@@ -42,6 +42,7 @@ const ProfileProtector = () => {
           .profile-container {
             width: 100%;
             margin-top: 70px;
+            
           }
           
           .profile-body {
