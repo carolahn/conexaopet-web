@@ -13,6 +13,7 @@ const AddressForm = ({ addressList, setAddress }) => {
 
   useEffect(() => {
     setAddress(addressData);
+    // eslint-disable-next-line
   }, [addressData]);
 
   const handleNameChange = (e) => {
