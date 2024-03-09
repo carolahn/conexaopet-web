@@ -169,7 +169,7 @@ const RegisterForm = ({ initialValues = null }) => {
 
       <style>
         {`
-           .row {
+          .row {
             display: flex;
             width: 100%;
             margin-bottom: .2rem;

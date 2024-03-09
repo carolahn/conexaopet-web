@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import NewPublicationHeader from './NewPublicationHeader';
+import SearchPetForm from './SearchPetForm';
+import SearchEventForm from './SearchEventForm';
 
+Modal.setAppElement('#root');
 
 const SearchModal = ({ isModalOpen, closeModal }) => {
   const [selectedTab, setSelectedTab] = useState('pet');
@@ -52,7 +56,19 @@ const SearchModal = ({ isModalOpen, closeModal }) => {
       contentLabel='User Modal'
       style={modalStyle}
     >
-      SearchModal
+      {selectedTab === 'pet' && (
+        <>
+          <NewPublicationHeader title='Buscar pet' closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
+          <SearchPetForm />
+        </>
+      )}
+
+      {selectedTab === 'event' && (
+        <>
+          <NewPublicationHeader title='Buscar evento' closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
+          <SearchEventForm />
+        </>
+      )}
     </Modal>
   );
 };
