@@ -22,25 +22,21 @@ const Login = () => {
       <SimpleHeader title='Login' />
       <div className='login-body'>
         <form onSubmit={handleSubmit}>
-          <div className="row mb-1">
-            <label htmlFor="user" className="col-sm-2 col-form-label">Usuário</label>
-            <div className="col-sm">
-              <div className="input-group">
-                <input type="text" className="form-control" id="user" value={nickname} onChange={(e) => setNickname(e.target.value)} />
-              </div>
+          <div className="row">
+            <label htmlFor="user" className="col col-form-label">Usuário</label>
+            <div className="col">
+              <input type="text" className="form-control" id="user" value={nickname} onChange={(e) => setNickname(e.target.value)} />
             </div>
           </div>
 
-          <div className="row mb-1">
-            <label htmlFor="password" className="col-sm-2 col-form-label">Senha</label>
-            <div className="col-sm">
-              <div className="input-group">
-                <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-              </div>
+          <div className="row">
+            <label htmlFor="password" className="col col-form-label">Senha</label>
+            <div className="col">
+              <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
           </div>
 
-          <button type="submit" className="btn w-100 btn-publish">Entrar</button>
+          <button type="submit" className="btn btn-publish">Entrar</button>
         </form>
       </div>
 
@@ -58,6 +54,21 @@ const Login = () => {
             padding: 0 10px;
           }
 
+          .row {
+            display: flex;
+            width: 100%;
+            margin-bottom: .2rem;
+          }
+
+          .col {
+            width: calc(100% - 1.5em);
+          }
+          
+          .row .col-form-label {
+            width: 24%;
+            align-self: center;
+          }
+
           input[type="text"], input[type="password"] {
             border: 1px solid #ced4da;
             padding: 0.375rem 0.75rem;
@@ -67,9 +78,28 @@ const Login = () => {
             width: calc(100% - 1.6em);
           }
 
+          .btn-publish {
+            width: 100%;
+            background-color: var(--color-contrast) !important;
+            border: 1px solid var(--color-contrast-2) !important;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+          }
+          
+          .btn-publish:hover {
+            background-color: var(--color-contrast-2) !important;
+          }
+
           @media (max-width: 900px) {
-            .login-container {
-              margin-top: 50px;
+            .row .col-form-label {
+              width: 30%;
+            }
+            .col-form-input {
+              width: 70%;
             }
           }
 
