@@ -73,7 +73,7 @@ const RegisterForm = ({ initialValues = null }) => {
         (userType == '2' || userType == '3') && (
           <ImageUploader label='Selecione o avatar' onChange={handleImagesChange} initialValues={initialValues?.imagens}/>
       )}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} aria-label="Cadastro de Usuário">
 
         
         <div className="row">
