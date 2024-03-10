@@ -8,6 +8,8 @@ import ProfileProtector from '../pages/ProfileProtector';
 import DashboardProtector from '../pages/DashboardProtector';
 import DashboardMember from '../pages/DashboardMember';
 import DashboardSponsor from '../pages/DashboardSponsor';
+import SinglePet from '../pages/SinglePet';
+import SingleEvent from '../pages/SingleEvent';
 
 const AppRoutes = () => {
   const isAuthenticated = true;
@@ -16,6 +18,8 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/event" element={<Event />} />
+      <Route path="/event/:id" element={<SingleEvent />} />
+      <Route path="/pet/:id" element={<SinglePet />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/protector/:id" element={<ProfileProtector/>} />
