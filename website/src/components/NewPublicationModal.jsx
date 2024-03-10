@@ -4,7 +4,9 @@ import NewPublicationHeader from './NewPublicationHeader';
 import NewPetForm from './NewPetForm';
 import NewEventForm from './NewEventForm';
 
-Modal.setAppElement('#root');
+if (process.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
+}
 
 const NewPublicationModal = ({ isModalOpen, closeModal, initialValues = null, isNewPublication = true }) => {
   const [selectedTab, setSelectedTab] = useState('pet');

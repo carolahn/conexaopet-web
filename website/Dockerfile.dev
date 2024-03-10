@@ -1,0 +1,27 @@
+# Dockerfile para rodar o servidor de desenvolvimento local, sem nginx
+# $ cd website
+# $ docker build -t 15-website-localserver -f Dockerfile.dev .
+# $ docker run --name 15-website -p 3000:3000 -v "$(pwd):/website" 15-website-localserver
+# acesso em http://localhost:3000 ou http://127.0.0.1:3000	
+
+# se não tiver node_modules, precisa entrar no container e rodar npm install
+# $ docker run -it --name 15-website -p 3000:3000 -v "$(pwd):/website" 15-website-localserver ash
+# /website # npm install
+# /website # npm start
+
+
+FROM node:19.6.1
+
+WORKDIR /website
+
+COPY package*.json ./
+
+RUN npm install
+
+VOLUME ["/website"]
+
+COPY . .
+
+CMD ["npm", "start"]
+
+EXPOSE 3000

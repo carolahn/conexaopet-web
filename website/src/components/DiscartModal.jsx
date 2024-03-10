@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import closeIcon from '../assets/images/close.png';
 
-Modal.setAppElement('#root');
+if (process.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
+}
 
 const DiscartModal = ({ isModalOpen, closeModal, publicationId }) => {
   const [modalStyle, setModalStyle] = useState({
