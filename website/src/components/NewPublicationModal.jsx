@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import NewPublicationHeader from './NewPublicationHeader';
+import NewPetForm from './NewPetForm';
+import NewEventForm from './NewEventForm';
 
 Modal.setAppElement('#root');
 
@@ -57,7 +60,19 @@ const NewPublicationModal = ({ isModalOpen, closeModal, initialValues = null, is
       style={modalStyle}
       appElement={document.getElementById('root')}
     >
-     New publication modal
+      {selectedTab === 'pet' && (
+        <>
+          <NewPublicationHeader title={isNewPublication ? 'Nova publicação' : 'Editar publicação'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
+          <NewPetForm initialValues={isNewPublication ? null : initialValues} />
+        </>
+      )}
+
+      {selectedTab === 'event' && (
+        <>
+          <NewPublicationHeader title='Novo evento' closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
+          <NewEventForm />
+        </>
+      )}
 
     </Modal>
   );

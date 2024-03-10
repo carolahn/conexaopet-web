@@ -122,7 +122,7 @@ const NewEventForm = ({initialValues}) => {
       <style>
         {`
           .new-event-form {
-            width: 80%;
+            width: 100%;
             max-width: 490px;
             padding-top: 15px;
             margin: 0 auto;
