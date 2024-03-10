@@ -3,7 +3,9 @@ import Modal from 'react-modal';
 import SimpleHeader from './SimpleHeader';
 import RegisterForm from './RegisterForm';
 
-Modal.setAppElement('#root');
+if (process.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
+}
 
 const EditUserModal = ({ isModalOpen, closeModal, userData }) => {
   const [modalStyle, setModalStyle] = useState({

@@ -4,7 +4,9 @@ import NewPublicationHeader from './NewPublicationHeader';
 import SearchPetForm from './SearchPetForm';
 import SearchEventForm from './SearchEventForm';
 
-Modal.setAppElement('#root');
+if (process.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
+}
 
 const SearchModal = ({ isModalOpen, closeModal }) => {
   const [selectedTab, setSelectedTab] = useState('pet');

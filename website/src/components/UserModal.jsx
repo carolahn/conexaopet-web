@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom';
 import EditUserModal from './EditUserModal';
 import { mockUserData } from './mockFormData';
 
-Modal.setAppElement('#root');
+if (process.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
+}
 
 const UserModal = ({ isModalOpen, closeModal, isLoggedIn = false }) => {
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
