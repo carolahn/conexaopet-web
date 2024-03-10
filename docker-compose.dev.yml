@@ -1,0 +1,26 @@
+version: '3'
+services:
+  website:
+    restart: on-failure
+    build:
+      context: ./website
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - website:/website/build/  # build files will be added at this directory
+
+  nginx:
+    restart: on-failure
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - website:/usr/share/nginx/html/website # Copy React App's build files to the Nginx directory
+    depends_on:
+      - website
+
+volumes:
+  website:
