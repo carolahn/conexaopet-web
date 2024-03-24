@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
@@ -12,6 +13,12 @@ import SinglePet from '../pages/SinglePet';
 import SingleEvent from '../pages/SingleEvent';
 
 const AppRoutes = () => {
+  // const { token, user } = useSelector((state) => state);
+  const tokenFromLocalStorage = localStorage.getItem('token');
+  const userFromLocalStorage = localStorage.getItem('user');
+  const token = useSelector((state) => state.authReducer.token || tokenFromLocalStorage);
+  const user = useSelector((state) => state.authReducer.user || userFromLocalStorage);
+
   const isAuthenticated = true;
   const userType = 'patrocinador'; //protetor, patrocinador, membro, visitante
   return (

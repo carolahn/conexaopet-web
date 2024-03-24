@@ -1,20 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector, connect } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import SimpleHeader from '../components/SimpleHeader';
+import { login } from '../redux/actions';
 
 const Login = () => {
-  const [nickname, setNickname] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.authReducer.token);
+
+  useEffect(() => {
+    if (token) {
+      navigate('/');
+    }
+  }, [token, navigate]);
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formData = {
-      nickname: nickname,
-      senha: password,
-    };
-
-    const jsonData = JSON.stringify(formData);
-    console.log(jsonData);
+    await dispatch(login(username, password)); 
   };
 
   return (
@@ -25,7 +32,7 @@ const Login = () => {
           <div className="row">
             <label htmlFor="user" className="col col-form-label">Usuário</label>
             <div className="col">
-              <input type="text" className="form-control" id="user" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+              <input type="text" className="form-control" id="user" value={username} onChange={(e) => setUsername(e.target.value)} />
             </div>
           </div>
 
@@ -109,4 +116,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default connect() (Login);
