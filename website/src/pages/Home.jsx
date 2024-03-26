@@ -7,11 +7,11 @@ import mockPetCardData from '../components/mockPetCardData';
 import mockEventCardData from '../components/mockEventCardData';
 
 
-const Home = () => {
+const Home = ( props ) => {
   return (
     <div className='home-page' data-testid="home-page">
       <div className='home-body'>
-				<Header/>
+				<Header user={props.user} token={props.token} />
 				<CarouselHome events={mockEventCardData}/>
 				{/* <button onClick={handleLogout}>Logout</button> */}
 				<InfiniteScroll itemList={mockPetCardData}>

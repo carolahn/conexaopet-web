@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
 }
 
-const EditUserModal = ({ isModalOpen, closeModal, userData }) => {
+const EditUserModal = ({ isModalOpen, closeModal, user, token, userData }) => {
   const [modalStyle, setModalStyle] = useState({
     overlay: {
       zIndex: 3,
@@ -66,7 +66,7 @@ const EditUserModal = ({ isModalOpen, closeModal, userData }) => {
     >
       <SimpleHeader title='Editar perfil' action='close' onClose={handleCloseModal}/>
       <div className='edit-user'>
-        <RegisterForm initialValues={userData} />
+        <RegisterForm initialValues={user} handleCloseModal={handleCloseModal} />
       </div>
 
       <style>

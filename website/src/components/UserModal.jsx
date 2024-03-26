@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import { useDispatch } from 'react-redux';
 import closeIcon from '../assets/images/close.png';
 import { Link } from 'react-router-dom';
 import EditUserModal from './EditUserModal';
 import { mockUserData } from './mockFormData';
+import { logout } from '../redux/actions';
 
 if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
 }
 
-const UserModal = ({ isModalOpen, closeModal, isLoggedIn = false }) => {
+const UserModal = ({ isModalOpen, closeModal, user, token, isLoggedIn = false }) => {
+  const dispatch = useDispatch();
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [modalStyle, setModalStyle] = useState({
     content: {
@@ -51,6 +54,11 @@ const UserModal = ({ isModalOpen, closeModal, isLoggedIn = false }) => {
     setIsEditUserModalOpen(false);
   };
 
+  const handleLogout = () => {
+    dispatch(logout());
+    window.location.reload();
+  };
+
   return (
     <Modal
       isOpen={isModalOpen}
@@ -64,11 +72,11 @@ const UserModal = ({ isModalOpen, closeModal, isLoggedIn = false }) => {
         </div>
       </div>
 
-      {isLoggedIn === true ? (
+      {token ? (
         <div style={{ marginTop: '5px', display: 'flex', flexDirection: 'column' }}>
           <Link to='/dashboard/member/2' style={{ marginBottom: '8px'}}>Minha conta</Link>
           <div className='edit-user-link' onClick={openEditUserModal}>Editar conta</div>
-          <Link to='/'>Sair</Link>
+          <Link to='/' onClick={handleLogout}>Sair</Link>
         </div>
       ) : (
         <div style={{ marginTop: '5px', display: 'flex', flexDirection: 'column' }}>
@@ -78,7 +86,7 @@ const UserModal = ({ isModalOpen, closeModal, isLoggedIn = false }) => {
 
       )}
 
-      <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={closeEditUserModal} userData={mockUserData}/>
+      <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={closeEditUserModal} user={user} token={token} userData={mockUserData}/>
       
       <style>
         {`

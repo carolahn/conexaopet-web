@@ -1,60 +1,114 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import ImageUploader from '../components/ImageUploader';
 import Toast from '../components/Toast';
+import { createUser, updateUser, login, clearUserError } from '../redux/actions';
 import { mockUserTypeData } from '../components/mockFormData';
 
-const RegisterForm = ({ initialValues = null }) => {
+
+const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
   const [userType, setUserType] = useState('');
   const [name, setName] = useState('');
-  const [nickname, setNickname] = useState('');
+  const [username, setUsername] = useState('');
   const [phone, setPhone] = useState('');
   const [city, setCity] = useState('');
   const [uf, setUf] = useState('');
-  const [password, setPassword] = useState('');
   const [images, setImages] = useState([]);
   const [pix, setPix] = useState([]);
   const [site, setSite] = useState([]);
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Alterações salvas');
+  const [toastType, setToastType] = useState('success');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userError = useSelector(state => state.userReducer.error);
 
+  
   useEffect(() => {
     if (initialValues) {
-      setUserType(initialValues.tipo || '');
-      setName(initialValues.nome || '');
-      setNickname(initialValues.nickname || '');
-      setPhone(initialValues.celular || '');
-      setCity(initialValues.cidade || '');
+      setUserType(initialValues.type || '');
+      setName(initialValues.name || '');
+      setUsername(initialValues.username || '');
+      setPhone(initialValues.phone || '');
+      setCity(initialValues.city || '');
       setUf(initialValues.uf || '');
-      setPassword(initialValues.senha || '');
-      setImages(initialValues.avatar || []);
+      setImages(initialValues.image || []);
       setPix(initialValues.pix || '');
       setSite(initialValues.site || '');
+      setPassword(initialValues.senha || '');
+      setEmail(initialValues.email || '');
     }
   }, [initialValues]);
+
+  console.log('images: ', images);
 
   const handleImagesChange = (selectedImages) => {
     setImages(selectedImages);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = {
-      images: images,
-      tipo_usuario: userType,
-      nome: name,
-      nickname: nickname,
-      celular: phone,
-      cidade: city,
+      image: images[0],
+      type: userType,
+      name: name,
+      username: username,
+      phone: phone,
+      city: city,
       uf: uf,
-      senha: password,
-      pix: pix,
-      site: site,
+      email: email,
     };
 
-    const jsonData = JSON.stringify(formData);
-    console.log(jsonData);
-    handleOpenToast();
-  
+    if (!initialValues) {
+      formData.password = password;
+    }
+
+    if (initialValues?.type == 2 || userType == 2) {
+      formData.pix = pix;
+    }
+
+    if (initialValues?.type == 3 || userType == 3) {
+      formData.site = site;
+    }
+
+    console.log('formdata: ', formData);
+    console.log('images: ', images[0]);
+    try {
+      if (initialValues) {
+        await dispatch(updateUser(initialValues.id, formData));
+        setToastMessage('Alterações salvas');
+        setToastType('success');
+        setTimeout(() => {
+          handleCloseModal();
+        }, 2000);
+        handleOpenToast();
+      } else {
+        await dispatch(createUser(formData));
+        if (!userError) {
+          setToastMessage('Cadastro realizado');
+          setToastType('success');
+          dispatch(login(username, password));
+          setTimeout(() => {
+            navigate('/');
+          }, 2000);
+          handleOpenToast();
+        } else {
+          setToastMessage(`Erro ao enviar solicitação: ${JSON.stringify(userError)}`);
+          setToastType('failure');
+          handleOpenToast();
+          dispatch(clearUserError());
+        }
+      }
+      
+    } catch (error) {
+      setToastMessage(`Erro ao enviar solicitação: ${error.message}}`);
+      setToastType('failure');
+      handleOpenToast();
+    }
   };
 
   const handleOpenToast = () => {
@@ -71,15 +125,18 @@ const RegisterForm = ({ initialValues = null }) => {
       {
         // eslint-disable-next-line 
         (userType == '2' || userType == '3') && (
-          <ImageUploader label='Selecione o avatar' onChange={handleImagesChange} initialValues={initialValues?.imagens}/>
+          <ImageUploader label='Selecione o avatar' onChange={handleImagesChange} initialValues={[initialValues?.image]}/>
       )}
-      <form onSubmit={handleSubmit} aria-label="Cadastro de Usuário">
+      <form onSubmit={handleSubmit} aria-label="Cadastro de Usuário" encType="multipart/form-data" >
 
         
         <div className="row">
           <label htmlFor="userType" className="col col-form-label">Tipo</label>
           <div className="col col-form-input">
-            <select className="form-select" placeholder="Selecione" id="userType" name="userType" aria-label="Selecione o tipo de usuário" value={userType} onChange={(e) => setUserType(e.target.value)}>
+            <select className="form-select" placeholder="Selecione" id="userType" name="userType" 
+              aria-label="Selecione o tipo de usuário"
+              disabled={initialValues ? true : false}
+              value={userType} onChange={(e) => setUserType(e.target.value)}>
               <option value=""></option>
               {mockUserTypeData.map((item) => (
                 <option key={item.id} value={item.id}>
@@ -98,9 +155,16 @@ const RegisterForm = ({ initialValues = null }) => {
         </div>
 
         <div className="row">
-          <label htmlFor="userNickname" className="col col-form-label">Nickname</label>
+          <label htmlFor="userUsername" className="col col-form-label">Username</label>
           <div className="col col-form-input">
-            <input type="text" id="userNickname" aria-label="Insira o apelido do usuário" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+            <input type="text" id="userUsername" aria-label="Insira o apelido do usuário" value={username} onChange={(e) => setUsername(e.target.value)} />
+          </div>
+        </div>
+
+        <div className="row">
+          <label htmlFor="userEmail" className="col col-form-label">E-mail</label>
+          <div className="col col-form-input">
+            <input type="email" id="userEmail" aria-label="Insira o email do usuário" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
         </div>
 
@@ -131,15 +195,17 @@ const RegisterForm = ({ initialValues = null }) => {
           </div>
         </div>
 
-        <div className="row">
-          <label htmlFor="userPassword" className="col col-form-label">Senha</label>
-          <div className="col col-form-input">
-            <input type="text" id="userPassword" aria-label="Insira a senha" value={password} onChange={(e) => setPassword(e.target.value)} />
+        {!initialValues && (
+          <div className="row">
+            <label htmlFor="userPassword" className="col col-form-label">Senha</label>
+            <div className="col col-form-input">
+              <input type="password" id="userPassword" aria-label="Insira a senha" value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
           </div>
-        </div>
+        )}
 
         { // eslint-disable-next-line
-          (userType == '2' || userType == '3') && (
+          (userType == '2') && (
             <div className="row">
               <label htmlFor="userPix" className="col col-form-label">Chave pix</label>
               <div className="col col-form-input">
@@ -163,8 +229,7 @@ const RegisterForm = ({ initialValues = null }) => {
      
 
       {showToast && (
-        <Toast message={initialValues ? 'Alterações salvas' : 'Cadastro realizado' } type='success' onClose={handleCloseToast} />
-
+        <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
       )}
 
       <style>
@@ -197,7 +262,7 @@ const RegisterForm = ({ initialValues = null }) => {
             height: 38px;
           }
 
-          input[type="text"] {
+          input[type="text"], input[type="password"], input[type="email"] {
             /* Adicione estilos desejados aqui */
             border: 1px solid #ced4da;
             padding: 0.375rem 0.75rem;

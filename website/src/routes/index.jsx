@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { getToken, getUser } from '../utils/selectors';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
@@ -12,18 +13,14 @@ import DashboardSponsor from '../pages/DashboardSponsor';
 import SinglePet from '../pages/SinglePet';
 import SingleEvent from '../pages/SingleEvent';
 
-const AppRoutes = () => {
-  // const { token, user } = useSelector((state) => state);
-  const tokenFromLocalStorage = localStorage.getItem('token');
-  const userFromLocalStorage = localStorage.getItem('user');
-  const token = useSelector((state) => state.authReducer.token || tokenFromLocalStorage);
-  const user = useSelector((state) => state.authReducer.user || userFromLocalStorage);
 
-  const isAuthenticated = true;
-  const userType = 'patrocinador'; //protetor, patrocinador, membro, visitante
+const AppRoutes = () => {
+  const token = useSelector(getToken);
+  const user = useSelector(getUser);
+
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Home user={user} token={token} />} />
       <Route path="/event" element={<Event />} />
       <Route path="/event/:id" element={<SingleEvent />} />
       <Route path="/pet/:id" element={<SinglePet />} />

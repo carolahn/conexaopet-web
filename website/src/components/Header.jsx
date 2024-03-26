@@ -8,7 +8,7 @@ import searchFilledIcon from '../assets/images/search-filled.png';
 import UserModal from './UserModal';
 import SearchModal from './SearchModal';
 
-const Header = () => {
+const Header = ( props ) => {
   const [isVisible, setIsVisible] = useState(true);
   const [prevScrollPos, setPrevScrollPos] = useState(window.pageYOffset);
 	const [isUserModalOpen, setIsUserModalOpen] = useState(false);
@@ -81,7 +81,7 @@ const Header = () => {
 				</div>
 			</div>
 
-			<UserModal isModalOpen={isUserModalOpen} closeModal={closeUserModal} isLoggedIn={true}>
+			<UserModal isModalOpen={isUserModalOpen} closeModal={closeUserModal} user={props.user} token={props.token} isLoggedIn={true}>
 				<h2>Opções do Usuário</h2>
         <button onClick={closeUserModal}>Fechar</button>
 			</UserModal>

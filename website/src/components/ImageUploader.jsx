@@ -7,52 +7,46 @@ const ImageUploader = ({ label, onChange, initialValues=[] }) => {
   // eslint-disable-next-line
   const [width, height] = useWindowSize();
   const [selectedImages, setSelectedImages] = useState([]);
-  const [blobData, setBlobData] = useState([]);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
-  const prevBlobData = useRef(blobData);
-  const [imageUrls, setImageUrls] = useState([]);
+  const prevSelectedImages = useRef(selectedImages);
+
+  console.log('initialValues: ', initialValues);
+  console.log('selectedImages: ', selectedImages);
+  
 
   useEffect(() => {
-    const urls = selectedImages.map((image) => {
-      return image.blob
-        ? URL.createObjectURL(new Blob([image.blob], { type: image.type }))
-        : URL.createObjectURL(image);
-    });
-
-    setImageUrls(urls);
-  }, [selectedImages]);
-
-  useEffect(() => {
-    if (!isEqual(blobData, prevBlobData.current)) {
-      prevBlobData.current = blobData;
-      onChange(blobData);
+    if (!isEqual(selectedImages, prevSelectedImages.current)) {
+      prevSelectedImages.current = selectedImages;
+      onChange(selectedImages);
     }
-  }, [blobData, onChange]);
+  }, [selectedImages, onChange]);
 
   useEffect(() => {
     if (initialValues && initialValues.length > 0) {
       const loadInitialImages = async () => {
-        const newImages = [];
+        try {
+          const files = await Promise.all(
+            initialValues.map(async (path) => {
 
-        for (const image of initialValues) {
-          if (typeof image === 'string') {
-            // Se for uma string, presume-se que é uma URL da imagem
-            const blob = await fetch(image).then((response) => response.blob());
-            const base64String = await convertBlobToBase64(blob);
-            newImages.push({ blob: base64String, type: blob.type });
-          } else if (image.blob && image.type) {
-            // Se já é um objeto com blob e type, não faz conversão
-            newImages.push(image);
-          }
+              const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
+              const pathAfterMedia = path.substring(path.indexOf('media/'));
+              const url = apiUrl + pathAfterMedia;
+              
+              const response = await fetch(url);
+              if (!response.ok) {
+                throw new Error(`Failed to fetch image from ${url}`);
+              }
+              const blob = await response.blob();
+              const file = new File([blob], path.substring(path.lastIndexOf('/') + 1));
+              return file;
+            })
+          );
+          setSelectedImages(files);
+        } catch (error) {
+          console.error('Error loading initial images:', error);
         }
-
-        console.log('Loaded initial images:', newImages);
-
-        setSelectedImages(newImages);
-        setBlobData(newImages);
       };
-
       loadInitialImages();
     }
     // eslint-disable-next-line
@@ -68,48 +62,14 @@ const ImageUploader = ({ label, onChange, initialValues=[] }) => {
 
   const handleImageSelection = async (e) => {
     const files = Array.from(e.target.files);
-    setSelectedImages((prevImages) => [...prevImages, ...files]);
-    
     const newImages = [];
-  
-    for (const file of files) {
-      const blob = await getBlobFromImageFile(file);
-      
-      // Convertendo Blob para base64
-      const base64String = await convertBlobToBase64(blob);
-  
-      newImages.push({ blob: base64String, type: file.type });
-      console.log('blob: ', base64String);
-    }
-    setBlobData((prevBlobData) => [...prevBlobData, ...newImages]);
-  };
 
-  const convertBlobToBase64 = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        console.log('Base64:', reader.result.split(',')[1]);
-        resolve(reader.result.split(',')[1]);
-      }
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
+    for (const file of files) {
+      newImages.push(file);
+    }
+
+    setSelectedImages((prevImages) => [...prevImages, ...newImages]);
   };
-  
-  const getBlobFromImageFile = (file) => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-  
-      reader.onloadend = () => {
-        const arrayBuffer = reader.result;
-        const blob = new Blob([arrayBuffer], { type: file.type });
-        resolve(blob);
-      };
-  
-      reader.readAsArrayBuffer(file);
-    });
-  };
-  
 
   const handleDragStart = (index) => {
     setDraggedIndex(index);
@@ -130,7 +90,6 @@ const ImageUploader = ({ label, onChange, initialValues=[] }) => {
 
   const removeImage = (index) => {
     setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
-    setBlobData((prevBlobData) => prevBlobData.filter((_, i) => i !== index));
   };
 
   const handleDragEnd = () => {
@@ -175,7 +134,7 @@ const ImageUploader = ({ label, onChange, initialValues=[] }) => {
         onDragOver={(e) => e.preventDefault()}
         onDragEnd={handleDragEnd}
       >
-        {selectedImages.map((_, index) => (
+        {selectedImages.map((file, index) => (
 
           <div
             key={index}
@@ -186,7 +145,7 @@ const ImageUploader = ({ label, onChange, initialValues=[] }) => {
             draggable
           >
             <img
-              src={imageUrls[index]}
+              src={URL.createObjectURL(file)}
               onError={(e) => console.error('Erro ao carregar imagem:', e)}
               alt={`Imagem ${index + 1}`}
               style={width > 900 ? imagePreviewStyles : imagePreviewMobileStyles} 
@@ -271,13 +230,3 @@ const trashIconStyles = {
 };
 
 export default ImageUploader;
-
-
-
-
-
-
-
-
-
-
