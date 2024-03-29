@@ -5,7 +5,7 @@ import NewCupomForm from './NewCupomForm';
 
 Modal.setAppElement('#root');
 
-const NewCupomModal = ({ isModalOpen, closeModal, initialValues = null, isNewPublication = true }) => {
+const NewCupomModal = ({ user, isModalOpen, closeModal, initialValues = null, setToastType, setToastMessage, handleOpenToast }) => {
   const [selectedTab, setSelectedTab] = useState('pet');
   const [modalStyle, setModalStyle] = useState({
     overlay: {
@@ -59,8 +59,8 @@ const NewCupomModal = ({ isModalOpen, closeModal, initialValues = null, isNewPub
       style={modalStyle}
       appElement={document.getElementById('root')}
     >
-        <NewPublicationHeader title='Novo cupom' closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab} showButtons={false}/>
-        <NewCupomForm />
+        <NewPublicationHeader title={initialValues ? 'Editar cupom' : 'Novo cupom'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab} showButtons={false}/>
+        <NewCupomForm user={user} initialValues={initialValues} handleCloseModal={closeModal} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
 
     </Modal>
   );

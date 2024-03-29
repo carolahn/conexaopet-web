@@ -81,7 +81,7 @@ const Header = ( props ) => {
 				</div>
 			</div>
 
-			<UserModal isModalOpen={isUserModalOpen} closeModal={closeUserModal} user={props.user} token={props.token} isLoggedIn={true}>
+			<UserModal isModalOpen={isUserModalOpen} closeModal={closeUserModal} user={props.user} token={props.token} >
 				<h2>Opções do Usuário</h2>
         <button onClick={closeUserModal}>Fechar</button>
 			</UserModal>

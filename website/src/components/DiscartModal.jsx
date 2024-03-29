@@ -6,7 +6,7 @@ if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
 }
 
-const DiscartModal = ({ isModalOpen, closeModal, publicationId }) => {
+const DiscartModal = ({ isModalOpen, closeModal, handleConfirm }) => {
   const [modalStyle, setModalStyle] = useState({
     content: {
       inset: 'calc(50% - 150px) calc(50% - 125px)',
@@ -58,8 +58,8 @@ const DiscartModal = ({ isModalOpen, closeModal, publicationId }) => {
         <h2 style={{ marginBottom: '15px'}}>Remover publicação?</h2>
       </div>
       <div style={{ marginTop: '5px', display: 'flex' }}>
-        <button className='btn-discart' style={{ marginRight: '5px' }}>Sim</button>
-        <button className='btn-discart'>Cancelar</button>
+        <button className='btn-discart btn-discatrt-confirm' onClick={handleConfirm} style={{ marginRight: '5px' }}>Sim</button>
+        <button className='btn-discart' onClick={closeModal}>Cancelar</button>
       </div>
 
       <style>
@@ -78,6 +78,13 @@ const DiscartModal = ({ isModalOpen, closeModal, publicationId }) => {
             display: inline-block;
             transition: background-color 0.3s ease;
             width: 100%;
+          }
+
+          .btn-discatrt-confirm {
+            background-color: var(--color-contrast) !important;
+            border: 1px solid var(--color-contrast-2) !important;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+            color: var(--color-primary);
           }
         `}
       </style>

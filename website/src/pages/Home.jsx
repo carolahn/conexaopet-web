@@ -13,7 +13,6 @@ const Home = ( props ) => {
       <div className='home-body'>
 				<Header user={props.user} token={props.token} />
 				<CarouselHome events={mockEventCardData}/>
-				{/* <button onClick={handleLogout}>Logout</button> */}
 				<InfiniteScroll itemList={mockPetCardData}>
 					{({ itemList, isLoading }) => (
 						<PetCardList petList={itemList} />

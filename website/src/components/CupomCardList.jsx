@@ -1,11 +1,11 @@
 import React from 'react';
 import CupomCard from './CupomCard';
 
-const CupomCardList = ({ cupomList }) => {
+const CupomCardList = ({ cupomList, setToastType, setToastMessage, handleOpenToast }) => {
   return (
     <div className='cupom-card-list'>
       {cupomList.map((cupom, index) => (
-        <CupomCard key={index} cupom={cupom} id={`cupom-${cupom.id}`} />
+        <CupomCard key={index} cupom={cupom} id={`cupom-${cupom.id}`} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
       ))}
 
       <style>

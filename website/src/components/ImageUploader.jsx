@@ -23,14 +23,15 @@ const ImageUploader = ({ label, onChange, initialValues=[] }) => {
   }, [selectedImages, onChange]);
 
   useEffect(() => {
-    if (initialValues && initialValues.length > 0) {
+    if (initialValues && initialValues.length > 0 && initialValues[0]) {
       const loadInitialImages = async () => {
         try {
           const files = await Promise.all(
             initialValues.map(async (path) => {
-
+              // if (path == undefined) return '';
+              
               const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
-              const pathAfterMedia = path.substring(path.indexOf('media/'));
+              const pathAfterMedia = path?.substring(path.indexOf('media/'));
               const url = apiUrl + pathAfterMedia;
               
               const response = await fetch(url);
@@ -65,7 +66,9 @@ const ImageUploader = ({ label, onChange, initialValues=[] }) => {
     const newImages = [];
 
     for (const file of files) {
-      newImages.push(file);
+      if (file !== '') {
+        newImages.push(file);
+      }
     }
 
     setSelectedImages((prevImages) => [...prevImages, ...newImages]);
@@ -135,26 +138,28 @@ const ImageUploader = ({ label, onChange, initialValues=[] }) => {
         onDragEnd={handleDragEnd}
       >
         {selectedImages.map((file, index) => (
+          file && (
+            <div
+              key={index}
+              style={width > 900 ? imageContainerStyles : imageContainerMobileStyles}
+              onDragOver={() => handleDragOver(index)}
+              onDragStart={() => handleDragStart(index)}
+              onDragEnd={handleDragEnd}
+              draggable
+            >
+              <img
+                src={file ? URL.createObjectURL(file) : ''}
+                onError={(e) => console.error('Erro ao carregar imagem:', e)}
+                alt={`Imagem ${index + 1}`}
+                style={width > 900 ? imagePreviewStyles : imagePreviewMobileStyles} 
+                onClick={() => console.log(`Clicou na miniatura ${index + 1}`)}
+              />
+              <button onClick={() => removeImage(index)} style={removeButtonStyles}>
+                <img src={trashIcon} alt="Remover" style={trashIconStyles} />
+              </button>
+            </div>
 
-          <div
-            key={index}
-            style={width > 900 ? imageContainerStyles : imageContainerMobileStyles}
-            onDragOver={() => handleDragOver(index)}
-            onDragStart={() => handleDragStart(index)}
-            onDragEnd={handleDragEnd}
-            draggable
-          >
-            <img
-              src={URL.createObjectURL(file)}
-              onError={(e) => console.error('Erro ao carregar imagem:', e)}
-              alt={`Imagem ${index + 1}`}
-              style={width > 900 ? imagePreviewStyles : imagePreviewMobileStyles} 
-              onClick={() => console.log(`Clicou na miniatura ${index + 1}`)}
-            />
-            <button onClick={() => removeImage(index)} style={removeButtonStyles}>
-              <img src={trashIcon} alt="Remover" style={trashIconStyles} />
-            </button>
-          </div>
+          )
         ))}
       </div>
     </div>

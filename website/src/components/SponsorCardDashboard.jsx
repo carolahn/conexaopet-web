@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import plusIcon from '../assets/images/plus.png';
+import refreshIcon from '../assets/images/refresh.png';
 import cupomFilledIcon from '../assets/images/cupom-filled.png';
 import NewCupomModal from './NewCupomModal';
+import { updateExpiredCupons } from '../redux/actions';
 
-const SponsorCardDashboard = ({ sponsor, setSelectedTab}) => {
+
+const SponsorCardDashboard = ({ user, setSelectedTab, setToastType, setToastMessage, handleOpenToast }) => {
   const [cupomIconSrc, setCupomIconSrc] = useState(cupomFilledIcon);
   const [isNewCupomModalOpen, setIsNewCupomModalOpen] = useState(false);
-
+  const dispatch = useDispatch();
+  
   const handleSelectCupom = () => {
     setCupomIconSrc(cupomFilledIcon);
     setSelectedTab('cupom');
@@ -20,16 +25,34 @@ const SponsorCardDashboard = ({ sponsor, setSelectedTab}) => {
     setIsNewCupomModalOpen(false);
   };
 
+  const handleRefreshCupons = async () => {
+    try {
+      const response = await dispatch(updateExpiredCupons());
+      setToastMessage('Cupons expirados atualizados.');
+      setToastType('success');
+      handleOpenToast();
+    } catch (error) {
+      console.error('Error refreshing cupons:', error);
+      setToastMessage(`Erro: ${error.message}`);
+      setToastType('failure');
+      handleOpenToast();
+    }
+  };
+
+
   return (
     <div className='sponsor-card-tabs'>
       <div className='cupom-icon-container' onClick={handleSelectCupom}>
         <img src={cupomIconSrc} alt='Cupons ativos' className='cupom-icon' />
       </div>
+      <div className='refresh-icon-container' onClick={handleRefreshCupons}>
+        <img src={refreshIcon} alt='Atualizar cupons expirados' className='refresh-icon' />
+      </div>
       <div className='plus-icon-container' onClick={openNewCupomModal}>
         <img src={plusIcon} alt='Novo cupom' className='plus-icon' />
       </div>
 
-      <NewCupomModal isModalOpen={isNewCupomModalOpen} closeModal={closeNewCupomModal} style={{ zIndex: '3'}}/>
+      <NewCupomModal user={user} isModalOpen={isNewCupomModalOpen} closeModal={closeNewCupomModal} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} style={{ zIndex: '3'}}/>
 
       <style>
         {`
@@ -41,13 +64,17 @@ const SponsorCardDashboard = ({ sponsor, setSelectedTab}) => {
             cursor: pointer;
             height: 20px;
           }
+          .refresh-icon {
+            cursor: pointer;
+            height: 20px;
+          }
           
           .sponsor-card-tabs {
             display: flex;
             justify-content: center;
           }
           
-          .sponsor-card-tabs .cupom-icon {
+          .sponsor-card-tabs .cupom-icon, .refresh-icon {
             margin-right: 50px;
           }
           

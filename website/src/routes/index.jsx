@@ -29,7 +29,7 @@ const AppRoutes = () => {
       <Route path="/protector/:id" element={<ProfileProtector/>} />
       <Route path="/dashboard/protector/:id" element={<DashboardProtector />} />
       <Route path="/dashboard/member/:id" element={<DashboardMember />} />
-      <Route path="/dashboard/sponsor/:id" element={<DashboardSponsor />} />
+      <Route path="/dashboard/sponsor/:id" element={<DashboardSponsor user={user} token={token} />} />
       <Route path="*" element={<Navigate to="/404" />} />
     </Routes>
   );

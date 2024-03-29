@@ -11,7 +11,7 @@ if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
 }
 
-const UserModal = ({ isModalOpen, closeModal, user, token, isLoggedIn = false }) => {
+const UserModal = ({ isModalOpen, closeModal, user, token }) => {
   const dispatch = useDispatch();
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [modalStyle, setModalStyle] = useState({
@@ -59,6 +59,18 @@ const UserModal = ({ isModalOpen, closeModal, user, token, isLoggedIn = false })
     window.location.reload();
   };
 
+  const getDashboardLink = () => {
+    if (user.type === 1) {
+      return `/dashboard/member/${user.id}`;
+    } else if (user.type === 2) {
+      return `/dashboard/protector/${user.id}`;
+    } else if (user.type === 3) {
+      return `/dashboard/sponsor/${user.id}`;
+    } else {
+      return '/';
+    }
+  };
+
   return (
     <Modal
       isOpen={isModalOpen}
@@ -74,7 +86,7 @@ const UserModal = ({ isModalOpen, closeModal, user, token, isLoggedIn = false })
 
       {token ? (
         <div style={{ marginTop: '5px', display: 'flex', flexDirection: 'column' }}>
-          <Link to='/dashboard/member/2' style={{ marginBottom: '8px'}}>Minha conta</Link>
+          <Link to={getDashboardLink()} style={{ marginBottom: '8px'}} onClick={closeModal}>Minha conta</Link>
           <div className='edit-user-link' onClick={openEditUserModal}>Editar conta</div>
           <Link to='/' onClick={handleLogout}>Sair</Link>
         </div>
@@ -86,7 +98,7 @@ const UserModal = ({ isModalOpen, closeModal, user, token, isLoggedIn = false })
 
       )}
 
-      <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={closeEditUserModal} user={user} token={token} userData={mockUserData}/>
+      <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={() => {closeEditUserModal(); closeModal();}} user={user} token={token} userData={mockUserData}/>
       
       <style>
         {`
