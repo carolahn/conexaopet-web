@@ -12,14 +12,14 @@ import Toast from '../components/Toast';
 import DiscartModal from './DiscartModal';
 
 // Objeto para armazenar cache de imagens
-const imageCache = {};
+export const imageCache = {};
 
 const CupomCard = ({ cupom }) => {
   const [ownerImage, setOwnerImage] = useState(null);
   const [cupomImage, setCupomImage] = useState(null);
   const [isNewCupomModalOpen, setIsNewCupomModalOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
   const [toastType, setToastType] = useState('success');
   const [isDiscartModalOpen, setIsDiscartModalOpen] = useState(false);

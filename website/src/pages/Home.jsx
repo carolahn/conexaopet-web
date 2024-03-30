@@ -1,25 +1,71 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import CarouselHome from '../components/CarouselHome';
 import Header from '../components/Header';
 import PetCardList from '../components/PetCardList';
 import InfiniteScroll from '../components/InfiniteScroll';
 import mockPetCardData from '../components/mockPetCardData';
 import mockEventCardData from '../components/mockEventCardData';
+import Toast from '../components/Toast';
+import { fetchPetList } from '../redux/actions/petActions';
+import { fetchEventList } from '../redux/actions/eventActions';
 
 
 const Home = ( props ) => {
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Alterações salvas');
+  const [toastType, setToastType] = useState('success');
+  const dispatch = useDispatch();
+  const petList = useSelector((state) => state.pet.petList);
+  const petNextPage = useSelector((state) => state.pet.nextPage);
+  const petIsLoading = useSelector((state) => state.pet.isLoading);
+  const eventList = useSelector((state) => state.event.eventList);
+  const eventNextPage = useSelector((state) => state.event.nextPage);
+  const eventIsLoading = useSelector((state) => state.event.isLoading);
+
+  useEffect(() => {
+    dispatch(fetchPetList());
+    dispatch(fetchEventList());
+  }, [dispatch]);
+
+  const loadMorePets = () => {
+    console.log("petNextPage: ", petNextPage)
+    if (petNextPage) {
+      const pageNumber = petNextPage.split('page=')[1];
+      dispatch(fetchPetList(pageNumber));
+    }
+  };
+
+  const loadMoreEvents = () => {
+    console.log("eventNextPage: ", eventNextPage)
+    if (eventNextPage) {
+      const pageNumber = eventNextPage.split('page=')[1];
+      dispatch(fetchEventList(pageNumber));
+    }
+  };
+
+  const handleOpenToast = () => {
+    setShowToast(true);
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
+
   return (
     <div className='home-page' data-testid="home-page">
       <div className='home-body'>
 				<Header user={props.user} token={props.token} />
-				<CarouselHome events={mockEventCardData}/>
-				<InfiniteScroll itemList={mockPetCardData}>
-					{({ itemList, isLoading }) => (
-						<PetCardList petList={itemList} />
-					)}
+				<CarouselHome events={eventList} loadMore={loadMoreEvents} isLoading={eventIsLoading} />
+				<InfiniteScroll itemList={petList || []} loadMore={loadMorePets} isLoading={petIsLoading}>
+          <PetCardList petList={petList} />
 				</InfiniteScroll>
 
 			</div>
+
+      {showToast && (
+        <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
+      )}
 
       <style>
         {`

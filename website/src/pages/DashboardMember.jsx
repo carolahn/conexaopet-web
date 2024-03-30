@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import PetCardList from '../components/PetCardList';
 import EventCardList from '../components/EventCardList';
@@ -11,10 +12,21 @@ import MemberCardDashboard from '../components/MemberCardDashboard';
 import CupomCardList from '../components/CupomCardList';
 
 
-const DashboardMember = () => {
+const DashboardMember = ( props ) => {
   const [selectedTab, setSelectedTab] = useState('pet');
   const { id } = useParams();
   const isOwner = false;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (id === null || id === undefined) {
+      navigate('/');
+    } else if (props.user.id !== parseInt(id)) {
+      navigate('/');
+    }
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <div className='profile-container'>

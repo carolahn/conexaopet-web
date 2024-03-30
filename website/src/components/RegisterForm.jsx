@@ -43,7 +43,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
     }
   }, [initialValues]);
 
-  console.log('images: ', images);
+  // console.log('images: ', images);
 
   const handleImagesChange = (selectedImages) => {
     setImages(selectedImages);
@@ -75,8 +75,8 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
       formData.site = site;
     }
 
-    console.log('formdata: ', formData);
-    console.log('images: ', images[0]);
+    // console.log('formdata: ', formData);
+    // console.log('images: ', images[0]);
     try {
       if (initialValues) {
         await dispatch(updateUser(initialValues.id, formData));

@@ -5,7 +5,7 @@ const PetCardList = ({ petList, isOwner = false }) => {
   return (
     <div className="pet-card-list">
       {petList.map((pet, index) => (
-        <PetCard key={index} isOwner={isOwner} {...pet} />
+        <PetCard key={index} pet={pet} id={`pet-${pet.id}`} />
       ))}
 
       <style>

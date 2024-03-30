@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useWindowSize } from '../hooks/useWindowSize';
+import { getUser } from '../utils/selectors';
 import starIcon from '../assets/images/star.png';
 import starFilledIcon from '../assets/images/star-filled.png';
 import moreIcon from '../assets/images/more.png';
@@ -15,23 +17,13 @@ import trashIcon from '../assets/images/trash.png';
 import DiscartModal from './DiscartModal';
 import { mockEditPetData } from './mockFormData';
 import NewPublicationModal from './NewPublicationModal';
+import { imageCache } from './CupomCard';
+import { getPersonalityString, getAlongString, getLifeStage, getPetType } from '../utils/petData';
 
-const PetCard = ({
-  avatar,
-  nome,
-	cidade,
-  imagens,
-  tipo,
-  sexo,
-  idade,
-  porte,
-  raca,
-  protetor,
-  convivio,
-  personalidade,
-  descricao,
-	isOwner = false,
-}) => {
+
+const PetCard = ({ pet }) => {
+  const [ownerImage, setOwnerImage] = useState(null);
+  const [petImages, setPetImages] = useState([]);
 	const [isFavorite, setIsFavorite] = useState(false);
 	const [starIconSrc, setStarIconSrc] = useState(starIcon);
 	const [isMoreInfoVisible, setMoreInfoVisible] = useState(false);
@@ -39,6 +31,45 @@ const PetCard = ({
   const [width, height] = useWindowSize();
 	const [isDiscartModalOpen, setIsDiscartModalOpen] = useState(false);
 	const [isNewPublicationModalOpen, setIsNewPublicationModalOpen] = useState(false);
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchImage = async (imageURL, setImage) => {
+      try {
+        // Verifica se a imagem já está em cache
+        if (imageCache[imageURL]) {
+          setImage(imageCache[imageURL]);
+          return;
+        }
+  
+        const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
+        const pathAfterMedia = imageURL.substring(imageURL.indexOf('media/'));
+        const url = apiUrl + pathAfterMedia;
+  
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch image from ${url}`);
+        }
+        const blob = await response.blob();
+        const file = new File([blob], imageURL.substring(imageURL.lastIndexOf('/') + 1));
+  
+        // Salva a imagem no cache
+        imageCache[imageURL] = URL.createObjectURL(file);
+        setImage(imageCache[imageURL]);
+      } catch (error) {
+        console.error(`Error fetching image from ${imageURL}:`, error);
+      }
+    };
+  
+    fetchImage(pet.owner.image, setOwnerImage);
+  
+    pet.images.forEach(image => {
+      fetchImage(image.image, (cachedImage) => {
+        setPetImages(prevImages => [...prevImages, cachedImage]);
+      });
+    });
+  }, [pet.owner.image, pet.images]);
 
 	useEffect(() => {
     // Atualizar o índice do slide para 0 ao redimensionar a janela
@@ -61,11 +92,11 @@ const PetCard = ({
   };
 
 	const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % imagens.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % pet.images.length);
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + imagens.length) % imagens.length);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + pet.images.length) % pet.images.length);
   };
 
 	const handleChangeIndex = (index) => {
@@ -73,7 +104,7 @@ const PetCard = ({
   };
 
 	const isAtBeginning = currentIndex === 0;
-  const isAtEnd = currentIndex === imagens.length - 1;
+  const isAtEnd = currentIndex === pet.images.length - 1;
 
 	const openDiscartModal = () => {
     setIsDiscartModalOpen(!isDiscartModalOpen);
@@ -97,11 +128,11 @@ const PetCard = ({
 			<div className='pet-card-header'>
 				<div className='pet-header'>
 					<div className='pet-avatar'>
-						<img src={avatar} alt={`Avatar de ${nome}`} />
+						<img src={ownerImage} alt={`Avatar de ${pet.owner.username}`} />
 					</div>
-					<h2>{protetor}</h2>
+					<h2>{pet.owner.username}</h2>
 				</div>
-				{isOwner && (
+				{user?.id === pet.owner.id && (
 					<div className='pet-options-container'>
 						<div className='icon-container' onClick={openNewPublicationModal}>
 							<img src={editIcon} alt='Buscar' className='edit-icon' />
@@ -118,9 +149,9 @@ const PetCard = ({
 					{width >= 900 ? (
 						<div className="pet-carousel" style={{ maxWidth: '500px' }}>
 							<div className="pet-carousel-content" style={{ transform: `translateX(-${currentIndex * 500}px)` }}>
-								{imagens.map((imagem, index) => (
+								{petImages.map((imagem, index) => (
 									<div key={index} style={{ width: '500px' }}>
-										<img src={imagem} alt={`Foto de ${nome}`} className='pet-image'/>
+										<img src={imagem} alt={`Foto de ${pet.name}`} className='pet-image'/>
 									</div>
 								))}
 							</div>
@@ -131,9 +162,9 @@ const PetCard = ({
 					) : (
 						<div className="pet-carousel" style={{ height: `${width - 30}px`, width: `${width - 30}px` }}>
 							<div className="pet-carousel-content" style={{ transform: `translateX(-${currentIndex * (width - 30)}px)` }}>
-								{imagens.map((imagem, index) => (
+								{petImages.map((imagem, index) => (
 									<div key={index} style={{ width: `${width - 30}px` }}>
-										<img src={imagem} alt={`Foto de ${nome}`} className='pet-image' style={{ height: `${width - 30}px`, width: `${width - 30}px`, objectFit: 'cover' }}/>
+										<img src={imagem} alt={`Foto de ${pet.name}`} className='pet-image' style={{ height: `${width - 30}px`, width: `${width - 30}px`, objectFit: 'cover' }}/>
 									</div>
 								))}
 							</div>
@@ -145,10 +176,10 @@ const PetCard = ({
 				</div>
 				<div className='pet-card-bar'>
 					<div className='pet-card-summary'>
-						<h2>{nome}</h2>
-						<p className={`pet-label pet-${sexo.toLowerCase()}`}>{sexo}</p>
-						<p className='pet-label pet-age'>{idade}</p>
-						<p className='pet-label pet-size'>{porte}</p>
+						<h2>{pet.name}</h2>
+						<p className={`pet-label pet-${pet.gender.toLowerCase()}`}>{pet.gender === 'M' ? 'macho' : 'fêmea'}</p>
+						<p className='pet-label pet-age'>{getLifeStage(pet.age_year)}</p>
+						<p className='pet-label pet-size'>{pet.size}</p>
 					</div>
 					<div className='pet-card-buttons'>
 						<div className='star-icon-container' onClick={handleFavoriteClick}>
@@ -164,39 +195,39 @@ const PetCard = ({
 						<div className='pet-info-row'>
 							<div className='pet-info-col'>
 								<img src={pinIcon} alt='Cidade' className='pet-info-icon'/>
-								<div className='pet-data'>{cidade}</div>
+								<div className='pet-data'>{pet.owner.city}</div>
 							</div>
 						</div>
 						<div className='pet-info-row'>
 							<div className='pet-info-col'>
 								<img src={printIcon} alt='Tipo de animal' className='pet-info-icon'/>
-								<div className='pet-data'>{tipo}</div>
+								<div className='pet-data'>{getPetType(pet.type)}</div>
 							</div>
 							<div className='pet-info-col'>
 								<img src={ribbonIcon} alt='Raça' className='pet-info-icon'/>
-								<div className='pet-data'>{raca}</div>
+								<div className='pet-data'>{pet.breed}</div>
 							</div>
 						</div>
 						<div className='pet-info-row'>
 							<div className='pet-info-col'>
 								<img src={cakeIcon} alt='Idade' className='pet-info-icon'/>
-								<div className='pet-data'>{idade}</div>
+								<div className='pet-data'>{pet.age_year > 0 ? `${pet.age_year} anos` : `${pet.age_month} meses`}</div>
 							</div>
 							<div className='pet-info-col'>
 								<img src={weightIcon} alt='Peso' className='pet-info-icon'/>
-								<div className='pet-data'>{porte}</div>
+								<div className='pet-data'>{pet.weight} kg</div>
 							</div>
 						</div>
 						<div className='pet-info-line'>
 							<img src={infoIcon} alt='Informações gerais' className='pet-info-icon'/>
 							<div className='pet-data'>
-								<p>{convivio}</p>
-								<p>{personalidade}</p>
+								<p>{pet.get_along.length > 0 ? `Convive bem com: ${getAlongString(pet.get_along)}` : `Não lida bem com animais e crianças`}</p>
+								<p>{pet.personality.length > 0 ? `Personalidade: ${getPersonalityString(pet.personality)}`: ''}</p>
 							</div>
 						</div>
 						<div className='pet-info-line'>
 							<img src={quoteIcon} alt='Descrição' className='pet-info-icon'/>
-							<div className='pet-data'>{descricao}</div>
+							<div className='pet-data'>{pet.description}</div>
 						</div>
           </div>
         )}

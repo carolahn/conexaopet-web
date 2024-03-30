@@ -60,12 +60,16 @@ const UserModal = ({ isModalOpen, closeModal, user, token }) => {
   };
 
   const getDashboardLink = () => {
-    if (user.type === 1) {
-      return `/dashboard/member/${user.id}`;
-    } else if (user.type === 2) {
-      return `/dashboard/protector/${user.id}`;
-    } else if (user.type === 3) {
-      return `/dashboard/sponsor/${user.id}`;
+    if (user) {
+      if (user.type === 1) {
+        return `/dashboard/member/${user.id}`;
+      } else if (user.type === 2) {
+        return `/dashboard/protector/${user.id}`;
+      } else if (user.type === 3) {
+        return `/dashboard/sponsor/${user.id}`;
+      } else {
+        return '/';
+      }
     } else {
       return '/';
     }
@@ -98,7 +102,7 @@ const UserModal = ({ isModalOpen, closeModal, user, token }) => {
 
       )}
 
-      <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={() => {closeEditUserModal(); closeModal();}} user={user} token={token} userData={mockUserData}/>
+      <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={() => {closeEditUserModal(); closeModal();}} user={user} />
       
       <style>
         {`

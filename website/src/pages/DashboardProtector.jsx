@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import PetCardList from '../components/PetCardList';
 import EventCardList from '../components/EventCardList';
@@ -10,10 +11,21 @@ import InfiniteScroll from '../components/InfiniteScroll';
 import ProtectorCardDashboard from '../components/ProtectorCardDashboard';
 
 
-const DashboardProtector = () => {
+const DashboardProtector = ( props ) => {
   const [selectedTab, setSelectedTab] = useState('pet');
   const { id } = useParams();
   const isOwner = true;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (id === null || id === undefined) {
+      navigate('/');
+    } else if (props.user.id !== parseInt(id)) {
+      navigate('/');
+    }
+    // eslint-disable-next-line
+  }, []);
 
 
   return (

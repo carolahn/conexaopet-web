@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
 }
 
-const EditUserModal = ({ isModalOpen, closeModal, user, token, userData }) => {
+const EditUserModal = ({ isModalOpen, closeModal, user }) => {
   const [modalStyle, setModalStyle] = useState({
     overlay: {
       zIndex: 3,

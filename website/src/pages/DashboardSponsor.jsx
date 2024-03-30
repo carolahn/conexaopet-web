@@ -22,11 +22,15 @@ const DashboardSponsor = ( props ) => {
   const nextPage = useSelector((state) => state.cupom.nextPage);
   const isLoading = useSelector((state) => state.cupom.isLoading);
 
+
   useEffect(() => {
-    if (props.user.id !== parseInt(id)) {
+    if (id === null || id === undefined) {
+      navigate('/');
+    } else if (props.user.id !== id) {
       navigate('/');
     }
-  }, [props.user.id, id, navigate]);
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     dispatch(fetchCupomList());
@@ -60,7 +64,7 @@ const DashboardSponsor = ( props ) => {
           loadMore={loadMoreItems}
           isLoading={isLoading}
         >
-          <CupomCardList cupomList={cupomList} isLoading={isLoading} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
+          <CupomCardList cupomList={cupomList} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
         </InfiniteScroll>
       </div>
 

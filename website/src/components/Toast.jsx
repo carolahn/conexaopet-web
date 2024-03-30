@@ -7,7 +7,7 @@ const Toast = ({ message, type, onClose }) => {
     const timer = setTimeout(() => {
       setIsVisible(false);
       onClose();
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [onClose]);
@@ -26,7 +26,7 @@ const Toast = ({ message, type, onClose }) => {
             top: 0;
             left: 0;
             /* margin: 1rem; */
-            width: 100%;
+            width: 100vw;
             z-index: 1000;
             color: var(--color-text-clear);
             font-size: 1.2rem;
