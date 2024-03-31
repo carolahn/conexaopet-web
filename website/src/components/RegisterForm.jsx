@@ -19,6 +19,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
   const [site, setSite] = useState([]);
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [description, setDescription] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
   const [toastType, setToastType] = useState('success');
@@ -40,6 +41,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
       setSite(initialValues.site || '');
       setPassword(initialValues.senha || '');
       setEmail(initialValues.email || '');
+      setDescription(initialValues.description || '');
     }
   }, [initialValues]);
 
@@ -61,6 +63,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
       city: city,
       uf: uf,
       email: email,
+      description: description,
     };
 
     if (!initialValues) {
@@ -206,12 +209,21 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
 
         { // eslint-disable-next-line
           (userType == '2') && (
-            <div className="row">
-              <label htmlFor="userPix" className="col col-form-label">Chave pix</label>
-              <div className="col col-form-input">
-                <input type="text" id="userPix" aria-label="Insira a chave pix" value={pix} onChange={(e) => setPix(e.target.value)} />
-            </div>
-            </div>
+            <>
+              <div className="row">
+                <label htmlFor="userPix" className="col col-form-label">Chave pix</label>
+                <div className="col col-form-input">
+                  <input type="text" id="userPix" aria-label="Insira a chave pix" value={pix} onChange={(e) => setPix(e.target.value)} />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col">
+                  <div className="input-group">
+                    <textarea type="text" id="userDescription" placeholder="Descrição" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(e.target.value)}/>
+                  </div>
+                </div>
+              </div>
+            </>
         )}
 
         { // eslint-disable-next-line
@@ -270,6 +282,15 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
             line-height: 1.5;
             border-radius: 0.25rem;
             width: calc(100% - 1.6em);
+          }
+
+          textarea {
+            width: 100%;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            padding: 0.375rem 0.75rem;
           }
 
           .btn-publish {

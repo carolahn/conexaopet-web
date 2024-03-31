@@ -22,7 +22,7 @@ const DashboardMember = ( props ) => {
   useEffect(() => {
     if (id === null || id === undefined) {
       navigate('/');
-    } else if (props.user.id !== parseInt(id)) {
+    } else if (props.user.id != id) {
       navigate('/');
     }
     // eslint-disable-next-line

@@ -27,8 +27,8 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/protector/:id" element={<ProfileProtector/>} />
-      <Route path="/dashboard/protector/:id" element={<DashboardProtector />} />
-      <Route path="/dashboard/member/:id" element={<DashboardMember />} />
+      <Route path="/dashboard/protector/:id" element={<DashboardProtector user={user} token={token} />} />
+      <Route path="/dashboard/member/:id" element={<DashboardMember user={user} token={token} />} />
       <Route path="/dashboard/sponsor/:id" element={<DashboardSponsor user={user} token={token} />} />
       <Route path="*" element={<Navigate to="/404" />} />
     </Routes>

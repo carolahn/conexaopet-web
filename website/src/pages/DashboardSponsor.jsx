@@ -26,7 +26,7 @@ const DashboardSponsor = ( props ) => {
   useEffect(() => {
     if (id === null || id === undefined) {
       navigate('/');
-    } else if (props.user.id !== id) {
+    } else if (props.user.id != id) {
       navigate('/');
     }
     // eslint-disable-next-line
@@ -37,7 +37,6 @@ const DashboardSponsor = ( props ) => {
   }, [dispatch]);
 
   const loadMoreItems = () => {
-    console.log("nextPage: ", nextPage)
     if (nextPage) {
       const pageNumber = nextPage.split('page=')[1];
       dispatch(fetchCupomList(pageNumber));

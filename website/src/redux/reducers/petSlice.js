@@ -4,6 +4,7 @@ const petSlice = createSlice({
   name: 'pet',
   initialState: {
     petList: [],
+    petListByProtector: {},
     isLoading: false,
     nextPage: null,
     error: null,
@@ -20,9 +21,13 @@ const petSlice = createSlice({
     setNextPage(state, action) {
       state.nextPage = action.payload;
     },
+    setPetListByProtector(state, action) {
+      const { protectorId, petList } = action.payload;
+      state.petListByProtector[protectorId] = petList;
+    },
   },
 });
 
-export const { setPetList, setLoading, setNextPage } = petSlice.actions;
+export const { setPetList, setLoading, setNextPage, setPetListByProtector } = petSlice.actions;
 
 export default petSlice.reducer;

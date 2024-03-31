@@ -4,6 +4,7 @@ const eventSlice = createSlice({
   name: 'event',
   initialState: {
     eventList: [],
+    eventListByProtector: {},
     isLoading: false,
     nextPage: null,
     error: null,
@@ -20,9 +21,13 @@ const eventSlice = createSlice({
     setNextPage(state, action) {
       state.nextPage = action.payload;
     },
+    setEventListByProtector(state, action) {
+      const { protectorId, eventList } = action.payload;
+      state.eventListByProtector[protectorId] = eventList;
+    },
   },
 });
 
-export const { setEventList, setLoading, setNextPage } = eventSlice.actions;
+export const { setEventList, setLoading, setNextPage, setEventListByProtector } = eventSlice.actions;
 
 export default eventSlice.reducer;

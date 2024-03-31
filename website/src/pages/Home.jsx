@@ -29,7 +29,6 @@ const Home = ( props ) => {
   }, [dispatch]);
 
   const loadMorePets = () => {
-    console.log("petNextPage: ", petNextPage)
     if (petNextPage) {
       const pageNumber = petNextPage.split('page=')[1];
       dispatch(fetchPetList(pageNumber));
@@ -37,7 +36,6 @@ const Home = ( props ) => {
   };
 
   const loadMoreEvents = () => {
-    console.log("eventNextPage: ", eventNextPage)
     if (eventNextPage) {
       const pageNumber = eventNextPage.split('page=')[1];
       dispatch(fetchEventList(pageNumber));

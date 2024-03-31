@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NewPublicationModal from './NewPublicationModal';
 import DonationModal from './DonationModal';
 import whatsappIcon from '../assets/images/whatsapp.png';
@@ -11,6 +11,7 @@ import editIcon from '../assets/images/edit.png';
 import plusIcon from '../assets/images/plus.png';
 import EditUserModal from './EditUserModal';
 import { mockUserData } from './mockFormData';
+import { imageCache } from './CupomCard';
 
 const ProtectorCardDashboard = ({ protector, setSelectedTab }) => {
   const [pawIconSrc, setPawIconSrc] = useState(pawFilledIcon);
@@ -19,9 +20,42 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab }) => {
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [isNewPublicationModalOpen, setIsNewPublicationModalOpen] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [ownerImage, setOwnerImage] = useState(null);
   
+  useEffect(() => {
+    const fetchImage = async (imageURL, setImage) => {
+      try {
+        // Verifica se a imagem já está em cache
+        if (imageCache[imageURL]) {
+          setImage(imageCache[imageURL]);
+          return;
+        }
+
+        const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
+        const pathAfterMedia = imageURL.substring(imageURL.indexOf('media/'));
+        const url = apiUrl + pathAfterMedia;
+
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch image from ${url}`);
+        }
+        const blob = await response.blob();
+        const file = new File([blob], imageURL.substring(imageURL.lastIndexOf('/') + 1));
+        
+        // Salva a imagem no cache
+        imageCache[imageURL] = URL.createObjectURL(file);
+        setOwnerImage(imageCache[imageURL]);
+      } catch (error) {
+        console.error(`Error fetching image from ${imageURL}:`, error);
+      }
+    };
+
+    fetchImage(protector.image, setOwnerImage);
+
+  }, [protector.image]);
+
   const handleWhatsAppClick = () => {
-    window.open(`https://web.whatsapp.com/send?phone=${protector.celular}`, '_blank');
+    window.open(`https://web.whatsapp.com/send?phone=${protector.phone}`, '_blank');
   };
 
   const handleSelectPet = () => {
@@ -61,14 +95,14 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab }) => {
   };
 
   return (
-    <div className='protector-card'>
+    <div key={protector.id} className='protector-card'>
 
       <div className='protector-card-header'>
 				<div className='protector-avatar'>
-					<img src={protector.imagem} alt={`Avatar de ${protector.nickname}`} />
+					<img src={ownerImage} alt={`Avatar de ${protector.username}`} />
 				</div>
         <div className='protector-name-button'>
-				  <h2>{protector.nickname}</h2>
+				  <h2>{protector.username}</h2>
           <div className='protector-buttons'>
             <div className='whatsapp-icon-container' onClick={handleWhatsAppClick}>
               <img src={whatsappIcon} alt='Whatsapp' className='whatsapp-icon icon' />
@@ -84,7 +118,7 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab }) => {
 			</div>
 
       <div className='protector-card-description'>
-        {protector.descricao}
+        {protector.description}
       </div>
 
       <div className='protector-card-tabs'>
@@ -101,7 +135,7 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab }) => {
     
       <DonationModal isModalOpen={isDonationModalOpen} closeModal={closeDonationModal} pix={protector.pix} />
       <NewPublicationModal isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} style={{ zIndex: '3'}}/>
-      <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={closeEditUserModal} userData={mockUserData}/>
+      <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={closeEditUserModal} user={protector}/>
 
       <style>
         {`

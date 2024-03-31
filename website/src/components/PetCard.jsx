@@ -147,17 +147,17 @@ const PetCard = ({ pet }) => {
 			<div className='pet-card-body'>
 				<div className='pet-card-images-container'>
 					{width >= 900 ? (
-						<div className="pet-carousel" style={{ maxWidth: '500px' }}>
-							<div className="pet-carousel-content" style={{ transform: `translateX(-${currentIndex * 500}px)` }}>
-								{petImages.map((imagem, index) => (
-									<div key={index} style={{ width: '500px' }}>
-										<img src={imagem} alt={`Foto de ${pet.name}`} className='pet-image'/>
-									</div>
-								))}
-							</div>
-							<button className="pet-carousel-button left" onClick={prevSlide} disabled={isAtBeginning}>&#10094;</button>
-							<button className="pet-carousel-button right" onClick={nextSlide} disabled={isAtEnd}>&#10095;</button>
-						</div>
+            <div className="pet-carousel" style={{ width: '500px', maxHeight: '500px', marginBottom: '8px' }}>
+              <div className="pet-carousel-content" style={{ transform: `translateX(-${currentIndex * 500}px)` }}>
+                {petImages.map((imagem, index) => (
+                  <div key={index} style={{ width: '500px' }}>
+                    <img src={imagem} alt={`Foto de ${pet.name}`} className='pet-image' style={{ height: '100%', objectFit: 'cover', maxWidth: '500px', display: 'block'}}/>
+                  </div>
+                ))}
+              </div>
+              <button className="pet-carousel-button left" onClick={prevSlide} disabled={isAtBeginning}>&#10094;</button>
+              <button className="pet-carousel-button right" onClick={nextSlide} disabled={isAtEnd}>&#10095;</button>
+            </div>
 
 					) : (
 						<div className="pet-carousel" style={{ height: `${width - 30}px`, width: `${width - 30}px` }}>

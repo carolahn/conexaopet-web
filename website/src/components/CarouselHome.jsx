@@ -8,15 +8,12 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 	const [lastClick, setLastClick] = useState();
 	const [eventList, setEventList] = useState([]);
-	const [loadCount, setLoadCount] = useState(6);
-	// const [isLoading, setIsLoading] = useState(false);
 	const [isAtEnd, setIsAtEnd] = useState(false);
   const [width, height] = useWindowSize(events?.length);
   const dispatch = useDispatch();
 
 
   useEffect(() => {
-    console.log('events: ',events)
     const fetchImage = async (imageURL) => {
       try {
         // Verifica se a imagem já está em cache
@@ -61,8 +58,6 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
     }
   }, [events]);
 
-  console.log('eventList: ',eventList)
-
 	useEffect(() => {
 		if (width >= 900) {
 			const eventsShown = Math.floor(900 / (height * 0.22));
@@ -75,36 +70,6 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
 			setLastClick(numCanClick);
 		}
 	}, [currentIndex]);
-
-	// useEffect(() => {
-  //   // Atualiza os items quando a propriedade itemList é alterada
-  //   setEventList(events.slice(0, loadCount));
-  // }, [events, loadCount]);
-
-  // useEffect(() => {
-  //   // Carrega alguns itens iniciais ao montar o componente
-  //   loadMoreItems();
-  // }, []);
-
-	// const loadMoreItems = () => {
-	// 	if (!isLoading) {
-  //     setIsLoading(true);
-
-  //     // Simulação de uma requisição assíncrona (pode ser substituído por uma chamada de API real)
-  //     setTimeout(() => {
-  //       setEventList((prevItems) => {
-  //         const nextItems = events.slice(prevItems.length, prevItems.length + loadCount);
-
-	// 				if (nextItems.length === 0) {
-	// 					setIsAtEnd(true);
-	// 				}
-  //         return [...prevItems, ...nextItems];
-  //       });
-
-  //       setIsLoading(false);
-  //     }, 1000); // Aguarda 1 segundo para simular o carregamento assíncrono
-  //   }
-	// }
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % eventList?.length);
@@ -154,8 +119,6 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
 			)}
       <style>
         {`
-          /* SquareCarousel.css */
-
           .carousel {
             position: relative;
             width: 100%;
