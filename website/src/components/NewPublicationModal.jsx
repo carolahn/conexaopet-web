@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
 }
 
-const NewPublicationModal = ({ isModalOpen, closeModal, initialValues = null, isNewPublication = true }) => {
+const NewPublicationModal = ({ user, isModalOpen, closeModal, setToastType, setToastMessage, handleOpenToast, initialValues = null }) => {
   const [selectedTab, setSelectedTab] = useState('pet');
   const [modalStyle, setModalStyle] = useState({
     overlay: {
@@ -64,14 +64,14 @@ const NewPublicationModal = ({ isModalOpen, closeModal, initialValues = null, is
     >
       {selectedTab === 'pet' && (
         <>
-          <NewPublicationHeader title={isNewPublication ? 'Nova publicação' : 'Editar publicação'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
-          <NewPetForm initialValues={isNewPublication ? null : initialValues} />
+          <NewPublicationHeader title={initialValues ? 'Editar publicação' : 'Nova publicação'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
+          <NewPetForm user={user} initialValues={initialValues || null} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} handleCloseModal={closeModal} />
         </>
       )}
 
       {selectedTab === 'event' && (
         <>
-          <NewPublicationHeader title='Novo evento' closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
+          <NewPublicationHeader title={initialValues ? 'Editar evento' : 'Novo evento'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
           <NewEventForm />
         </>
       )}

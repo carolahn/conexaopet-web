@@ -1,5 +1,5 @@
 import axios from '../../utils/axiosConfig';
-import { setPetList, setLoading, setNextPage, setPetListByProtector } from '../reducers/petSlice';
+import { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure } from '../reducers/petSlice';
 
 export const fetchPetList = (page = 1) => async (dispatch, getState) => {
   try {
@@ -52,5 +52,33 @@ export const fetchPetListByProtector = (protectorId, page = 1) => async (dispatc
     throw error;
   } finally {
     dispatch(setLoading(false));
+  }
+};
+
+export const createPet = (protectorId, petData) => async (dispatch, getState) => {
+  try {
+    const currentState = getState();
+
+    const response = await axios.post('/pets/', petData);
+    const createdPet = response.data;
+
+    const currentPetList = currentState.pet.petListByProtector?.[protectorId] ?? [];
+    const updatedPetList = [createdPet, ...currentPetList];
+
+    dispatch(setPetListByProtector({ protectorId, petList: updatedPetList }));
+  } catch (error) {
+    console.error('Error creating pet:', error);
+    dispatch(createPetFailure(error.message));
+    throw error;
+  }
+};
+
+export const updatePet = (petId, petData) => async (dispatch) => {
+  try {
+    const response = await axios.put(`/pets/update/${petId}/`, petData);
+    dispatch(fetchPetList()); // Atualiza a lista de pets após a atualização bem-sucedida
+  } catch (error) {
+    console.error('Error updating pet:', error);
+    throw error;
   }
 };

@@ -221,8 +221,8 @@ const PetCard = ({ pet }) => {
 						<div className='pet-info-line'>
 							<img src={infoIcon} alt='Informações gerais' className='pet-info-icon'/>
 							<div className='pet-data'>
-								<p>{pet.get_along.length > 0 ? `Convive bem com: ${getAlongString(pet.get_along)}` : `Não lida bem com animais e crianças`}</p>
 								<p>{pet.personality.length > 0 ? `Personalidade: ${getPersonalityString(pet.personality)}`: ''}</p>
+								<p>{pet.get_along.length > 0 ? `Convive bem com: ${getAlongString(pet.get_along)}` : `Não lida bem com animais e crianças`}</p>
 							</div>
 						</div>
 						<div className='pet-info-line'>

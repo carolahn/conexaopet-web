@@ -13,7 +13,7 @@ import EditUserModal from './EditUserModal';
 import { mockUserData } from './mockFormData';
 import { imageCache } from './CupomCard';
 
-const ProtectorCardDashboard = ({ protector, setSelectedTab }) => {
+const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setToastMessage, handleOpenToast }) => {
   const [pawIconSrc, setPawIconSrc] = useState(pawFilledIcon);
   const [calendarIconSrc, setCalendarIconSrc] = useState(calendarIcon);
   const [plusIconSrc, setplusIconSrc] = useState(plusIcon);
@@ -134,7 +134,7 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab }) => {
       </div>
     
       <DonationModal isModalOpen={isDonationModalOpen} closeModal={closeDonationModal} pix={protector.pix} />
-      <NewPublicationModal isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} style={{ zIndex: '3'}}/>
+      <NewPublicationModal user={protector} isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} style={{ zIndex: '3'}}/>
       <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={closeEditUserModal} user={protector}/>
 
       <style>

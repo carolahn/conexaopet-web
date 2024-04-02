@@ -1,6 +1,7 @@
 const initialState = {
   loading: false,
   error: null,
+  protectorUsers: [],
 };
 
 export const userReducer = (state = initialState, action) => {
@@ -16,6 +17,19 @@ export const userReducer = (state = initialState, action) => {
       };
     case 'CREATE_USER_FAILURE':
     case 'UPDATE_USER_FAILURE':
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case 'FETCH_PROTECTOR_USERS_SUCCESS':
+      return {
+        ...state,
+        protectorUsers: action.payload,
+        loading: false,
+        error: null,
+      };
+    case 'FETCH_PROTECTOR_USERS_FAILURE':
       return {
         ...state,
         loading: false,

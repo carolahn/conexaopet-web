@@ -28,6 +28,10 @@ instance.interceptors.request.use(
       config.headers['Content-Type'] = 'multipart/form-data';
     }
 
+    if (config.url.endsWith('/pets/') && config.method === 'post') {
+      config.headers['Content-Type'] = 'multipart/form-data';
+    }
+
     return config;
   },
   (error) => {

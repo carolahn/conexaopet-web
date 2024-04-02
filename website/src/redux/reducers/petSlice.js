@@ -25,9 +25,12 @@ const petSlice = createSlice({
       const { protectorId, petList } = action.payload;
       state.petListByProtector[protectorId] = petList;
     },
+    createPetFailure(state, action) {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { setPetList, setLoading, setNextPage, setPetListByProtector } = petSlice.actions;
+export const { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure } = petSlice.actions;
 
 export default petSlice.reducer;

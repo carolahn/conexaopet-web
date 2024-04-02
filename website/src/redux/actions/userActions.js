@@ -18,6 +18,15 @@ export const updateUser = (userId, userData) => async (dispatch) => {
   }
 };
 
+export const fetchProtectorUsers = () => async (dispatch) => {
+  try {
+    const response = await axios.get('/users/protector/');
+    dispatch({ type: 'FETCH_PROTECTOR_USERS_SUCCESS', payload: response.data });
+  } catch (error) {
+    dispatch({ type: 'FETCH_PROTECTOR_USERS_FAILURE', payload: error.response.data });
+  }
+};
+
 export const clearUserError = () => ({
   type: 'CLEAR_USER_ERROR',
 });

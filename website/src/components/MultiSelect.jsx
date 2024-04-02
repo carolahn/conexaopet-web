@@ -11,10 +11,16 @@ const MultiSelect = ({ options, placeholder, attribute, onChange, initialValues=
   useEffect(() => {
     // Chama a função onChange passando os valores selecionados
     // Adicionando verificação para evitar chamadas desnecessárias
-    if (!isEqual(initialValues, selectedOptions)) {
+    if (!isEqual(initialValues, selectedOptions) && selectedOptions.length > 0) {
       onChange(selectedOptions);
     }
   }, [selectedOptions, onChange, initialValues]);
+
+  useEffect(() => {
+    if (initialValues && initialValues.length > 0 && !isEqual(initialValues, selectedOptions) ) {
+      setSelectedOptions(initialValues);
+    }
+  }, [initialValues]);
 
   const handleOptionChange = (id) => {
     setSelectedOptions((prevSelectedOptions) => {

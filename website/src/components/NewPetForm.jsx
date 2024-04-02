@@ -1,108 +1,156 @@
 import React, { useEffect, useState } from "react";
 import ImageUploader from "./ImageUploader";
+import { useDispatch, useSelector } from 'react-redux';
 import { mockTypeData, mockGenderData, mockSizeData, mockBreedData, mockProtectorData, mockPersonalityData, mockGetAlong } from './mockFormData';
 import MultiSelect from "./MultiSelect";
+import { petTypeChoices, petGenderChoices, petBreedChoices, personalityChoices, getAlongChoices, petSizeChoices, getPetSize } from '../utils/petData';
+import { fetchProtectorUsers, createPet } from "../redux/actions";
 
-const NewPetForm = ({ initialValues = null }) => {
+const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage, handleOpenToast, handleCloseModal }) => {
   const [weight, setWeight] = useState('');
+  const [size, setSize] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [name, setName] = useState('');
   const [type, setType] = useState('');
   const [gender, setGender] = useState('');
-  const [year, setYear] = useState('');
-  const [month, setMonth] = useState('');
+  const [ageYear, setAgeYear] = useState('');
+  const [ageMonth, setAgeMonth] = useState('');
   const [breed, setBreed] = useState('');
-  const [protector, setProtector] = useState('');
-  const [personalities, setPersonalities] = useState([]);
-  const [convivio, setConvivio] = useState([]);
+  const [owner, setOwner] = useState(user?.id);
+  const [personality, setPersonality] = useState([]);
+  const [getAlong, setGetAlong] = useState([]);
   const [description, setDescription] = useState('');
   const [images, setImages] = useState([]);
+  const dispatch = useDispatch();
+  const protectorChoices = useSelector(state => state.userReducer.protectorUsers);
+  const petError = useSelector(state => state.pet.error);
 
 
-  useEffect(() => {
-    if (initialValues) {
-      setImages(initialValues.imagens || []);
-      setWeight(initialValues.peso || '');
-      setName(initialValues.nome || '');
-      setType(initialValues.tipo || '');
-      setGender(initialValues.sexo || '');
-      setYear(initialValues.idade.ano || '');
-      setMonth(initialValues.idade.mes || '');
-      setBreed(initialValues.raca || '');
-      setProtector(initialValues.protetor || '');
-      setPersonalities(initialValues.personalidade || []);
-      setConvivio(initialValues.convivio || []);
-      setDescription(initialValues.descricao || '');
-    }
-  }, [initialValues]);
+  // useEffect(() => {
+  //   if (initialValues) {
+  //     setImages(initialValues.imagens || []);
+  //     setWeight(initialValues.peso || '');
+  //     setName(initialValues.nome || '');
+  //     setType(initialValues.tipo || '');
+  //     setGender(initialValues.sexo || '');
+  //     setYear(initialValues.idade.ano || '');
+  //     setMonth(initialValues.idade.mes || '');
+  //     setBreed(initialValues.raca || '');
+  //     setProtector(initialValues.protetor || '');
+  //     setPersonalities(initialValues.personalidade || []);
+  //     setConvivio(initialValues.convivio || []);
+  //     setDescription(initialValues.descricao || '');
+  //   }
+  // }, [initialValues]);
 
   // Recuperar valores do localStorage ao iniciar
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('formData'));
 
     if (storedData) {
-      setWeight(storedData.peso || '');
-      setSelectedSize(storedData.porte || '');
-      setName(storedData.nome || '');
-      setType(storedData.tipo || '');
-      setGender(storedData.genero || '');
-      setYear(storedData.idadeAnos || '');
-      setMonth(storedData.idadeMeses || '');
-      setBreed(storedData.raca || '');
-      setProtector(storedData.protetor || '');
-      setPersonalities(storedData.personalidades || []);
-      setConvivio(storedData.convivio || '');
-      setDescription(storedData.descricao || '');
+      setWeight(storedData.weight || '');
+      setName(storedData.name || '');
+      setType(storedData.type || '');
+      setGender(storedData.gender || '');
+      setAgeYear(storedData.ageYear || '');
+      setAgeMonth(storedData.ageMonth || '');
+      setBreed(storedData.breed || '');
+      setPersonality(storedData.personality || []);
+      setGetAlong(storedData.getAlong || []);
+      setDescription(storedData.description || '');
+    }
+
+    if (storedData && storedData.images) {
+      const promises = storedData.images.map((imageUrl) => {
+        return new Promise((resolve) => {
+          fetch(imageUrl)
+            .then((res) => res.blob())
+            .then((blob) => {
+              const file = new File([blob], `image${Date.now()}.jpg`, { type: 'image/jpeg' });
+              resolve(file);
+            });
+        });
+      });
+  
+      Promise.all(promises)
+        .then((files) => {
+          setImages(files);
+        })
+        .catch((error) => {
+          console.error('Error loading images:', error);
+        });
     }
   }, []);
 
   // Armazenar valores no localStorage sempre que houver uma alteração
   useEffect(() => {
-    const formData = {
-      peso: weight,
-      porte: selectedSize,
-      nome: name,
-      tipo: type,
-      genero: gender,
-      idadeAnos: year,
-      idadeMeses: month,
-      raca: breed,
-      protetor: protector,
-      personalidades: personalities,
-      convivio: convivio,
-      descricao: description,
-      imagens: images,
+    const formDataObject = {
+      weight: weight,
+      name: name,
+      type: type,
+      gender: gender,
+      ageYear: ageYear,
+      ageMonth: ageMonth,
+      breed: breed,
+      personality: personality,
+      getAlong: getAlong,
+      description: description,
+      images: [],
     };
+  
+    const promises = [];
+    for (const image of images) {
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+      promises.push(
+        new Promise((resolve) => {
+          reader.onload = () => {
+            formDataObject.images.push(reader.result);
+            resolve();
+          };
+        })
+      );
+    }
+  
+    Promise.all(promises).then(() => {
+      localStorage.setItem('formData', JSON.stringify(formDataObject));
+    });
+  }, [weight, name, type, gender, ageYear, ageMonth, breed, owner, personality, getAlong, description, images]);
 
-    localStorage.setItem('formData', JSON.stringify(formData));
-  }, [weight, selectedSize, name, type, gender, year, month, breed, protector, personalities, convivio, description, images]);
+  // useEffect(() => {
+  //   const calculateSizeFromWeight = () => {
+  //     const weightValue = parseFloat(weight);
+
+  //     if (weightValue <= 5) {
+  //       setSelectedSize('1'); // Size 1: Miniatura
+  //     } else if (weightValue <= 10) {
+  //       setSelectedSize('2'); // Size 2: Pequeno
+  //     } else if (weightValue <= 25) {
+  //       setSelectedSize('3'); // Size 3: Médio
+  //     } else if (weight > 25) {
+  //       setSelectedSize('4'); // Size 4: Grande
+  //     } else {
+  //       setSelectedSize('');
+  //     }
+  //   };
+
+  //   calculateSizeFromWeight();
+  // }, [weight]);
 
   useEffect(() => {
-    const calculateSizeFromWeight = () => {
-      const weightValue = parseFloat(weight);
+    dispatch(fetchProtectorUsers());
+  }, [dispatch])
 
-      if (weightValue <= 5) {
-        setSelectedSize('1'); // Size 1: Miniatura
-      } else if (weightValue <= 10) {
-        setSelectedSize('2'); // Size 2: Pequeno
-      } else if (weightValue <= 25) {
-        setSelectedSize('3'); // Size 3: Médio
-      } else if (weight > 25) {
-        setSelectedSize('4'); // Size 4: Grande
-      } else {
-        setSelectedSize('');
-      }
-    };
-
-    calculateSizeFromWeight();
+  useEffect(() => {
+    setSize(getPetSize(weight));
   }, [weight]);
 
   const handlePersonalitiesChange = (selectedPersonalities) => {
-    setPersonalities(selectedPersonalities);
+    setPersonality(selectedPersonalities);
   };
 
   const handleConvivioChange = (selectedConvivio) => {
-    setConvivio(selectedConvivio);
+    setGetAlong(selectedConvivio);
   };
 
   const handleImagesChange = (selectedImages) => {
@@ -112,33 +160,56 @@ const NewPetForm = ({ initialValues = null }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Limpando localStorage após o envio do formulário
-    localStorage.removeItem('formData');
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('type', type);
+    formData.append('gender', gender);
+    formData.append('age_year', ageYear);
+    formData.append('age_month', ageMonth);
+    formData.append('weight', weight);
+    formData.append('breed', breed);
+    formData.append('owner', owner);
+    formData.append('description', description);
 
-    const formData = {
-      nome: name,
-      tipo: type,
-      genero: gender,
-      idadeAnos: year,
-      idadeMeses: month,
-      peso: weight,
-      porte: selectedSize,
-      raca: breed,
-      protetor: protector,
-      personalidades: personalities,
-      convivio: convivio,
-      descricao: description,
-      imagens: images,
-    };
+    personality.forEach((value, index) => {
+      formData.append('personality[]', value);
+    });
 
-    const jsonData = JSON.stringify(formData);
-    console.log(jsonData);
+    getAlong.forEach((value, index) => {
+      formData.append('get_along[]', value);
+    });
+
+    images.forEach((value, index) => {
+      formData.append('image[]', value);
+    });
+   
+    try {
+      dispatch(createPet(user.id, formData));
+      if (!petError) {
+        // Limpa localStorage após o envio do formulário
+        localStorage.removeItem('formData');
+
+        setToastMessage('Publicação criada');
+        setToastType('success');
+        setTimeout(() => {
+          handleCloseModal();
+        }, 2000);
+        handleOpenToast();
+
+      } else {
+        setToastMessage(`Erro: ${petError}`);
+        setToastType('failure');
+        handleOpenToast();
+      }
+    } catch (error) {
+      console.error('Error: ', error);
+    }
   };
 
 
   return (
     <div className='new-pet-form'>
-      <ImageUploader label='Selecione as imagens' onChange={(selectedImages) => handleImagesChange(selectedImages)} initialValues={initialValues?.imagens}/>
+      <ImageUploader label='Selecione as imagens' onChange={(selectedImages) => handleImagesChange(selectedImages)} initialValues={initialValues?.images} dataRecovered={images} />
       
       <form onSubmit={handleSubmit}>
 
@@ -156,9 +227,9 @@ const NewPetForm = ({ initialValues = null }) => {
           <div className="col-sm-10">
             <select className="form-select" placeholder="Selecione" id="petType" name="petType" aria-label="Selecione o tipo de animal" value={type} onChange={(e) => setType(e.target.value)}>
               <option value=""></option>
-              {mockTypeData.map((item) => (
+              {petTypeChoices.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.tipo}
+                  {item.value}
                 </option>
               ))}
             </select>
@@ -170,9 +241,9 @@ const NewPetForm = ({ initialValues = null }) => {
           <div className="col-sm-10">
             <select className="form-select" id="petGender" name="petGender" aria-label="Selecione o sexo do animal" value={gender} onChange={(e) => setGender(e.target.value)}>
               <option value=""></option>
-              {mockGenderData.map((item) => (
+              {petGenderChoices.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.gender}
+                  {item.value}
                 </option>
               ))}
             </select>
@@ -183,9 +254,9 @@ const NewPetForm = ({ initialValues = null }) => {
           <label htmlFor="petGender" className="col-sm-2 col-form-label">Idade</label>
           <div className="col-sm">
             <div className="input-group pet-idade">
-              <input type="text" className="form-control" id="petYear" placeholder="anos" value={year} onChange={(e) => setYear(e.target.value)}/>
+              <input type="text" className="form-control" id="petYear" placeholder="anos" value={ageYear} onChange={(e) => setAgeYear(e.target.value)}/>
           
-              <input type="text" className="form-control" id="petMonth" placeholder="meses" value={month} onChange={(e) => setMonth(e.target.value)}/>
+              <input type="text" className="form-control" id="petMonth" placeholder="meses" value={ageMonth} onChange={(e) => setAgeMonth(e.target.value)}/>
             </div>
           </div>
         </div>
@@ -197,11 +268,11 @@ const NewPetForm = ({ initialValues = null }) => {
               <input type="text" className="form-control" id="petWeight" placeholder="kg" value={weight} onChange={(e) => setWeight(e.target.value)}/>
 
       
-              <select className="form-select" id="petSize" name="petSize" aria-label="Selecione o porte do animal" value={selectedSize} onChange={(e) => setSelectedSize(e.target.value)} disabled>
+              <select className="form-select" id="petSize" name="petSize" aria-label="Selecione o porte do animal" value={size} onChange={(e) => setSize(e.target.value)} disabled>
                 <option key='' value=''>porte</option>
-                {mockSizeData.map((item) => (
+                {petSizeChoices.map((item) => (
                   <option key={item.id} value={item.id}>
-                    {item.porte}
+                    {item.value}
                   </option>
                 ))}
               </select>
@@ -214,9 +285,9 @@ const NewPetForm = ({ initialValues = null }) => {
           <div className="col-sm-10">
             <select className="form-select" id="petBreed" name="petBreed" aria-label="Selecione a raça do animal" value={breed} onChange={(e) => setBreed(e.target.value)}>
               <option value=""></option>
-              {mockBreedData.map((item) => (
+              {petBreedChoices.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.raca}
+                  {item.value}
                 </option>
               ))}
             </select>
@@ -226,11 +297,11 @@ const NewPetForm = ({ initialValues = null }) => {
         <div className="row mb-1">
           <label htmlFor="petProtector" className="col-sm-2 col-form-label">Protetor</label>
           <div className="col-sm-10">
-            <select className="form-select" id="petProtector" name="petProtector" aria-label="Selecione o protetor" value={protector} onChange={(e) => setProtector(e.target.value)}>
+            <select className="form-select" id="petProtector" name="petProtector" aria-label="Selecione o protetor" value={owner} onChange={(e) => setOwner(e.target.value)} disabled >
               <option value=""></option>
-              {mockProtectorData.map((item) => (
+              {protectorChoices.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.nickname}
+                  {item.username}
                 </option>
               ))}
             </select>
@@ -238,17 +309,17 @@ const NewPetForm = ({ initialValues = null }) => {
         </div>
 
         <div className="row mb-1">
-          <MultiSelect options={mockPersonalityData} 
-            placeholder={'Personalidade'} attribute={'personalidade'} 
+          <MultiSelect options={personalityChoices} 
+            placeholder={'Personalidade'} attribute={'value'} 
             onChange={handlePersonalitiesChange} 
-            initialValues={initialValues?.personalidade}/>
+            initialValues={initialValues?.personality ? initialValues.personality : (personality ? personality : [])}/>
         </div>
 
         <div className="row mb-1">
-          <MultiSelect options={mockGetAlong} 
-            placeholder={'Convívio'} attribute={'convivio'} 
+          <MultiSelect options={getAlongChoices} 
+            placeholder={'Convívio'} attribute={'value'} 
             onChange={handleConvivioChange}
-            initialValues={initialValues?.convivio}/>
+            initialValues={initialValues?.getAlong ? initialValues.getAlong : (getAlong ? getAlong : [])}/>
         </div>
 
         <div className="row mb-1">

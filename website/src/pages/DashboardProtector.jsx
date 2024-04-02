@@ -69,7 +69,7 @@ const DashboardProtector = ( props ) => {
     <div className='profile-container'>
       <div className='profile-body'>
         <Header user={props.user} token={props.token} />
-        <ProtectorCardDashboard protector={props.user} setSelectedTab={setSelectedTab} />
+        <ProtectorCardDashboard protector={props.user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
 
         {selectedTab === 'pet' && (
           <InfiniteScroll 

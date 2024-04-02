@@ -3,7 +3,7 @@ import isEqual from 'lodash/isEqual';
 import { useWindowSize } from '../hooks/useWindowSize';
 import trashIcon from '../assets/images/trash.png'
 
-const ImageUploader = ({ label, onChange, initialValues=[] }) => {
+const ImageUploader = ({ label, onChange, initialValues=[], dataRecovered=[] }) => {
   // eslint-disable-next-line
   const [width, height] = useWindowSize();
   const [selectedImages, setSelectedImages] = useState([]);
@@ -52,6 +52,12 @@ const ImageUploader = ({ label, onChange, initialValues=[] }) => {
     }
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (dataRecovered && dataRecovered.length > 0 && !isEqual(selectedImages, dataRecovered)) {
+      setSelectedImages(dataRecovered);
+    }
+  }, [dataRecovered]);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
