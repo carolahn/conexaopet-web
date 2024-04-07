@@ -25,9 +25,12 @@ const eventSlice = createSlice({
       const { protectorId, eventList } = action.payload;
       state.eventListByProtector[protectorId] = eventList;
     },
+    createEventFailure(state, action) {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { setEventList, setLoading, setNextPage, setEventListByProtector } = eventSlice.actions;
+export const { setEventList, setLoading, setNextPage, setEventListByProtector, createEventFailure } = eventSlice.actions;
 
 export default eventSlice.reducer;

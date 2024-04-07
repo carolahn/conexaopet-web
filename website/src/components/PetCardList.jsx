@@ -1,7 +1,7 @@
 import React from 'react';
 import PetCard from './PetCard';
 
-const PetCardList = ({ petList, isOwner = false }) => {
+const PetCardList = ({ petList }) => {
   return (
     <div className="pet-card-list">
       {petList.map((pet, index) => (

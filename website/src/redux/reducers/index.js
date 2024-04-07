@@ -4,10 +4,12 @@ import { userReducer } from './userReducer';
 import cupomSlice from './cupomSlice';
 import petSlice from './petSlice';
 import eventSlice from './eventSlice';
+import addressSlice from './addressSlice';
 
 const rootReducer = combineReducers({
   authReducer,
   userReducer,
+  address: addressSlice,
   cupom: cupomSlice,
   pet: petSlice, 
   event: eventSlice,

@@ -15,10 +15,11 @@ import quoteIcon from '../assets/images/quote.png';
 import editIcon from '../assets/images/edit.png';
 import trashIcon from '../assets/images/trash.png';
 import DiscartModal from './DiscartModal';
-import { mockEditPetData } from './mockFormData';
 import NewPublicationModal from './NewPublicationModal';
 import { imageCache } from './CupomCard';
 import { getPersonalityString, getAlongString, getLifeStage, getPetType } from '../utils/petData';
+import { deletePet } from '../redux/actions';
+import Toast from './Toast';
 
 
 const PetCard = ({ pet }) => {
@@ -31,8 +32,12 @@ const PetCard = ({ pet }) => {
   const [width, height] = useWindowSize();
 	const [isDiscartModalOpen, setIsDiscartModalOpen] = useState(false);
 	const [isNewPublicationModalOpen, setIsNewPublicationModalOpen] = useState(false);
-  const user = useSelector(getUser);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Alterações salvas');
+  const [toastType, setToastType] = useState('success');
   const dispatch = useDispatch();
+  const user = useSelector(getUser);
+  const petError = useSelector(state => state.pet.error);
 
   useEffect(() => {
     const fetchImage = async (imageURL, setImage) => {
@@ -62,6 +67,8 @@ const PetCard = ({ pet }) => {
       }
     };
   
+    setPetImages([]);
+    
     fetchImage(pet.owner.image, setOwnerImage);
   
     pet.images.forEach(image => {
@@ -69,7 +76,8 @@ const PetCard = ({ pet }) => {
         setPetImages(prevImages => [...prevImages, cachedImage]);
       });
     });
-  }, [pet.owner.image, pet.images]);
+
+  }, [pet.owner.image, pet.images, pet]);
 
 	useEffect(() => {
     // Atualizar o índice do slide para 0 ao redimensionar a janela
@@ -122,9 +130,37 @@ const PetCard = ({ pet }) => {
 		setIsNewPublicationModalOpen(false);
 	};
 
+  const handleOpenToast = () => {
+    setShowToast(true);
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
+
+  const handleDeletePet = (e) => {
+    e.preventDefault();
+    try {
+      dispatch(deletePet(pet.id));
+      if (!petError) {
+        setToastMessage('Publicação removida');
+        setToastType('success');
+        setTimeout(() => {
+          closeDiscartModal();
+        }, 1000);
+        handleOpenToast();
+      } else {
+        setToastMessage(`Erro: ${petError}`);
+        setToastType('failure');
+        handleOpenToast();
+      }
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  };
 
   return (
-    <div className="pet-card">
+    <div className="pet-card" id={`pet-card=${pet.id}`}>
 			<div className='pet-card-header'>
 				<div className='pet-header'>
 					<div className='pet-avatar'>
@@ -233,8 +269,12 @@ const PetCard = ({ pet }) => {
         )}
 			</div>
 
-			<NewPublicationModal isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} initialValues={mockEditPetData} isNewPublication={false}/>
-			<DiscartModal isModalOpen={isDiscartModalOpen} closeModal={closeDiscartModal} publicationId={1} />
+			<NewPublicationModal isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} initialValues={pet} isNewPublication={false} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
+			<DiscartModal isModalOpen={isDiscartModalOpen} closeModal={closeDiscartModal} handleConfirm={handleDeletePet} />
+
+      {showToast && (
+        <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
+      )}
 
       <style>
         {`

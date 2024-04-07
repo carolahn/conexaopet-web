@@ -75,11 +75,11 @@ export const petSizeChoices = [
 ];
 
 export const getPetSize = (weight) => {
-  if (weight < 5) {
+  if (weight <= 6) {
     return 1;
-  } else if (weight < 15) {
+  } else if (weight <= 15) {
     return 2;
-  } else if (weight < 30) {
+  } else if (weight <= 25) {
     return 3;
   } else {
     return 4;
@@ -103,6 +103,11 @@ export const getPetSize = (weight) => {
 //     setSelectedSize('');
 //   }
 // };
+
+export function getBreedId(value) {
+  const breed = petBreedChoices.find(breed => breed.value === value);
+  return breed ? breed.id : null;
+}
 
 export const petBreedChoices = [
   { id: 1, value: 'SRD' },

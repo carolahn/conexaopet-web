@@ -72,7 +72,7 @@ const NewPublicationModal = ({ user, isModalOpen, closeModal, setToastType, setT
       {selectedTab === 'event' && (
         <>
           <NewPublicationHeader title={initialValues ? 'Editar evento' : 'Novo evento'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
-          <NewEventForm />
+          <NewEventForm user={user} initialValues={initialValues || null} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} handleCloseModal={closeModal} />
         </>
       )}
 

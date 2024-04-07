@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const DateTimePicker = ({ dateHour, setDateHour, showHour = true, dataLabel = '' }) => {
+const DateTimePicker = ({ dateHour, setDateHour, initialValues = null, showHour = true, dataLabel = '' }) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [startTime, setStartTime] = useState('00:00');
   const [endTime, setEndTime] = useState('00:00');
@@ -17,6 +17,32 @@ const DateTimePicker = ({ dateHour, setDateHour, showHour = true, dataLabel = ''
     }
     // eslint-disable-next-line
   }, [dateHour]);
+
+  useEffect(() => {
+    if (initialValues && initialValues.date_hour_initial) {
+      const initialDate = initialValues.date_hour_initial.split('T')[0];
+      if (initialDate !== selectedDate) {
+        setSelectedDate(initialDate);
+      }
+
+      const initialStartTime = initialValues.date_hour_initial.split('T')[1].substring(0, 5);
+      if (initialStartTime !== startTime) {
+        setStartTime(initialStartTime);
+      }
+    }
+
+    if (initialValues && initialValues.date_hour_end) {
+      const endDate = initialValues.date_hour_end.split('T')[0];
+      if (endDate !== selectedDate) {
+        setSelectedDate(endDate);
+      }
+
+      const initialEndTime = initialValues.date_hour_end.split('T')[1].substring(0, 5);
+      if (initialEndTime !== startTime) {
+        setEndTime(initialEndTime);
+      }
+    }
+  }, []);
 
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
@@ -39,7 +65,7 @@ const DateTimePicker = ({ dateHour, setDateHour, showHour = true, dataLabel = ''
 
   const formatDateTime = (date, time) => {
     const formattedDate = date ? new Date(date).toISOString().split('T')[0] : '';
-    return `${formattedDate} ${time}`;
+    return `${formattedDate}T${time}:00Z`;
   };
 
   const generateResultObject = () => {
@@ -49,8 +75,8 @@ const DateTimePicker = ({ dateHour, setDateHour, showHour = true, dataLabel = ''
         const formattedEndTime = formatDateTime(selectedDate, endTime);
   
         return {
-          dataHoraInicio: formattedStartTime,
-          dataHoraFim: formattedEndTime,
+          date_hour_initial: formattedStartTime,
+          date_hour_end: formattedEndTime,
         };
       } else {
         return null;

@@ -4,30 +4,28 @@ import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import PetCardList from '../components/PetCardList';
 import EventCardList from '../components/EventCardList';
-import mockPetCardData from '../components/mockPetCardData';
-import mockEventCardData from '../components/mockEventCardData';
-import { mockProtectorData } from '../components/mockProtectorData';
 import Toast from '../components/Toast';
 import InfiniteScroll from '../components/InfiniteScroll';
 import ProtectorCardDashboard from '../components/ProtectorCardDashboard';
 import { fetchPetListByProtector } from '../redux/actions/petActions';
 import { fetchEventListByProtector } from '../redux/actions/eventActions';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const DashboardProtector = ( props ) => {
   const [selectedTab, setSelectedTab] = useState('pet');
   const { id } = useParams();
-  const isOwner = true;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
   const [toastType, setToastType] = useState('success');
-  const petListByProtector = useSelector((state) => state.pet.petListByProtector[props.user.id]);
+  const petListByProtector = useSelector((state) => state.pet.petListByProtector[props.user?.id]);
   const petNextPage = useSelector((state) => state.pet.nextPage);
   const petIsLoading = useSelector((state) => state.pet.isLoading);
-  const eventListByProtector = useSelector((state) => state.event.eventListByProtector[props.user.id]);
+  const eventListByProtector = useSelector((state) => state.event.eventListByProtector[props.user?.id]);
   const eventNextPage = useSelector((state) => state.event.nextPage);
   const eventIsLoading = useSelector((state) => state.event.isLoading);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (id === null || id === undefined) {
@@ -35,12 +33,29 @@ const DashboardProtector = ( props ) => {
     } else if (props.user.id != id) {
       navigate('/');
     }
+
+    showLoadingSpiner();
+
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
+    showLoadingSpiner();
+  }, [selectedTab]);
+
+  const showLoadingSpiner = () => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000); 
+
+  };
+
+  useEffect(() => {
     dispatch(fetchPetListByProtector(props.user.id));
     dispatch(fetchEventListByProtector(props.user.id));
+    // eslint-disable-next-line
   }, [dispatch]);
 
   const loadMorePets = () => {
@@ -66,57 +81,60 @@ const DashboardProtector = ( props ) => {
   };
 
   return (
-    <div className='profile-container'>
-      <div className='profile-body'>
-        <Header user={props.user} token={props.token} />
-        <ProtectorCardDashboard protector={props.user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
+    <>
+      {loading && <LoadingSpinner />}
+      <div className='profile-container'>
+        <div className='profile-body'>
+          <Header user={props.user} token={props.token} />
+          <ProtectorCardDashboard protector={props.user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
 
-        {selectedTab === 'pet' && (
-          <InfiniteScroll 
-            itemList={petListByProtector || []}
-            loadMore={loadMorePets}
-            isLoading={petIsLoading}
-          >
-            <PetCardList petList={petListByProtector || []} />
-          </InfiniteScroll>
+          {selectedTab === 'pet' && (
+            <InfiniteScroll 
+              itemList={petListByProtector || []}
+              loadMore={loadMorePets}
+              isLoading={petIsLoading}
+            >
+              <PetCardList petList={petListByProtector || []} />
+            </InfiniteScroll>
+          )}
+
+          {selectedTab === 'event' && (
+            <InfiniteScroll 
+              itemList={eventListByProtector || []}
+              loadMore={loadMoreEvents}
+              isLoading={eventIsLoading}
+            >
+              <EventCardList eventList={eventListByProtector || []} />
+            </InfiniteScroll>
+          )}
+        </div>
+
+        {showToast && (
+          <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
         )}
 
-        {selectedTab === 'event' && (
-          <InfiniteScroll 
-            itemList={eventListByProtector || []}
-            loadMore={loadMoreEvents}
-            isLoading={eventIsLoading}
-          >
-            <EventCardList eventList={eventListByProtector || []} />
-          </InfiniteScroll>
-        )}
-      </div>
-
-      {showToast && (
-        <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
-      )}
-
-      <style>
-        {`
-          .profile-container {
-            width: 100%;
-            margin-top: 70px;
-          }
-          
-          .profile-body {
-            max-width: 900px;
-            margin: 0 auto;
-            height: 100vh;
-          }
-          
-          @media (max-width: 900px) {
+        <style>
+          {`
             .profile-container {
-              margin-top: 50px;
+              width: 100%;
+              margin-top: 70px;
             }
-          }
-        `}
-      </style>
-    </div>
+            
+            .profile-body {
+              max-width: 900px;
+              margin: 0 auto;
+              height: 100vh;
+            }
+            
+            @media (max-width: 900px) {
+              .profile-container {
+                margin-top: 50px;
+              }
+            }
+          `}
+        </style>
+      </div>
+    </>
 
   );
 };

@@ -28,9 +28,42 @@ const petSlice = createSlice({
     createPetFailure(state, action) {
       state.error = action.payload;
     },
+    updatePetSuccess(state, action) {
+      state.error = null;
+      // Atualize os dados do cupom na lista de cupons existente
+      let updatedIndex = state.petList.findIndex(pet => pet.id === action.payload.id);
+      if (updatedIndex !== -1) {
+        state.petList[updatedIndex] = action.payload;
+      }
+
+      const ownerId = action.payload.owner.id;
+      const petList = state.petListByProtector;
+
+      if (petList.hasOwnProperty(ownerId)) { 
+        const updatedPetListByProtector = { ...petList }; 
+        updatedPetListByProtector[ownerId] = updatedPetListByProtector[ownerId].map(pet => {
+          if (pet.id === action.payload.id) {
+            return action.payload; // Substitui o pet atualizado na lista de pets para o ownerId específico
+          }
+          return pet; 
+        });
+
+        state.petListByProtector = updatedPetListByProtector; 
+        
+      } else {
+        console.log('Não há pets do protetor:', ownerId);
+        state.error = `Não há pets do protetor: ${ownerId}`;
+      }
+    },
+    updatePetFailure(state, action) {
+      state.error = action.payload;
+    },
+    deletePetFailure(state, action) {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure } = petSlice.actions;
+export const { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure } = petSlice.actions;
 
 export default petSlice.reducer;

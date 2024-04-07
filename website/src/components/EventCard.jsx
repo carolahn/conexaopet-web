@@ -67,7 +67,7 @@ const EventCard = ( props ) => {
     });
   
     props.event.pets.forEach(pet => {
-      fetchImage(pet.images[0].image, (cachedImage) => {
+      fetchImage(pet.images[0]?.image, (cachedImage) => {
         setAllImages(prevImages => [...prevImages, { petId: pet.id, image: cachedImage }]);
       });
     });

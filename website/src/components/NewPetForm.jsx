@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ImageUploader from "./ImageUploader";
 import { useDispatch, useSelector } from 'react-redux';
-import { mockTypeData, mockGenderData, mockSizeData, mockBreedData, mockProtectorData, mockPersonalityData, mockGetAlong } from './mockFormData';
 import MultiSelect from "./MultiSelect";
-import { petTypeChoices, petGenderChoices, petBreedChoices, personalityChoices, getAlongChoices, petSizeChoices, getPetSize } from '../utils/petData';
-import { fetchProtectorUsers, createPet } from "../redux/actions";
+import isEqual from 'lodash/isEqual';
+import { petTypeChoices, petGenderChoices, petBreedChoices, personalityChoices, getAlongChoices, petSizeChoices, getPetSize, getBreedId } from '../utils/petData';
+import { fetchProtectorUsers, createPet, updatePet } from "../redux/actions";
+import { fetchImage } from '../utils/imageUtils';
 
 const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage, handleOpenToast, handleCloseModal }) => {
   const [weight, setWeight] = useState('');
   const [size, setSize] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
   const [name, setName] = useState('');
   const [type, setType] = useState('');
   const [gender, setGender] = useState('');
@@ -24,44 +24,46 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
   const dispatch = useDispatch();
   const protectorChoices = useSelector(state => state.userReducer.protectorUsers);
   const petError = useSelector(state => state.pet.error);
+  const petFromStore = useSelector(state => state.pet?.petList.length > 0 ? state.pet?.petList[initialValues?.id] : {});
+  const petListByProtectorFromStore = useSelector(state => state.pet?.petListByProtector);
 
-
-  // useEffect(() => {
-  //   if (initialValues) {
-  //     setImages(initialValues.imagens || []);
-  //     setWeight(initialValues.peso || '');
-  //     setName(initialValues.nome || '');
-  //     setType(initialValues.tipo || '');
-  //     setGender(initialValues.sexo || '');
-  //     setYear(initialValues.idade.ano || '');
-  //     setMonth(initialValues.idade.mes || '');
-  //     setBreed(initialValues.raca || '');
-  //     setProtector(initialValues.protetor || '');
-  //     setPersonalities(initialValues.personalidade || []);
-  //     setConvivio(initialValues.convivio || []);
-  //     setDescription(initialValues.descricao || '');
-  //   }
-  // }, [initialValues]);
-
-  // Recuperar valores do localStorage ao iniciar
+  // Recuperar valores do localStorage ao iniciar, se for criação de novo pet
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('formData'));
 
-    if (storedData) {
-      setWeight(storedData.weight || '');
-      setName(storedData.name || '');
-      setType(storedData.type || '');
-      setGender(storedData.gender || '');
-      setAgeYear(storedData.ageYear || '');
-      setAgeMonth(storedData.ageMonth || '');
-      setBreed(storedData.breed || '');
-      setPersonality(storedData.personality || []);
-      setGetAlong(storedData.getAlong || []);
-      setDescription(storedData.description || '');
+    setWeight(initialValues? initialValues.weight : (storedData ? storedData.weight : ''));
+    setName(initialValues? initialValues.name : (storedData ? storedData.name : ''));
+    setType(initialValues? initialValues.type : (storedData ? storedData.type : ''));
+    setGender(initialValues? initialValues.gender : (storedData ? storedData.gender : ''));
+    setAgeYear(initialValues? initialValues.age_year : (storedData ? storedData.ageYear : ''));
+    setAgeMonth(initialValues? initialValues.age_month : (storedData ? storedData.ageMonth : ''));
+    setBreed(initialValues? getBreedId(initialValues.breed) : (storedData ? storedData.breed : ''));
+    setPersonality(initialValues? initialValues.personality : (storedData ? storedData.personality : []));
+    setGetAlong(initialValues? initialValues.get_along : (storedData ? storedData.getAlong : []));
+    setDescription(initialValues? initialValues.description : (storedData ? storedData.description : ''));
+
+    if (initialValues && initialValues.owner) {
+      setOwner(initialValues.owner.id);
+    }
+    
+    // let petImages = [];
+    // if (initialValues && initialValues.images) {
+    //   petImages = initialValues.images.map(image => new File([image], `image${Date.now()}.jpg`, { type: 'image/jpeg' }));
+    // } else if (storedData && storedData.images) {
+    //   petImages = storedData.images.map(image => new File([image], `image${Date.now()}.jpg`, { type: 'image/jpeg' }));
+    // }
+
+    // // Defina as imagens recuperadas
+    // setImages(petImages);
+    let petImages = [];
+    if (initialValues && initialValues.images) {
+      petImages = initialValues.images.map(image =>  image.image );
+    } else if (storedData && storedData.images) {
+      petImages = storedData.images;
     }
 
-    if (storedData && storedData.images) {
-      const promises = storedData.images.map((imageUrl) => {
+    if (petImages.length > 0) {
+      const promises = petImages.map((imageUrl) => {
         return new Promise((resolve) => {
           fetch(imageUrl)
             .then((res) => res.blob())
@@ -80,62 +82,48 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
           console.error('Error loading images:', error);
         });
     }
+    // eslint-disable-next-line
   }, []);
-
+  
   // Armazenar valores no localStorage sempre que houver uma alteração
   useEffect(() => {
-    const formDataObject = {
-      weight: weight,
-      name: name,
-      type: type,
-      gender: gender,
-      ageYear: ageYear,
-      ageMonth: ageMonth,
-      breed: breed,
-      personality: personality,
-      getAlong: getAlong,
-      description: description,
-      images: [],
-    };
-  
-    const promises = [];
-    for (const image of images) {
-      const reader = new FileReader();
-      reader.readAsDataURL(image);
-      promises.push(
-        new Promise((resolve) => {
-          reader.onload = () => {
-            formDataObject.images.push(reader.result);
-            resolve();
-          };
-        })
-      );
+    if (!initialValues) {
+      const formDataObject = {
+        weight: weight,
+        name: name,
+        type: type,
+        gender: gender,
+        ageYear: ageYear,
+        ageMonth: ageMonth,
+        breed: breed,
+        personality: personality,
+        getAlong: getAlong,
+        description: description,
+        images: [],
+      };
+    
+      const promises = [];
+      for (const image of images) {
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        promises.push(
+          new Promise((resolve) => {
+            reader.onload = () => {
+              formDataObject.images.push(reader.result);
+              resolve();
+            };
+          })
+        );
+      }
+    
+      Promise.all(promises).then(() => {
+        localStorage.setItem('formData', JSON.stringify(formDataObject));
+      });
+
     }
-  
-    Promise.all(promises).then(() => {
-      localStorage.setItem('formData', JSON.stringify(formDataObject));
-    });
+    // eslint-disable-next-line
   }, [weight, name, type, gender, ageYear, ageMonth, breed, owner, personality, getAlong, description, images]);
 
-  // useEffect(() => {
-  //   const calculateSizeFromWeight = () => {
-  //     const weightValue = parseFloat(weight);
-
-  //     if (weightValue <= 5) {
-  //       setSelectedSize('1'); // Size 1: Miniatura
-  //     } else if (weightValue <= 10) {
-  //       setSelectedSize('2'); // Size 2: Pequeno
-  //     } else if (weightValue <= 25) {
-  //       setSelectedSize('3'); // Size 3: Médio
-  //     } else if (weight > 25) {
-  //       setSelectedSize('4'); // Size 4: Grande
-  //     } else {
-  //       setSelectedSize('');
-  //     }
-  //   };
-
-  //   calculateSizeFromWeight();
-  // }, [weight]);
 
   useEffect(() => {
     dispatch(fetchProtectorUsers());
@@ -155,7 +143,20 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
 
   const handleImagesChange = (selectedImages) => {
     setImages(selectedImages);
-  }
+  };
+
+  useEffect(() => {
+    if (petFromStore && !isEqual(initialValues, petFromStore)) {
+      petFromStore?.images?.forEach(image => {
+        fetchImage(image.image, (cachedImage) => {
+          setImages(prevImages => [...prevImages, cachedImage]);
+        });
+      });
+
+    }
+    
+    // eslint-disable-next-line
+  }, [petFromStore, petListByProtectorFromStore]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -171,36 +172,54 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
     formData.append('owner', owner);
     formData.append('description', description);
 
-    personality.forEach((value, index) => {
+    personality?.forEach((value, index) => {
       formData.append('personality[]', value);
     });
 
-    getAlong.forEach((value, index) => {
+    getAlong?.forEach((value, index) => {
       formData.append('get_along[]', value);
     });
 
-    images.forEach((value, index) => {
+    images?.forEach((value, index) => {
       formData.append('image[]', value);
     });
    
     try {
-      dispatch(createPet(user.id, formData));
-      if (!petError) {
-        // Limpa localStorage após o envio do formulário
-        localStorage.removeItem('formData');
-
-        setToastMessage('Publicação criada');
-        setToastType('success');
-        setTimeout(() => {
-          handleCloseModal();
-        }, 2000);
-        handleOpenToast();
+      if (initialValues) {
+        dispatch(updatePet(initialValues.id, formData));
+        if (!petError) {
+          setToastMessage('Pet atualizado');
+          setToastType('success');
+          setTimeout(() => {
+            handleCloseModal();
+          }, 2000);
+          handleOpenToast();
+        } else {
+          setToastMessage(`Erro: ${petError}`);
+          setToastType('failure');
+          handleOpenToast();
+        }
 
       } else {
-        setToastMessage(`Erro: ${petError}`);
-        setToastType('failure');
-        handleOpenToast();
+        dispatch(createPet(user.id, formData));
+        if (!petError) {
+          // Limpa localStorage após o envio do formulário
+          localStorage.removeItem('formData');
+  
+          setToastMessage('Publicação criada');
+          setToastType('success');
+          setTimeout(() => {
+            handleCloseModal();
+          }, 2000);
+          handleOpenToast();
+  
+        } else {
+          setToastMessage(`Erro: ${petError}`);
+          setToastType('failure');
+          handleOpenToast();
+        }
       }
+      
     } catch (error) {
       console.error('Error: ', error);
     }
@@ -209,7 +228,7 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
 
   return (
     <div className='new-pet-form'>
-      <ImageUploader label='Selecione as imagens' onChange={(selectedImages) => handleImagesChange(selectedImages)} initialValues={initialValues?.images} dataRecovered={images} />
+      <ImageUploader label='Selecione as imagens' onChange={(selectedImages) => handleImagesChange(selectedImages)} initialValues={initialValues?.images.map(image =>  image.image )} dataRecovered={images} />
       
       <form onSubmit={handleSubmit}>
 

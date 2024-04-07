@@ -1,5 +1,5 @@
 import axios from '../../utils/axiosConfig';
-import { setEventList, setLoading, setNextPage, setEventListByProtector } from '../reducers/eventSlice';
+import { setEventList, setLoading, setNextPage, setEventListByProtector, createEventFailure } from '../reducers/eventSlice';
 
 export const fetchEventList = (page = 1) => async (dispatch, getState) => {
   try {
@@ -53,4 +53,23 @@ export const fetchEventListByProtector = (protectorId, page = 1) => async (dispa
   } finally {
     dispatch(setLoading(false));
   }
+};
+
+export const createEvent = (protectorId, eventData) => async (dispatch, getState) => {
+  try {
+    const currentState = getState();
+
+    const response = await axios.post('/events/', eventData);
+    const createdEvent = response.data;
+
+    const currentEventList = currentState.event.eventListByProtector?.[protectorId] ?? [];
+    const updatedEventList = [createdEvent, ...currentEventList];
+
+    dispatch(setEventListByProtector({ protectorId, eventList: updatedEventList }));
+
+  } catch (error) {
+    console.error('Error creating event:', error);
+    dispatch(createEventFailure(error.message));
+    throw error;
+  } 
 };

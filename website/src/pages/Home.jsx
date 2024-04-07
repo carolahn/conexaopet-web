@@ -9,12 +9,14 @@ import mockEventCardData from '../components/mockEventCardData';
 import Toast from '../components/Toast';
 import { fetchPetList } from '../redux/actions/petActions';
 import { fetchEventList } from '../redux/actions/eventActions';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 
 const Home = ( props ) => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
   const [toastType, setToastType] = useState('success');
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const petList = useSelector((state) => state.pet.petList);
   const petNextPage = useSelector((state) => state.pet.nextPage);
@@ -27,6 +29,19 @@ const Home = ( props ) => {
     dispatch(fetchPetList());
     dispatch(fetchEventList());
   }, [dispatch]);
+
+  useEffect(() => {
+    showLoadingSpiner();
+    // eslint-disable-next-line
+  }, []);
+
+  const showLoadingSpiner = () => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000); 
+  };
 
   const loadMorePets = () => {
     if (petNextPage) {
@@ -51,29 +66,33 @@ const Home = ( props ) => {
   };
 
   return (
-    <div className='home-page' data-testid="home-page">
-      <div className='home-body'>
-				<Header user={props.user} token={props.token} />
-				<CarouselHome events={eventList} loadMore={loadMoreEvents} isLoading={eventIsLoading} />
-				<InfiniteScroll itemList={petList || []} loadMore={loadMorePets} isLoading={petIsLoading}>
-          <PetCardList petList={petList} />
-				</InfiniteScroll>
+    <>
+      {loading && <LoadingSpinner />}
 
-			</div>
+      <div className='home-page' data-testid="home-page">
+        <div className='home-body'>
+          <Header user={props.user} token={props.token} />
+          <CarouselHome events={eventList} loadMore={loadMoreEvents} isLoading={eventIsLoading} />
+          <InfiniteScroll itemList={petList || []} loadMore={loadMorePets} isLoading={petIsLoading}>
+            <PetCardList petList={petList} />
+          </InfiniteScroll>
 
-      {showToast && (
-        <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
-      )}
+        </div>
 
-      <style>
-        {`
-          .home-page {
-            width: 100%;
-	          margin-top: 70px;
-          }
-        `}
-      </style>
-    </div>
+        {showToast && (
+          <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
+        )}
+
+        <style>
+          {`
+            .home-page {
+              width: 100%;
+              margin-top: 70px;
+            }
+          `}
+        </style>
+      </div>
+    </>
   );
 };
 

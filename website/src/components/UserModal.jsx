@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import closeIcon from '../assets/images/close.png';
 import { Link } from 'react-router-dom';
 import EditUserModal from './EditUserModal';
-import { mockUserData } from './mockFormData';
 import { logout } from '../redux/actions';
 
 if (process.env.NODE_ENV !== 'test') {
@@ -13,6 +13,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 const UserModal = ({ isModalOpen, closeModal, user, token }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [modalStyle, setModalStyle] = useState({
     content: {
@@ -56,7 +57,8 @@ const UserModal = ({ isModalOpen, closeModal, user, token }) => {
 
   const handleLogout = () => {
     dispatch(logout());
-    window.location.reload();
+    closeModal();
+    navigate('/');
   };
 
   const getDashboardLink = () => {

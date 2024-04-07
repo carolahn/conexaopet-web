@@ -1,114 +1,285 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { mockPetData, mockAddressData, mockProtectorData } from './mockFormData';
 import ImageUploader from './ImageUploader';
 import MultiSelect from './MultiSelect';
 import DateTimePicker from './DateTimePicker';
 import AddressForm from './AddressForm';
+import isEqual from 'lodash/isEqual';
+import { fetchProtectorUsers, getAddressList, createAddress, createEvent } from "../redux/actions";
+import { fetchImage } from '../utils/imageUtils';
 
-const NewEventForm = ({initialValues}) => {
+const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessage, handleOpenToast, handleCloseModal }) => {
   const [images, setImages] = useState([]);
-  const [animals, setAnimals] = useState([]);
+  const [pets, setPets] = useState([]);
   const [dateHour, setDateHour] = useState({});
   const [address, setAddress] = useState({});
+  const [owner, setOwner] = useState(user?.id);
   const [protector, setProtector] = useState('');
   const [description, setDescription] = useState('');
+  const [petChoices, setPetChoices] = useState([]);
+  const dispatch = useDispatch();
+  const protectorChoices = useSelector(state => state.userReducer.protectorUsers);
+  const addressChoices = useSelector(state => state.address.addressList);
+  const eventError = useSelector(state => state.event.error);
+  const eventFromStore = useSelector(state => state.event?.eventList.length > 0 ? state.event?.eventList[initialValues?.id] : {});
+  const eventListByProtectorFromStore = useSelector(state => state.event?.eventListByProtector);
+  const petListByProtector = useSelector((state) => state.pet.petListByProtector[user?.id]);
 
-  useEffect(() => {
-    if (initialValues) {
-      setImages(initialValues.images || []);
-      setAnimals(initialValues.animals || []);
-      setDateHour(initialValues.dateHour || {});
-      setAddress(initialValues.address || {});
-      setProtector(initialValues.protector || '');
-      setDescription(initialValues.description || '');
-    }
-  }, [initialValues]);
-
-  // Recuperar valores do localStorage ao iniciar
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('eventFormData'));
+   
+    setPets(initialValues ? initialValues.pets : (storedData ? storedData.pets : []));
+    setDateHour(initialValues ? initialValues.date_hour : (storedData ? storedData.dateHour : ''));
+    setAddress(initialValues ? initialValues.address : (storedData ? storedData.address : {}));
+    // setProtector(initialValues? initialValues.owner.id : (storedData ? storedData.owner : ''));
+    setDescription(initialValues ? initialValues.description : (storedData ? storedData.description : ''));
 
-    if (storedData) {
-      setImages(storedData.images || []);
-      setAnimals(storedData.animals || []);
-      setDateHour(storedData.dateHour || {});
-      setAddress(storedData.address || {});
-      setProtector(storedData.protector || '');
-      setDescription(storedData.description || '');
+    if (initialValues && initialValues.owner) {
+      setOwner(initialValues.owner.id);
     }
+
+    let eventImages = [];
+    if (initialValues && initialValues.images) {
+      eventImages = initialValues.images.map(image => image.image);
+    } else if (storedData && storedData.images) {
+      eventImages = storedData.images;
+    }
+
+    if (eventImages.length > 0) {
+      const promises = eventImages.map((imageUrl) => {
+        return new Promise((resolve) => {
+          fetch(imageUrl)
+            .then((res) => res.blob())
+            .then((blob) => {
+              const file = new File([blob], `image${Date.now()}.jpg`, { type: 'image/jpeg' });
+              resolve(file);
+            });
+        });
+      });
+  
+      Promise.all(promises)
+        .then((files) => {
+          setImages(files);
+        })
+        .catch((error) => {
+          console.error('Error loading images:', error);
+        });
+    }
+
+    // eslint-disable-next-line
   }, []);
+
+
+  // Recuperar valores do localStorage ao iniciar
+  // useEffect(() => {
+  //   const storedData = JSON.parse(localStorage.getItem('eventFormData'));
+
+  //   if (storedData) {
+  //     setImages(storedData.images || []);
+  //     setAnimals(storedData.animals || []);
+  //     setDateHour(storedData.dateHour || {});
+  //     setAddress(storedData.address || {});
+  //     setProtector(storedData.protector || '');
+  //     setDescription(storedData.description || '');
+  //   }
+  // }, []);
 
   // Armazenar valores no localStorage sempre que houver uma alteração
   useEffect(() => {
-    const formData = {
-      images: images,
-      animals: animals,
-      dateHour: dateHour,
-      address: address,
-      protector: protector,
-      description: description,
-    };
+    if (!initialValues) {
+      const formDataObject = {
+        pets: pets,
+        dateHour: dateHour,
+        address: address,
+        owner: owner,
+        description: description,
+        images: [],
+      };
 
-    localStorage.setItem('eventFormData', JSON.stringify(formData));
-  }, [images, animals, dateHour, address, protector, description]);
+      const promises = [];
+      for (const image of images) {
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        promises.push(
+          new Promise((resolve) => {
+            reader.onload = () => {
+              formDataObject.images.push(reader.result);
+              resolve();
+            };
+          })
+        );
+      }
+    
+      Promise.all(promises).then(() => {
+        localStorage.setItem('eventFormData', JSON.stringify(formDataObject));
+      });
+    }
+    // eslint-disable-next-line
+  }, [images, pets, dateHour, address, owner, description]);
+
+  useEffect(() => {
+    dispatch(fetchProtectorUsers());
+    dispatch(getAddressList());
+  }, [dispatch])
 
   const handleImagesChange = (selectedImages) => {
     setImages(selectedImages);
   }
 
   const handleAnimalsChange = (selectedAnimals) => {
-    setAnimals(selectedAnimals);
+    if (selectedAnimals !== null && !isEqual(pets, selectedAnimals)) {
+      setPets(selectedAnimals);
+    }
   };
+
+  useEffect(() => {
+    if (eventFromStore && !isEqual(initialValues, eventFromStore)) {
+      eventFromStore?.images.forEach(image => {
+        fetchImage(image.image, (cachedImage) => {
+          setImages(prevImages => [...prevImages, cachedImage]);
+        });
+      });
+
+    }
+    
+    // eslint-disable-next-line
+  }, [eventFromStore, eventListByProtectorFromStore]);
+
+  useEffect(() => {
+    let petOptions = petListByProtector?.map((pet) => {
+      return {
+        id: pet.id,
+        value: pet.name
+      };
+    });
+    
+    setPetChoices(petOptions);
+    // eslint-disable-next-line
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Limpando localStorage após o envio do formulário
-    localStorage.removeItem('eventFormData');
+    // localStorage.removeItem('eventFormData');
+    console.log("date_hour_initial: ", dateHour?.date_hour_initial);
 
-    const formData = {
-      images: images,
-      animals: animals,
-      dateHour: dateHour,
-      address: address,
-      protector: protector,
-      description: description,
-    };
+    if (!address?.id) {
+      dispatch(createAddress(address))
+        .then((createdAddress) => { 
+          
+          setAddress(createdAddress); 
+    
+          const formData = new FormData();
+          formData.append('date_hour_initial', dateHour.date_hour_initial);
+          formData.append('date_hour_end', dateHour.date_hour_end);
+          formData.append('address', createdAddress.id); // Use the address ID
+          formData.append('owner', owner);
+          formData.append('description', description);
+      
+          pets.forEach((value) => {
+            formData.append('pet[]', value);
+          });
+      
+          images.forEach((value) => {
+            formData.append('image[]', value);
+          });
+          
+          try {
+            dispatch(createEvent(owner, formData));
+            if (!eventError) {
+              setToastMessage('Evento criado');
+              setToastType('success');
+              setTimeout(() => {
+                handleCloseModal();
+              }, 2000);
+              handleOpenToast();
+            } else {
+              setToastMessage(`Erro: ${eventError}`);
+              setToastType('failure');
+              handleOpenToast();
+            }
 
-    const jsonData = JSON.stringify(formData);
-    console.log(jsonData);
+          } catch(error) {
+            console.error('Error creating event:', error);
+          }
+        });
+        
+    } else {
+      const formData = new FormData();
+      formData.append('date_hour_initial', dateHour.date_hour_initial);
+      formData.append('date_hour_end', dateHour.date_hour_end);
+      formData.append('address', address.id); // Use the address ID
+      formData.append('owner', owner);
+      formData.append('description', description);
+  
+      pets.forEach((value) => {
+        formData.append('pet[]', value);
+      });
+  
+      images.forEach((value) => {
+        formData.append('image[]', value);
+      });
+      
+      try {
+        dispatch(createEvent(owner, formData));
+        if (!eventError) {
+          setToastMessage('Evento criado');
+          setToastType('success');
+          setTimeout(() => {
+            handleCloseModal();
+          }, 2000);
+          handleOpenToast();
+        } else {
+          setToastMessage(`Erro: ${eventError}`);
+          setToastType('failure');
+          handleOpenToast();
+        }
+
+      } catch(error) {
+        console.error('Error creating event:', error);
+      }
+    }
+
+  
+
   };
 
   return (
     <div className='new-event-form'>
-      <ImageUploader label='Selecione as imagens' onChange={handleImagesChange}/>
+      <ImageUploader label='Selecione as imagens' onChange={(selectedImages) => handleImagesChange(selectedImages)} initialValues={initialValues?.images.map(image =>  image.image )} dataRecovered={images}/>
       
       <form onSubmit={handleSubmit}>
         <div className='row'>
-          <MultiSelect options={mockPetData} placeholder={'Animais'} attribute={'nome'} onChange={handleAnimalsChange}/>
+          <MultiSelect options={petChoices} 
+          placeholder={'Animais'} attribute={'value'} 
+          onChange={handleAnimalsChange}
+          initialValues={initialValues?.pets ? initialValues.pets : (pets ? pets : [])} />
         </div>
-
-        <div className='row event-date'>
-          <DateTimePicker setDateHour={setDateHour} />
-        </div>
-
-        <div className='row event-place'>
-          <AddressForm addressList={mockAddressData} setAddress={setAddress}/>
-        </div>
-
+        
         <div className="row new-event-protector">
           <label htmlFor="eventProtector" className="col-sm-2 col-form-label">Protetor</label>
           <div className="col" style={{ display: 'contents' }}>
-            <select className="form-select" id="eventProtector" name="eventProtector" aria-label="Selecione o protetor" value={protector} onChange={(e) => setProtector(e.target.value)}>
+            <select className="form-select" id="eventProtector" name="eventProtector" aria-label="Selecione o protetor" value={owner} onChange={(e) => setProtector(e.target.value)} disabled>
               <option value=""></option>
-              {mockProtectorData.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.nickname}
+              {protectorChoices.map((item) => (
+                <option key={`${item.username}-${item.id}`} value={item.id}>
+                  {item.username}
                 </option>
               ))}
             </select>
           </div>
         </div>
+
+        <div className='row event-date'>
+          <DateTimePicker setDateHour={setDateHour} initialValues={JSON.parse(localStorage.getItem('eventFormData')) ? JSON.parse(localStorage.getItem('eventFormData')).dateHour : null} />
+        </div>
+
+        <div className='row event-place'>
+          <AddressForm addressList={addressChoices} setAddress={setAddress} initialValues={initialValues?.address || {}}/>
+        </div>
+
 
         <div className="row">
           <div className="col">
@@ -192,7 +363,7 @@ const NewEventForm = ({initialValues}) => {
             border-radius: 0.25rem;
             font-size: 1rem;
             line-height: 1.5;
-            padding: 0.375rem 0.75rem;
+            padding: 0.375rem 0.7rem;
           }
 
           @media (max-width: 900px) {

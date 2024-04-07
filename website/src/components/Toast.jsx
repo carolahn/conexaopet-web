@@ -22,7 +22,7 @@ const Toast = ({ message, type, onClose }) => {
       <style>
         {`
           .toast {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             /* margin: 1rem; */

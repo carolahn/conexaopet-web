@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getToken, getUser } from '../utils/selectors';
 import Home from '../pages/Home';
@@ -12,26 +12,42 @@ import DashboardMember from '../pages/DashboardMember';
 import DashboardSponsor from '../pages/DashboardSponsor';
 import SinglePet from '../pages/SinglePet';
 import SingleEvent from '../pages/SingleEvent';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 
 const AppRoutes = () => {
   const token = useSelector(getToken);
   const user = useSelector(getUser);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 2000); 
+
+    return () => clearTimeout(timeout);
+  }, [location, navigate]);
 
   return (
-    <Routes>
-      <Route path="/" element={<Home user={user} token={token} />} />
-      <Route path="/event" element={<Event />} />
-      <Route path="/event/:id" element={<SingleEvent />} />
-      <Route path="/pet/:id" element={<SinglePet />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/protector/:id" element={<ProfileProtector/>} />
-      <Route path="/dashboard/protector/:id" element={<DashboardProtector user={user} token={token} />} />
-      <Route path="/dashboard/member/:id" element={<DashboardMember user={user} token={token} />} />
-      <Route path="/dashboard/sponsor/:id" element={<DashboardSponsor user={user} token={token} />} />
-      <Route path="*" element={<Navigate to="/404" />} />
-    </Routes>
+    <>
+      {loading && <LoadingSpinner />}
+   
+      <Routes>
+        <Route path="/" element={<Home user={user} token={token} />} />
+        <Route path="/event" element={<Event />} />
+        <Route path="/event/:id" element={<SingleEvent />} />
+        <Route path="/pet/:id" element={<SinglePet />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/protector/:id" element={<ProfileProtector/>} />
+        <Route path="/dashboard/protector/:id" element={<DashboardProtector user={user} token={token} />} />
+        <Route path="/dashboard/member/:id" element={<DashboardMember user={user} token={token} />} />
+        <Route path="/dashboard/sponsor/:id" element={<DashboardSponsor user={user} token={token} />} />
+        <Route path="*" element={<Navigate to="/404" />} />
+      </Routes>
+    </>
   );
 };
 

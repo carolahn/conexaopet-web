@@ -90,11 +90,11 @@ const MultiSelect = ({ options, placeholder, attribute, onChange, initialValues=
             boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
           }}
         >
-          {options.map((option) => (
-            <div key={option.id} style={optionContainerStyles}>
+          {options.map((option, index) => (
+            <div key={`multiselect-${option.id}-${index}`} style={optionContainerStyles}>
               <input
                 type="checkbox"
-                id={option.id}
+                id={`${option.id}-${index}`}
                 value={option.id}
                 checked={selectedOptions.includes(option.id)}
                 onChange={() => handleOptionChange(option.id)}

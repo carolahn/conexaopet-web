@@ -10,9 +10,6 @@ const ImageUploader = ({ label, onChange, initialValues=[], dataRecovered=[] }) 
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const prevSelectedImages = useRef(selectedImages);
-
-  console.log('initialValues: ', initialValues);
-  console.log('selectedImages: ', selectedImages);
   
 
   useEffect(() => {
@@ -54,9 +51,13 @@ const ImageUploader = ({ label, onChange, initialValues=[], dataRecovered=[] }) 
   }, []);
 
   useEffect(() => {
-    if (dataRecovered && dataRecovered.length > 0 && !isEqual(selectedImages, dataRecovered)) {
+    console.log('initialValues: ', initialValues)
+    console.log('dataRecovered: ', dataRecovered)
+    if (initialValues.length === 0 && dataRecovered && dataRecovered.length > 0 && !isEqual(selectedImages, dataRecovered)) {
       setSelectedImages(dataRecovered);
+      console.log("datarecovered")
     }
+    // eslint-disable-next-line
   }, [dataRecovered]);
 
   const handleMouseEnter = () => {

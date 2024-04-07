@@ -10,7 +10,6 @@ import calendarFilledIcon from '../assets/images/calendar-filled.png';
 import editIcon from '../assets/images/edit.png';
 import plusIcon from '../assets/images/plus.png';
 import EditUserModal from './EditUserModal';
-import { mockUserData } from './mockFormData';
 import { imageCache } from './CupomCard';
 
 const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setToastMessage, handleOpenToast }) => {
@@ -52,7 +51,7 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
 
     fetchImage(protector.image, setOwnerImage);
 
-  }, [protector.image]);
+  }, [protector?.image]);
 
   const handleWhatsAppClick = () => {
     window.open(`https://web.whatsapp.com/send?phone=${protector.phone}`, '_blank');
@@ -99,7 +98,7 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
 
       <div className='protector-card-header'>
 				<div className='protector-avatar'>
-					<img src={ownerImage} alt={`Avatar de ${protector.username}`} />
+					<img src={ownerImage} alt={`Avatar de ${protector?.username}`} />
 				</div>
         <div className='protector-name-button'>
 				  <h2>{protector.username}</h2>

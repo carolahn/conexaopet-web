@@ -1,18 +1,65 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const AddressForm = ({ addressList, setAddress }) => {
+
+const AddressForm = ({ addressList, setAddress, initialValues }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [addressData, setAddressData] = useState({
-    nome: '',
-    rua: '',
-    numero: '',
-    bairro: '',
-    cidade: '',
+    name: '',
+    street: '',
+    number: '',
+    district: '',
+    city: '',
     uf: '',
   });
+  const suggestionsRef = useRef(null);
+
+
+  useEffect(() => {
+    // Fechar o dropdown
+    const handleClickOutside = (event) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem('eventFormData'));
+  
+    // Verificar se os campos do endereço já estão preenchidos
+    const isAddressFilled = Object.keys(addressData).some(key => addressData[key] !== '');
+  
+    if (!isAddressFilled) {
+      if (initialValues && Object.keys(initialValues).length !== 0) {
+        // Preencher os campos com os valores de initialValues.address
+        setAddressData(initialValues);
+      } else if (storedData && Object.keys(storedData.address).length !== 0) {
+        // Preencher os campos com os valores do localStorage
+        setAddressData(storedData.address);
+      }
+    }
+  }, [initialValues, addressData]);
 
   useEffect(() => {
     setAddress(addressData);
+    // eslint-disable-next-line
+  }, [addressData]);
+
+  useEffect(() => {
+    // Se for um novo name, deve remover o address.id
+    if (!addressList.some(address => address.name.toLowerCase() === addressData.name.toLowerCase())) {
+      delete addressData.id;
+    }
+
+    // Se name já existir, mas não for selecionado da lista
+    if (addressList.find((address) => address.name.toLowerCase() === addressData.name.toLowerCase())) {
+      setAddressData(addressList.find((address) => address.name.toLowerCase() === addressData.name.toLowerCase()));
+    }
     // eslint-disable-next-line
   }, [addressData]);
 
@@ -20,7 +67,7 @@ const AddressForm = ({ addressList, setAddress }) => {
     const { value } = e.target;
     setAddressData((prevData) => ({
       ...prevData,
-      nome: value,
+      name: value,
     }));
 
     setShowSuggestions(value.length >= 3); // Mostrar sugestões apenas quando o tamanho do nome for >= 3
@@ -31,29 +78,30 @@ const AddressForm = ({ addressList, setAddress }) => {
     setShowSuggestions(false);
   };
 
-  const suggestions = addressList.filter((address) =>
-    address.nome.toLowerCase().includes(addressData.nome.toLowerCase())
-  );
+  const suggestions = (showSuggestions && addressList) ? addressList.filter((address) =>
+    address?.name.toLowerCase().includes(addressData?.name.toLowerCase())
+  ) : [];
 
+  console.log("address: ", addressData)
   return (
     <div style={{ position: 'relative', width: '100%' }}>
         <span style={nameContainerStyles}>
             <input
                 type='text'
                 placeholder='Local'
-                value={addressData.nome}
+                value={addressData?.name}
                 onChange={handleNameChange}
             />
 
             {showSuggestions && (
-                <div style={suggestionContainerStyles}>
+                <div ref={suggestionsRef} style={suggestionContainerStyles}>
                 {suggestions.map((suggestion, index) => (
                     <div
                     key={index}
                     style={suggestionItemStyles}
                     onClick={() => handleSuggestionSelect(suggestion)}
                     >
-                    {suggestion.nome}
+                    {suggestion.name}
                     </div>
                 ))}
                 </div>
@@ -65,8 +113,9 @@ const AddressForm = ({ addressList, setAddress }) => {
             className='input-street'
             type='text'
             placeholder='Rua'
-            value={addressData.rua}
-            onChange={(e) => setAddressData((prevData) => ({ ...prevData, rua: e.target.value }))}
+            value={addressData?.street}
+            onChange={(e) => setAddressData((prevData) => ({ ...prevData, street: e.target.value }))}
+            disabled={addressData?.id}
           />
         </div>
         <div className='number'>
@@ -74,8 +123,9 @@ const AddressForm = ({ addressList, setAddress }) => {
             className='input-number'
             type='text'
             placeholder='n°'
-            value={addressData.numero}
-            onChange={(e) => setAddressData((prevData) => ({ ...prevData, numero: e.target.value }))}
+            value={addressData?.number}
+            onChange={(e) => setAddressData((prevData) => ({ ...prevData, number: e.target.value }))}
+            disabled={addressData?.id}
           />
         </div>
       </div>
@@ -86,10 +136,9 @@ const AddressForm = ({ addressList, setAddress }) => {
             className='input-district'
             type='text'
             placeholder='Bairro'
-            value={addressData.bairro}
-            onChange={(e) =>
-              setAddressData((prevData) => ({ ...prevData, bairro: e.target.value }))
-            }
+            value={addressData?.district}
+            onChange={(e) => setAddressData((prevData) => ({ ...prevData, district: e.target.value }))}
+            disabled={addressData?.id}
           />
         </div>
         <div className='city'>
@@ -97,8 +146,9 @@ const AddressForm = ({ addressList, setAddress }) => {
             className='input-city'
             type='text'
             placeholder='Cidade'
-            value={addressData.cidade}
-            onChange={(e) => setAddressData((prevData) => ({ ...prevData, cidade: e.target.value }))}
+            value={addressData?.city}
+            onChange={(e) => setAddressData((prevData) => ({ ...prevData, city: e.target.value }))}
+            disabled={addressData?.id}
           />
         </div>
         <div className='uf'>
@@ -106,8 +156,9 @@ const AddressForm = ({ addressList, setAddress }) => {
             className='input-uf'
             type='text'
             placeholder='UF'
-            value={addressData.uf}
+            value={addressData?.uf}
             onChange={(e) => setAddressData((prevData) => ({ ...prevData, uf: e.target.value }))}
+            disabled={addressData?.id}
           />
         </div>
       </div>

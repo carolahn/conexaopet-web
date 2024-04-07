@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
-import { mockCupomData, mockSponsorData } from '../components/mockFormData';
 import InfiniteScroll from '../components/InfiniteScroll';
 import CupomCardList from '../components/CupomCardList';
 import SponsorCardDashboard from '../components/SponsorCardDashboard';
@@ -63,7 +62,7 @@ const DashboardSponsor = ( props ) => {
           loadMore={loadMoreItems}
           isLoading={isLoading}
         >
-          <CupomCardList cupomList={cupomList} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
+          <CupomCardList cupomList={cupomList} />
         </InfiniteScroll>
       </div>
 

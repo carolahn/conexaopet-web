@@ -1,5 +1,5 @@
 import axios from '../../utils/axiosConfig';
-import { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure } from '../reducers/petSlice';
+import { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure } from '../reducers/petSlice';
 
 export const fetchPetList = (page = 1) => async (dispatch, getState) => {
   try {
@@ -76,9 +76,33 @@ export const createPet = (protectorId, petData) => async (dispatch, getState) =>
 export const updatePet = (petId, petData) => async (dispatch) => {
   try {
     const response = await axios.put(`/pets/update/${petId}/`, petData);
-    dispatch(fetchPetList()); // Atualiza a lista de pets após a atualização bem-sucedida
+    dispatch(updatePetSuccess(response.data));
   } catch (error) {
     console.error('Error updating pet:', error);
+    dispatch(updatePetFailure(error.message));
+    throw error;
+  }
+};
+
+export const deletePet = (petId) => async (dispatch, getState) => {
+  try {
+    await axios.delete(`/pets/delete/${petId}/`);
+
+    // Remover o pet da lista petList
+    const { petList } = getState().pet;
+    const updatedPetList = petList.filter(pet => pet.id !== petId);
+    dispatch(setPetList(updatedPetList));
+
+    // Remover o pet da lista petListByProtector se existir
+    const protectorId = getState().authReducer.user.id; // ou qualquer outra forma de obter o ID do protetor
+    const petListByProtector = getState().pet.petListByProtector[protectorId];
+    if (petListByProtector) {
+      const updatedPetListByProtector = petListByProtector.filter(pet => pet.id !== petId);
+      dispatch(setPetListByProtector({ protectorId, petList: updatedPetListByProtector }));
+    }
+  } catch (error) {
+    console.error('Error deleting pet:', error);
+    dispatch(deletePetFailure(error.message));
     throw error;
   }
 };
