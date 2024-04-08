@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import closeIcon from '../assets/images/close.png';
 import { Link } from 'react-router-dom';
 import EditUserModal from './EditUserModal';
-import { logout } from '../redux/actions';
+import { logout } from '../redux/store';
 
 if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');

@@ -24,9 +24,16 @@ const addressSlice = createSlice({
     createAddressFailure(state, action) {
       state.error = action.payload;
     },
+    resetAddressState(state) { 
+      return {
+        addressList: [],
+        isLoading: false,
+        error: null,
+      };
+    },
   },
 });
 
-export const { setAddressList, setLoading, getAddressListFailure, createAddressSuccess, createAddressFailure } = addressSlice.actions;
+export const { setAddressList, setLoading, getAddressListFailure, createAddressSuccess, createAddressFailure, resetAddressState } = addressSlice.actions;
 
 export default addressSlice.reducer;

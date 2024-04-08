@@ -5,6 +5,7 @@ const petSlice = createSlice({
   initialState: {
     petList: [],
     petListByProtector: {},
+    petChoices: [],
     isLoading: false,
     nextPage: null,
     error: null,
@@ -61,9 +62,16 @@ const petSlice = createSlice({
     deletePetFailure(state, action) {
       state.error = action.payload;
     },
+    getPetChoicesSuccess(state, action) {
+      state.error = null;
+      state.petChoices = action.payload;
+    },
+    getPetChoicesFailure(state, action) {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure } = petSlice.actions;
+export const { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure, getPetChoicesSuccess, getPetChoicesFailure } = petSlice.actions;
 
 export default petSlice.reducer;

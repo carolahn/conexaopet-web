@@ -51,14 +51,17 @@ const AddressForm = ({ addressList, setAddress, initialValues }) => {
   }, [addressData]);
 
   useEffect(() => {
-    // Se for um novo name, deve remover o address.id
-    if (!addressList.some(address => address.name.toLowerCase() === addressData.name.toLowerCase())) {
-      delete addressData.id;
-    }
+    if (addressData && Object.keys(addressData).length !== 0 && addressData?.id) {
+      // Se for um novo name, deve remover o address.id
+      if (!addressList.some(address => address.name.toLowerCase() === addressData.name.toLowerCase())) {
+        delete addressData?.id;
+      }
+  
+      // Se name já existir, mas não for selecionado da lista
+      if (addressList.find((address) => address.name.toLowerCase() === addressData.name.toLowerCase())) {
+        setAddressData(addressList.find((address) => address.name.toLowerCase() === addressData.name.toLowerCase()));
+      }
 
-    // Se name já existir, mas não for selecionado da lista
-    if (addressList.find((address) => address.name.toLowerCase() === addressData.name.toLowerCase())) {
-      setAddressData(addressList.find((address) => address.name.toLowerCase() === addressData.name.toLowerCase()));
     }
     // eslint-disable-next-line
   }, [addressData]);

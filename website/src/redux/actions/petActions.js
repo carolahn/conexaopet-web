@@ -1,5 +1,5 @@
 import axios from '../../utils/axiosConfig';
-import { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure } from '../reducers/petSlice';
+import { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure, getPetChoicesSuccess, getPetChoicesFailure } from '../reducers/petSlice';
 
 export const fetchPetList = (page = 1) => async (dispatch, getState) => {
   try {
@@ -14,8 +14,11 @@ export const fetchPetList = (page = 1) => async (dispatch, getState) => {
       const data = response.data;
       const currentPetList = currentState.pet.petList;
 
+      // Filtra os novos resultados para remover duplicatas
+      const newResults = data.results.filter(result => !currentPetList.some(pet => pet.id === result.id));
+
       // Concatena os novos resultados com os existentes
-      const updatedPetList = [...currentPetList, ...data.results];
+      const updatedPetList = [...currentPetList, ...newResults];
 
       dispatch(setPetList(updatedPetList));
       dispatch(setNextPage(data.next));
@@ -40,9 +43,12 @@ export const fetchPetListByProtector = (protectorId, page = 1) => async (dispatc
       const response = await axios.get(`/pets/protector/${protectorId}/?page=${page}`);
       const data = response.data;
 
-      // Concatena os novos resultados com os existentes
       const currentPetList = currentState.pet.petListByProtector?.[protectorId] ?? [];
-      const updatedPetList = [...currentPetList, ...data.results];
+      // Filtra os novos resultados para remover duplicatas
+      const newResults = data.results.filter(result => !currentPetList.some(pet => pet.id === result.id));
+
+      // Concatena os novos resultados com os existentes
+      const updatedPetList = [...currentPetList, ...newResults];
 
       dispatch(setPetListByProtector({ protectorId, petList: updatedPetList }));
       dispatch(setNextPage(data.next));
@@ -103,6 +109,17 @@ export const deletePet = (petId) => async (dispatch, getState) => {
   } catch (error) {
     console.error('Error deleting pet:', error);
     dispatch(deletePetFailure(error.message));
+    throw error;
+  }
+};
+
+export const getPetChoices = (protectorId) => async (dispatch) => {
+  try {
+    const response = await axios.get(`/pets/protector/${protectorId}/all/`);
+    dispatch(getPetChoicesSuccess(response.data));
+  } catch (error) {
+    console.error('Error fetching pet choices:', error);
+    dispatch(getPetChoicesFailure(error.message));
     throw error;
   }
 };

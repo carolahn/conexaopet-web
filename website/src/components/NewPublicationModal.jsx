@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
 }
 
-const NewPublicationModal = ({ user, isModalOpen, closeModal, setToastType, setToastMessage, handleOpenToast, initialValues = null }) => {
+const NewPublicationModal = ({ user, isModalOpen, closeModal, setToastType, setToastMessage, handleOpenToast, initialValues = null, editType = null }) => {
   const [selectedTab, setSelectedTab] = useState('pet');
   const [modalStyle, setModalStyle] = useState({
     overlay: {
@@ -62,16 +62,16 @@ const NewPublicationModal = ({ user, isModalOpen, closeModal, setToastType, setT
       style={modalStyle}
       appElement={document.getElementById('root')}
     >
-      {selectedTab === 'pet' && (
+      {((selectedTab === 'pet' && editType !== 'event') || editType === 'pet') && (
         <>
-          <NewPublicationHeader title={initialValues ? 'Editar publicação' : 'Nova publicação'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
+          <NewPublicationHeader title={initialValues ? 'Editar publicação' : 'Nova publicação'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab} showButtons={editType ? false : true} />
           <NewPetForm user={user} initialValues={initialValues || null} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} handleCloseModal={closeModal} />
         </>
       )}
 
-      {selectedTab === 'event' && (
+      {(selectedTab === 'event' || editType === 'event') && (
         <>
-          <NewPublicationHeader title={initialValues ? 'Editar evento' : 'Novo evento'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
+          <NewPublicationHeader title={initialValues ? 'Editar evento' : 'Novo evento'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab} showButtons={editType ? false : true} />
           <NewEventForm user={user} initialValues={initialValues || null} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} handleCloseModal={closeModal} />
         </>
       )}

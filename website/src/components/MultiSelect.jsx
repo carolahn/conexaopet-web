@@ -14,13 +14,13 @@ const MultiSelect = ({ options, placeholder, attribute, onChange, initialValues=
     if (!isEqual(initialValues, selectedOptions) && selectedOptions.length > 0) {
       onChange(selectedOptions);
     }
-  }, [selectedOptions, onChange, initialValues]);
+  }, [selectedOptions, onChange]);
 
   useEffect(() => {
     if (initialValues && initialValues.length > 0 && !isEqual(initialValues, selectedOptions) ) {
       setSelectedOptions(initialValues);
     }
-  }, [initialValues]);
+  }, []);
 
   const handleOptionChange = (id) => {
     setSelectedOptions((prevSelectedOptions) => {

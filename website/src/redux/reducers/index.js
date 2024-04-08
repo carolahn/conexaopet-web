@@ -4,7 +4,7 @@ import { userReducer } from './userReducer';
 import cupomSlice from './cupomSlice';
 import petSlice from './petSlice';
 import eventSlice from './eventSlice';
-import addressSlice from './addressSlice';
+import addressSlice, { resetAddressState } from './addressSlice';
 
 const rootReducer = combineReducers({
   authReducer,
@@ -16,3 +16,9 @@ const rootReducer = combineReducers({
 });
 
 export default rootReducer;
+// export const rootReducerWithLogout = (state, action) => {
+//   if (action.type === 'LOGOUT') {
+//     state = resetAddressState(undefined, action); // Despacha a ação resetAddressState
+//   }
+//   return rootReducer(state, action);
+// };

@@ -7,7 +7,7 @@ import EventCardList from '../components/EventCardList';
 import Toast from '../components/Toast';
 import InfiniteScroll from '../components/InfiniteScroll';
 import ProtectorCardDashboard from '../components/ProtectorCardDashboard';
-import { fetchPetListByProtector } from '../redux/actions/petActions';
+import { fetchPetListByProtector, getPetChoices } from '../redux/actions/petActions';
 import { fetchEventListByProtector } from '../redux/actions/eventActions';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -55,6 +55,8 @@ const DashboardProtector = ( props ) => {
   useEffect(() => {
     dispatch(fetchPetListByProtector(props.user.id));
     dispatch(fetchEventListByProtector(props.user.id));
+    dispatch(getPetChoices(props.user.id));
+    console.log("dispatch petChoices");
     // eslint-disable-next-line
   }, [dispatch]);
 

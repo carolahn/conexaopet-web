@@ -134,11 +134,16 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
   }, [weight]);
 
   const handlePersonalitiesChange = (selectedPersonalities) => {
-    setPersonality(selectedPersonalities);
+    // setPersonality(selectedPersonalities);
+    if (selectedPersonalities !== null && !isEqual(personality, selectedPersonalities)) {
+      setPersonality(selectedPersonalities);
+    }
   };
 
   const handleConvivioChange = (selectedConvivio) => {
-    setGetAlong(selectedConvivio);
+    if (selectedConvivio !== null && !isEqual(selectedConvivio, getAlong)) {
+      setGetAlong(selectedConvivio);
+    }
   };
 
   const handleImagesChange = (selectedImages) => {
@@ -338,7 +343,7 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
           <MultiSelect options={getAlongChoices} 
             placeholder={'Convívio'} attribute={'value'} 
             onChange={handleConvivioChange}
-            initialValues={initialValues?.getAlong ? initialValues.getAlong : (getAlong ? getAlong : [])}/>
+            initialValues={initialValues?.get_along ? initialValues.get_along : (getAlong ? getAlong : [])}/>
         </div>
 
         <div className="row mb-1">

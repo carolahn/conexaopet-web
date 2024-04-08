@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { formatarData, formatarHora } from '../utils/formatarData';
+import { getUser } from '../utils/selectors';
 import starIcon from '../assets/images/star.png';
 import starFilledIcon from '../assets/images/star-filled.png';
 import moreIcon from '../assets/images/more.png';
@@ -12,8 +14,15 @@ import weightIcon from '../assets/images/weight.png';
 import infoIcon from '../assets/images/info.png';
 import quoteIcon from '../assets/images/quote.png';
 import clockIcon from '../assets/images/clock.png';
+import editIcon from '../assets/images/edit.png';
+import trashIcon from '../assets/images/trash.png';
 import { imageCache } from './CupomCard';
 import { getPersonalityString, getAlongString, getLifeStage, getPetType } from '../utils/petData';
+import Toast from './Toast';
+import DiscartModal from './DiscartModal';
+import NewPublicationModal from './NewPublicationModal';
+import { deleteEvent } from '../redux/actions';
+
 
 const EventCard = ( props ) => {
   const [ownerImage, setOwnerImage] = useState(null);
@@ -25,6 +34,14 @@ const EventCard = ( props ) => {
 	const [currentAnimal, setCurrentAnimal] = useState(null);
   const [allImages, setAllImages] = useState([]);
   const [sortedImages, setSortedImages] = useState([]);
+  const [isDiscartModalOpen, setIsDiscartModalOpen] = useState(false);
+	const [isNewPublicationModalOpen, setIsNewPublicationModalOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Alterações salvas');
+  const [toastType, setToastType] = useState('success');
+  const dispatch = useDispatch();
+  const user = useSelector(getUser);
+  const eventError = useSelector(state => state.event.error);
 
   
   useEffect(() => {
@@ -122,14 +139,71 @@ const EventCard = ( props ) => {
 	const isAtBeginning = currentIndex === 0;
   const isAtEnd = currentIndex === sortedImages.length - 1;
 
+  const openDiscartModal = () => {
+    setIsDiscartModalOpen(!isDiscartModalOpen);
+  };
+
+	const closeDiscartModal = () => {
+    setIsDiscartModalOpen(false);
+  };
+
+	const openNewPublicationModal = () => {
+		setIsNewPublicationModalOpen(!isNewPublicationModalOpen);
+	};
+
+	const closeNewPublicationModal = () => {
+		setIsNewPublicationModalOpen(false);
+	};
+
+  const handleOpenToast = () => {
+    setShowToast(true);
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
+
+  const handleDeleteEvent = (e) => {
+    e.preventDefault();
+    try {
+      dispatch(deleteEvent(props.event.id));
+      if (!eventError) {
+        setToastMessage('Publicação removida');
+        setToastType('success');
+        setTimeout(() => {
+          closeDiscartModal();
+        }, 1000);
+        handleOpenToast();
+      } else {
+        setToastMessage(`Erro: ${eventError}`);
+        setToastType('failure');
+        handleOpenToast();
+      }
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  };
+
   return (
     <div className="event-card" id={props.id}>
 			<div className='event-card-header'>
-				<div className='event-avatar'>
-					<img src={ownerImage} alt={`Avatar de ${props.event.owner.username}`} />
-				</div>
-				<h2>{props.event.owner.username}</h2>
-			</div>
+        <div className='event-header'>
+          <div className='event-avatar'>
+            <img src={ownerImage} alt={`Avatar de ${props.event.owner.username}`} />
+          </div>
+          <h2>{props.event.owner.username}</h2>
+        </div>
+        {user?.id === props.event.owner.id && (
+          <div className='event-options-container'>
+            <div className='icon-container' onClick={openNewPublicationModal}>
+              <img src={editIcon} alt='Buscar' className='edit-icon' />
+            </div>
+            <div className='icon-container' onClick={openDiscartModal}>
+              <img src={trashIcon} alt='Perfil' className='trash-icon' />
+            </div>
+          </div>
+        )}
+      </div>
 
 			<div className='event-card-body'>
 				<div className='event-card-images-container'>
@@ -264,6 +338,13 @@ const EventCard = ( props ) => {
 				)}
 			</div>
 
+      <NewPublicationModal isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} initialValues={props.event} editType={'event'} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
+			<DiscartModal isModalOpen={isDiscartModalOpen} closeModal={closeDiscartModal} handleConfirm={handleDeleteEvent} />
+
+      {showToast && (
+        <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
+      )}
+
       <style>
         {`
           .event-card {
@@ -279,6 +360,12 @@ const EventCard = ( props ) => {
             display: flex;
             align-items: center;
             padding: 0 0 7px 3px;
+            justify-content: space-between;
+          }
+
+          .event-header {
+            display: flex;
+            align-items: center;
           }
             
           .event-avatar {
@@ -293,6 +380,21 @@ const EventCard = ( props ) => {
             width: 100%;
             height: 100%;
             object-fit: cover;
+          }
+
+          .event-options-container {
+            display: flex;
+            justify-content: space-between;
+          
+          }
+          
+          .edit-icon, .trash-icon {
+            height: 20px;
+            cursor: pointer;
+          }
+          
+          .edit-icon {
+            margin-right: 5px;
           }
           
           .event-card-images-container {

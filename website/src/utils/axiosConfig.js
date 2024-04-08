@@ -36,6 +36,10 @@ instance.interceptors.request.use(
       config.headers['Content-Type'] = 'multipart/form-data';
     }
 
+    if (config.url.endsWith('/events/update/') && config.method === 'put') {
+      config.headers['Content-Type'] = 'multipart/form-data';
+    }
+
     return config;
   },
   (error) => {

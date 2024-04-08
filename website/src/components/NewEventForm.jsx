@@ -6,7 +6,7 @@ import MultiSelect from './MultiSelect';
 import DateTimePicker from './DateTimePicker';
 import AddressForm from './AddressForm';
 import isEqual from 'lodash/isEqual';
-import { fetchProtectorUsers, getAddressList, createAddress, createEvent } from "../redux/actions";
+import { fetchProtectorUsers, getAddressList, createAddress, createEvent, updateEvent } from "../redux/actions";
 import { fetchImage } from '../utils/imageUtils';
 
 const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessage, handleOpenToast, handleCloseModal }) => {
@@ -17,7 +17,7 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
   const [owner, setOwner] = useState(user?.id);
   const [protector, setProtector] = useState('');
   const [description, setDescription] = useState('');
-  const [petChoices, setPetChoices] = useState([]);
+  // const [petChoices, setPetChoices] = useState([]);
   const dispatch = useDispatch();
   const protectorChoices = useSelector(state => state.userReducer.protectorUsers);
   const addressChoices = useSelector(state => state.address.addressList);
@@ -25,7 +25,9 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
   const eventFromStore = useSelector(state => state.event?.eventList.length > 0 ? state.event?.eventList[initialValues?.id] : {});
   const eventListByProtectorFromStore = useSelector(state => state.event?.eventListByProtector);
   const petListByProtector = useSelector((state) => state.pet.petListByProtector[user?.id]);
+  const petChoices = useSelector(state => state.pet.petChoices);
 
+  console.log("initialValues_eventform: ", initialValues)
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('eventFormData'));
    
@@ -128,14 +130,17 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
   }
 
   const handleAnimalsChange = (selectedAnimals) => {
+    console.log("selectedAnimals handle: ", selectedAnimals);
     if (selectedAnimals !== null && !isEqual(pets, selectedAnimals)) {
       setPets(selectedAnimals);
     }
   };
 
+  console.log("pets: ", pets);
+
   useEffect(() => {
     if (eventFromStore && !isEqual(initialValues, eventFromStore)) {
-      eventFromStore?.images.forEach(image => {
+      eventFromStore?.images?.forEach(image => {
         fetchImage(image.image, (cachedImage) => {
           setImages(prevImages => [...prevImages, cachedImage]);
         });
@@ -146,24 +151,24 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
     // eslint-disable-next-line
   }, [eventFromStore, eventListByProtectorFromStore]);
 
-  useEffect(() => {
-    let petOptions = petListByProtector?.map((pet) => {
-      return {
-        id: pet.id,
-        value: pet.name
-      };
-    });
+  // useEffect(() => {
+  //   let petOptions = petListByProtector?.map((pet) => {
+  //     return {
+  //       id: pet.id,
+  //       value: pet.name
+  //     };
+  //   });
     
-    setPetChoices(petOptions);
-    // eslint-disable-next-line
-  }, []);
+  //   setPetChoices(petOptions);
+  //   // eslint-disable-next-line
+  // }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Limpando localStorage após o envio do formulário
     // localStorage.removeItem('eventFormData');
-    console.log("date_hour_initial: ", dateHour?.date_hour_initial);
+    // console.log("date_hour_initial: ", dateHour?.date_hour_initial);
 
     if (!address?.id) {
       dispatch(createAddress(address))
@@ -174,7 +179,7 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
           const formData = new FormData();
           formData.append('date_hour_initial', dateHour.date_hour_initial);
           formData.append('date_hour_end', dateHour.date_hour_end);
-          formData.append('address', createdAddress.id); // Use the address ID
+          formData.append('address', createdAddress.id); 
           formData.append('owner', owner);
           formData.append('description', description);
       
@@ -187,18 +192,37 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
           });
           
           try {
-            dispatch(createEvent(owner, formData));
-            if (!eventError) {
-              setToastMessage('Evento criado');
-              setToastType('success');
-              setTimeout(() => {
-                handleCloseModal();
-              }, 2000);
-              handleOpenToast();
+            if (initialValues) {
+              dispatch(updateEvent(initialValues.id, formData));
+              if (!eventError) {
+                localStorage.removeItem('eventFormData');
+                setToastMessage('Evento atualizado');
+                setToastType('success');
+                setTimeout(() => {
+                  handleCloseModal();
+                }, 2000);
+                handleOpenToast();
+              } else {
+                setToastMessage(`Erro: ${eventError}`);
+                setToastType('failure');
+                handleOpenToast();
+              }
+
             } else {
-              setToastMessage(`Erro: ${eventError}`);
-              setToastType('failure');
-              handleOpenToast();
+              dispatch(createEvent(owner, formData));
+              if (!eventError) {
+                localStorage.removeItem('eventFormData');
+                setToastMessage('Evento criado');
+                setToastType('success');
+                setTimeout(() => {
+                  handleCloseModal();
+                }, 2000);
+                handleOpenToast();
+              } else {
+                setToastMessage(`Erro: ${eventError}`);
+                setToastType('failure');
+                handleOpenToast();
+              }
             }
 
           } catch(error) {
@@ -223,18 +247,38 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
       });
       
       try {
-        dispatch(createEvent(owner, formData));
-        if (!eventError) {
-          setToastMessage('Evento criado');
-          setToastType('success');
-          setTimeout(() => {
-            handleCloseModal();
-          }, 2000);
-          handleOpenToast();
+        if (initialValues) {
+          dispatch(updateEvent(initialValues.id, formData));
+          if (!eventError) {
+            localStorage.removeItem('eventFormData');
+            setToastMessage('Evento atualizado');
+            setToastType('success');
+            setTimeout(() => {
+              handleCloseModal();
+            }, 2000);
+            handleOpenToast();
+          } else {
+            setToastMessage(`Erro: ${eventError}`);
+            setToastType('failure');
+            handleOpenToast();
+          }
+
         } else {
-          setToastMessage(`Erro: ${eventError}`);
-          setToastType('failure');
-          handleOpenToast();
+          dispatch(createEvent(owner, formData));
+          if (!eventError) {
+            // Limpando localStorage após o envio do formulário
+            localStorage.removeItem('eventFormData');
+            setToastMessage('Evento criado');
+            setToastType('success');
+            setTimeout(() => {
+              handleCloseModal();
+            }, 2000);
+            handleOpenToast();
+          } else {
+            setToastMessage(`Erro: ${eventError}`);
+            setToastType('failure');
+            handleOpenToast();
+          }
         }
 
       } catch(error) {
@@ -252,10 +296,10 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
       
       <form onSubmit={handleSubmit}>
         <div className='row'>
-          <MultiSelect options={petChoices} 
-          placeholder={'Animais'} attribute={'value'} 
+          <MultiSelect options={petChoices || []} 
+          placeholder={'Animais'} attribute={'name'} 
           onChange={handleAnimalsChange}
-          initialValues={initialValues?.pets ? initialValues.pets : (pets ? pets : [])} />
+          initialValues={initialValues?.pets ? initialValues.pets.map(pet => pet.id) : (pets ? pets : [])} />
         </div>
         
         <div className="row new-event-protector">
@@ -273,7 +317,7 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
         </div>
 
         <div className='row event-date'>
-          <DateTimePicker setDateHour={setDateHour} initialValues={JSON.parse(localStorage.getItem('eventFormData')) ? JSON.parse(localStorage.getItem('eventFormData')).dateHour : null} />
+          <DateTimePicker setDateHour={setDateHour} initialValues={initialValues ? { date_hour_initial: initialValues.date_hour_initial, date_hour_end: initialValues.date_hour_end } : (JSON.parse(localStorage.getItem('eventFormData')) ? JSON.parse(localStorage.getItem('eventFormData')).dateHour : null)} />
         </div>
 
         <div className='row event-place'>

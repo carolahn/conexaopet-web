@@ -40,6 +40,7 @@ const PetCard = ({ pet }) => {
   const petError = useSelector(state => state.pet.error);
 
   useEffect(() => {
+
     const fetchImage = async (imageURL, setImage) => {
       try {
         // Verifica se a imagem já está em cache
@@ -269,7 +270,7 @@ const PetCard = ({ pet }) => {
         )}
 			</div>
 
-			<NewPublicationModal isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} initialValues={pet} isNewPublication={false} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
+			<NewPublicationModal isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} initialValues={pet} editType={'pet'} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
 			<DiscartModal isModalOpen={isDiscartModalOpen} closeModal={closeDiscartModal} handleConfirm={handleDeletePet} />
 
       {showToast && (

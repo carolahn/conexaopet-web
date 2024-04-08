@@ -11,7 +11,7 @@ export const login = (username, password) => async (dispatch) => {
   }
 };
 
-export const logout = () => (dispatch) => {
+export const authLogout = () => (dispatch) => {
   dispatch({ type: 'LOGOUT' });
 };
 
