@@ -61,9 +61,18 @@ const eventSlice = createSlice({
     deleteEventFailure(state, action) {
       state.error = action.payload;
     },
+    resetEventState(state) { 
+      return {
+        eventList: [],
+        eventListByProtector: {},
+        isLoading: false,
+        nextPage: null,
+        error: null,
+      };
+    },
   },
 });
 
-export const { setEventList, setLoading, setNextPage, setEventListByProtector, createEventFailure, updateEventSuccess, updateEventFailure, deleteEventFailure } = eventSlice.actions;
+export const { setEventList, setLoading, setNextPage, setEventListByProtector, createEventFailure, updateEventSuccess, updateEventFailure, deleteEventFailure, resetEventState } = eventSlice.actions;
 
 export default eventSlice.reducer;

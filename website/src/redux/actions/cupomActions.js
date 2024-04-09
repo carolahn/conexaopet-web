@@ -1,5 +1,5 @@
 import axios from '../../utils/axiosConfig';
-import { setCupomList, setLoading, setNextPage, createCupomSuccess, createCupomFailure, updateCupomSuccess, updateCupomFailure, deleteCupomSuccess, deleteCupomFailure, updateExpiredCuponsSuccess, updateExpiredCuponsFailure  } from '../reducers/cupomSlice';
+import { setCupomList, setLoading, setNextPage, createCupomSuccess, createCupomFailure, updateCupomSuccess, updateCupomFailure, deleteCupomSuccess, deleteCupomFailure, updateExpiredCuponsSuccess, updateExpiredCuponsFailure, setCupomListBySponsor, fetchCupomListFailure } from '../reducers/cupomSlice';
 
 export const fetchCupomList = (page = 1) => async (dispatch, getState) => {
   try {
@@ -10,18 +10,53 @@ export const fetchCupomList = (page = 1) => async (dispatch, getState) => {
     if (nextPage !== page) {
       dispatch(setLoading(true));
 
-      const response = await axios.get(`/cupons/user/?page=${page}`);
+      const response = await axios.get(`/cupons/all/?page=${page}`);
       const data = response.data;
       const currentCupomList = currentState.cupom.cupomList;
 
+      // Filtra os novos resultados para remover duplicatas
+      const newResults = data.results.filter(result => !currentCupomList.some(cupom => cupom.id === result.id));
+
       // Concatena os novos resultados com os existentes
-      const updatedCupomList = [...currentCupomList, ...data.results];
+      const updatedCupomList = [...currentCupomList, ...newResults];
 
       dispatch(setCupomList(updatedCupomList));
       dispatch(setNextPage(data.next));
     }
   } catch (error) {
     console.error('Error fetching cupom list:', error);
+    dispatch(fetchCupomListFailure(error.message));
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+export const fetchCupomListByProtector = (sponsorId, page = 1) => async (dispatch, getState) => {
+  try {
+    const currentState = getState();
+    const nextPage = currentState.cupom.nextPage;
+
+    // Verifica se a próxima página é diferente da atual
+    if (nextPage !== page) {
+      dispatch(setLoading(true));
+
+      const response = await axios.get(`/cupons/user/?page=${page}`);
+      const data = response.data;
+      const currentCupomList = currentState.cupom.cupomListBySponsor?.[sponsorId] ?? [];
+
+      // Filtra os novos resultados para remover duplicatas
+      const newResults = data.results.filter(result => !currentCupomList.some(cupom => cupom.id === result.id));
+
+      // Concatena os novos resultados com os existentes
+      const updatedCupomList = [...currentCupomList, ...newResults];
+
+      dispatch(setCupomListBySponsor({ sponsorId, cupomList: updatedCupomList }));
+      dispatch(setNextPage(data.next));
+    }
+  } catch (error) {
+    console.error('Error fetching cupom list:', error);
+    dispatch(fetchCupomListFailure(error.message));
     throw error;
   } finally {
     dispatch(setLoading(false));

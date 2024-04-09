@@ -30,6 +30,8 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
   // Recuperar valores do localStorage ao iniciar, se for criação de novo pet
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('formData'));
+    console.log("initialValues: ", initialValues)
+    console.log("localStorage: ", storedData)
 
     setWeight(initialValues? initialValues.weight : (storedData ? storedData.weight : ''));
     setName(initialValues? initialValues.name : (storedData ? storedData.name : ''));
@@ -230,6 +232,7 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
     }
   };
 
+  console.log("initialValues petform: ", initialValues)
 
   return (
     <div className='new-pet-form'>
@@ -336,14 +339,14 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
           <MultiSelect options={personalityChoices} 
             placeholder={'Personalidade'} attribute={'value'} 
             onChange={handlePersonalitiesChange} 
-            initialValues={initialValues?.personality ? initialValues.personality : (personality ? personality : [])}/>
+            initialValues={initialValues?.personality ? initialValues.personality : (JSON.parse(localStorage.getItem('formData'))?.personality ? JSON.parse(localStorage.getItem('formData'))?.personality : [])}/>
         </div>
 
         <div className="row mb-1">
           <MultiSelect options={getAlongChoices} 
             placeholder={'Convívio'} attribute={'value'} 
             onChange={handleConvivioChange}
-            initialValues={initialValues?.get_along ? initialValues.get_along : (getAlong ? getAlong : [])}/>
+            initialValues={initialValues?.get_along ? initialValues.get_along : (JSON.parse(localStorage.getItem('formData'))?.getAlong ? JSON.parse(localStorage.getItem('formData'))?.getAlong : [])}/>
         </div>
 
         <div className="row mb-1">
@@ -380,6 +383,10 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
           
           .btn-publish:hover {
             background-color: var(--color-contrast-2) !important;
+          }
+
+          .btn-publish:active {
+            transform: translateY(2px);
           }
           
           .placeholder-option {

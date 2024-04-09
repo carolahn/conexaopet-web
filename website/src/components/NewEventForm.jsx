@@ -299,7 +299,7 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
           <MultiSelect options={petChoices || []} 
           placeholder={'Animais'} attribute={'name'} 
           onChange={handleAnimalsChange}
-          initialValues={initialValues?.pets ? initialValues.pets.map(pet => pet.id) : (pets ? pets : [])} />
+          initialValues={initialValues?.pets ? initialValues.pets.map(pet => pet.id) : (JSON.parse(localStorage.getItem('eventFormData'))?.pets ? JSON.parse(localStorage.getItem('eventFormData'))?.pets : [])} />
         </div>
         
         <div className="row new-event-protector">
@@ -358,6 +358,10 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
           
           .btn-publish:hover {
             background-color: var(--color-contrast-2) !important;
+          }
+
+          .btn-publish:active {
+            transform: translateY(2px);
           }
           
           .placeholder-option {

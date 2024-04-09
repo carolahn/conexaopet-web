@@ -6,6 +6,13 @@ import closeIcon from '../assets/images/close.png';
 import { Link } from 'react-router-dom';
 import EditUserModal from './EditUserModal';
 import { logout } from '../redux/store';
+import { resetAddressState } from '../redux/reducers/addressSlice';
+import { resetCupomState } from '../redux/reducers/cupomSlice';
+import { resetEventState } from '../redux/reducers/eventSlice';
+import { resetPetState } from '../redux/reducers/petSlice';
+import { resetFavoritePetState } from '../redux/reducers/favoritePetSlice';
+import { resetFavoriteEventState } from '../redux/reducers/favoriteEventSlice';
+import { fetchEventList, fetchPetList } from '../redux/actions';
 
 if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
@@ -57,7 +64,15 @@ const UserModal = ({ isModalOpen, closeModal, user, token }) => {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(resetAddressState());
+    dispatch(resetCupomState());
+    dispatch(resetEventState());
+    dispatch(resetPetState());
+    dispatch(resetFavoritePetState());
+    dispatch(resetFavoriteEventState());
     closeModal();
+    dispatch(fetchEventList());
+    dispatch(fetchPetList());
     navigate('/');
   };
 

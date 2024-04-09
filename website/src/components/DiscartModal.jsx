@@ -80,6 +80,10 @@ const DiscartModal = ({ isModalOpen, closeModal, handleConfirm }) => {
             width: 100%;
           }
 
+          .btn-discart:active {
+            transform: translateY(2px);
+          }
+
           .btn-discatrt-confirm {
             background-color: var(--color-contrast) !important;
             border: 1px solid var(--color-contrast-2) !important;

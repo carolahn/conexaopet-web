@@ -18,7 +18,7 @@ import DiscartModal from './DiscartModal';
 import NewPublicationModal from './NewPublicationModal';
 import { imageCache } from './CupomCard';
 import { getPersonalityString, getAlongString, getLifeStage, getPetType } from '../utils/petData';
-import { deletePet } from '../redux/actions';
+import { addFavoritePet, deletePet, removeFavoritePet } from '../redux/actions';
 import Toast from './Toast';
 
 
@@ -38,6 +38,8 @@ const PetCard = ({ pet }) => {
   const dispatch = useDispatch();
   const user = useSelector(getUser);
   const petError = useSelector(state => state.pet.error);
+  const favoritePetList = useSelector((state) => state.favoritePet.favoritePetList);
+  const favoritePetError = useSelector((state) => state.favoritePet.error);
 
   useEffect(() => {
 
@@ -80,17 +82,48 @@ const PetCard = ({ pet }) => {
 
   }, [pet.owner.image, pet.images, pet]);
 
+
 	useEffect(() => {
     // Atualizar o índice do slide para 0 ao redimensionar a janela
     setCurrentIndex(0);
   }, [width]);
 
-	const handleFavoriteClick = () => {
-    setIsFavorite((prevIsFavorite) => {
-      if (!prevIsFavorite) {
+  useEffect(() => {
+    if (favoritePetList && favoritePetList.length > 0) {
+      const isPetFavorite = favoritePetList.some(favoritePet => favoritePet.id === pet.id);
+      setIsFavorite(isPetFavorite);
+      
+      if(isPetFavorite) {
         setStarIconSrc(starFilledIcon);
       } else {
         setStarIconSrc(starIcon);
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [favoritePetList])
+
+	const handleFavoriteClick = () => {
+    setIsFavorite((prevIsFavorite) => {
+      if (!prevIsFavorite) {
+        try {
+          dispatch(addFavoritePet(pet));
+          if (!favoritePetError) {
+            setStarIconSrc(starFilledIcon);
+          }
+        } catch (error) {
+          console.error('Error adding favorite pet:', error);
+        }
+
+      } else {
+        try {
+          dispatch(removeFavoritePet(pet));
+          if (!favoritePetError) {
+            setStarIconSrc(starIcon);
+          }
+        } catch (error) {
+          console.error('Error removing favorite pet:', error);
+        }
       }
       return !prevIsFavorite;
     });
@@ -219,7 +252,8 @@ const PetCard = ({ pet }) => {
 						<p className='pet-label pet-size'>{pet.size}</p>
 					</div>
 					<div className='pet-card-buttons'>
-						<div className='star-icon-container' onClick={handleFavoriteClick}>
+						<div className={`star-icon-container ${user ? '' : 'disabled'}`} onClick={handleFavoriteClick}>
+              <div className='pet-followers'>{pet.followers}</div>
 							<img src={starIconSrc} alt='Favorito' className='star-icon' />
 						</div>
 						<div className='more-icon-container' onClick={handleMoreInfoClick}>
@@ -351,6 +385,26 @@ const PetCard = ({ pet }) => {
             width: 20%;
             display: flex;
             justify-content: end;
+          }
+
+          .pet-followers {
+            margin-right: 3px;
+            font-size: 1.2rem;
+          }
+
+          .star-icon-container {
+            display: flex;
+            align-items: center;
+            height: fit-content;
+            border: 0.4px solid #e1e7e8;
+            border-radius: 15%;
+            padding: 0 2px;
+            cursor: pointer;
+          }
+
+          .star-icon-container.disabled {
+            pointer-events: none;
+            opacity: 0.5;
           }
           
           .star-icon, .more-icon {

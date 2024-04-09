@@ -12,12 +12,14 @@ const MultiSelect = ({ options, placeholder, attribute, onChange, initialValues=
     // Chama a função onChange passando os valores selecionados
     // Adicionando verificação para evitar chamadas desnecessárias
     if (!isEqual(initialValues, selectedOptions) && selectedOptions.length > 0) {
+      console.log("selectedOptions: ", selectedOptions)
       onChange(selectedOptions);
     }
   }, [selectedOptions, onChange]);
 
   useEffect(() => {
     if (initialValues && initialValues.length > 0 && !isEqual(initialValues, selectedOptions) ) {
+      console.log('initalValues: ', initialValues)
       setSelectedOptions(initialValues);
     }
   }, []);
@@ -60,6 +62,8 @@ const MultiSelect = ({ options, placeholder, attribute, onChange, initialValues=
   useEffect(() => {
     onChange(selectedOptions);
   }, [selectedOptions, onChange]);
+
+  console.log(initialValues)
 
   return (
     <div style={containerStyles}>

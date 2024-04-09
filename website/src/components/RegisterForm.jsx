@@ -308,6 +308,10 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
           .btn-publish:hover {
             background-color: var(--color-contrast-2) !important;
           }
+
+          .btn-publish:active {
+            transform: translateY(2px);
+          }
           
           .label-cidade {
             display: flex;

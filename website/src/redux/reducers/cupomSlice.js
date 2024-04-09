@@ -4,6 +4,7 @@ const cupomSlice = createSlice({
   name: 'cupom',
   initialState: {
     cupomList: [],
+    cupomListBySponsor: {},
     isLoading: false,
     nextPage: null,
     expiredInactiveCount: 0,
@@ -21,6 +22,13 @@ const cupomSlice = createSlice({
     },
     setNextPage(state, action) {
       state.nextPage = action.payload;
+    },
+    setCupomListBySponsor(state, action) {
+      const { sponsorId, cupomList } = action.payload;
+      state.eventListByProtector[sponsorId] = cupomList;
+    },
+    fetchCupomListFailure(state, action) {
+      state.error = action.payload;
     },
     createCupomSuccess(state, action) {
       state.error = null;
@@ -58,9 +66,19 @@ const cupomSlice = createSlice({
     updateExpiredCuponsFailure(state, action) {
       state.error = action.payload;
     },
+    resetCupomState(state) { 
+      return {
+        cupomList: [],
+        isLoading: false,
+        nextPage: null,
+        expiredInactiveCount: 0,
+        expiredActiveCount: 0,
+        error: null,
+      };
+    },
   },
 });
 
-export const { setCupomList, setLoading, setNextPage, createCupomSuccess, createCupomFailure, updateCupomSuccess, updateCupomFailure, deleteCupomSuccess, deleteCupomFailure, updateExpiredCuponsSuccess, updateExpiredCuponsFailure } = cupomSlice.actions;
+export const { setCupomList, setLoading, setNextPage, fetchCupomListFailure, createCupomSuccess, createCupomFailure, updateCupomSuccess, updateCupomFailure, deleteCupomSuccess, deleteCupomFailure, updateExpiredCuponsSuccess, updateExpiredCuponsFailure, resetCupomState, setCupomListBySponsor } = cupomSlice.actions;
 
 export default cupomSlice.reducer;

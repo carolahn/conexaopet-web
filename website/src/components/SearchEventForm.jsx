@@ -132,6 +132,10 @@ const SearchEventForm = () => {
             background-color: var(--color-contrast-2) !important;
           }
           
+          .btn-publish:active {
+            transform: translateY(2px);
+          }
+          
           .placeholder-option {
             color: #6c757d;
           }

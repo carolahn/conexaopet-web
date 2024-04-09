@@ -10,6 +10,8 @@ import Toast from '../components/Toast';
 import { fetchPetList } from '../redux/actions/petActions';
 import { fetchEventList } from '../redux/actions/eventActions';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { fetchCupomList, fetchFavoritePetList } from '../redux/actions';
+import { fetchFavoriteEventList } from '../redux/actions/favoriteEventActions';
 
 
 const Home = ( props ) => {
@@ -28,6 +30,12 @@ const Home = ( props ) => {
   useEffect(() => {
     dispatch(fetchPetList());
     dispatch(fetchEventList());
+    if (props.token !== null) {
+      dispatch(fetchFavoritePetList());
+      dispatch(fetchFavoriteEventList());
+      dispatch(fetchCupomList());
+    }
+    // eslint-disable-next-line
   }, [dispatch]);
 
   useEffect(() => {

@@ -42,8 +42,8 @@ export const fetchEventListByProtector = (protectorId, page = 1) => async (dispa
 
       const response = await axios.get(`/events/protector/${protectorId}/?page=${page}`);
       const data = response.data;
-
       const currentEventList = currentState.event.eventListByProtector?.[protectorId] ?? [];
+      
       // Filtra os novos resultados para remover duplicatas
       const newResults = data.results.filter(result => !currentEventList.some(event => event.id === result.id));
 

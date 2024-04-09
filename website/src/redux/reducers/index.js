@@ -5,6 +5,8 @@ import cupomSlice from './cupomSlice';
 import petSlice from './petSlice';
 import eventSlice from './eventSlice';
 import addressSlice, { resetAddressState } from './addressSlice';
+import favoritePetSlice from './favoritePetSlice';
+import favoriteEventSlice from './favoriteEventSlice';
 
 const rootReducer = combineReducers({
   authReducer,
@@ -13,6 +15,8 @@ const rootReducer = combineReducers({
   cupom: cupomSlice,
   pet: petSlice, 
   event: eventSlice,
+  favoritePet: favoritePetSlice,
+  favoriteEvent: favoriteEventSlice,
 });
 
 export default rootReducer;

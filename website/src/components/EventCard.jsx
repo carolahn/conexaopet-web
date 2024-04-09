@@ -22,6 +22,7 @@ import Toast from './Toast';
 import DiscartModal from './DiscartModal';
 import NewPublicationModal from './NewPublicationModal';
 import { deleteEvent } from '../redux/actions';
+import { addFavoriteEvent, removeFavoriteEvent } from '../redux/actions/favoriteEventActions';
 
 
 const EventCard = ( props ) => {
@@ -42,6 +43,8 @@ const EventCard = ( props ) => {
   const dispatch = useDispatch();
   const user = useSelector(getUser);
   const eventError = useSelector(state => state.event.error);
+  const favoriteEventList = useSelector((state) => state.favoriteEvent.favoriteEventList);
+  const favoriteEventError = useSelector((state) => state.favoriteEvent.error);
 
   
   useEffect(() => {
@@ -106,9 +109,50 @@ const EventCard = ( props ) => {
     // eslint-disable-next-line
 	}, [currentIndex]);
 
+  useEffect(() => {
+    if (favoriteEventList && favoriteEventList.length > 0) {
+      const isEventFavorite = favoriteEventList.some(favoriteEvent => favoriteEvent.id === props.event.id);
+      setIsFavorite(isEventFavorite);
+      
+      if(isEventFavorite) {
+        setStarIconSrc(starFilledIcon);
+      } else {
+        setStarIconSrc(starIcon);
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [favoriteEventList])
+
+  // const handleFavoriteClick = () => {
+  //   setIsFavorite((prevIsFavorite) => {
+  //     setStarIconSrc(prevIsFavorite ? starIcon : starFilledIcon);
+  //     return !prevIsFavorite;
+  //   });
+  // };
+
   const handleFavoriteClick = () => {
     setIsFavorite((prevIsFavorite) => {
-      setStarIconSrc(prevIsFavorite ? starIcon : starFilledIcon);
+      if (!prevIsFavorite) {
+        try {
+          dispatch(addFavoriteEvent(props.event));
+          if (!favoriteEventError) {
+            setStarIconSrc(starFilledIcon);
+          }
+        } catch (error) {
+          console.error('Error adding favorite event:', error);
+        }
+
+      } else {
+        try {
+          dispatch(removeFavoriteEvent(props.event));
+          if (!favoriteEventError) {
+            setStarIconSrc(starIcon);
+          }
+        } catch (error) {
+          console.error('Error removing favorite event:', error);
+        }
+      }
       return !prevIsFavorite;
     });
   };
@@ -244,7 +288,8 @@ const EventCard = ( props ) => {
 							<p className='event-label'>{props.event.address.name}</p>
 						</div>
 						<div className='event-card-buttons'>
-							<div className='star-icon-container' onClick={handleFavoriteClick}>
+							<div className={`star-icon-container ${user ? '' : 'disabled'}`} onClick={handleFavoriteClick}>
+                <div className='event-followers'>{props.event.followers}</div>
 								<img src={starIconSrc} alt='Favorito' className='star-icon' />
 							</div>
 							<div className='more-icon-container' onClick={handleMoreInfoClick}>
@@ -413,6 +458,26 @@ const EventCard = ( props ) => {
           
           .event-card-summary {
             width: 80%;
+          }
+
+          .event-followers {
+            margin-right: 3px;
+            font-size: 1.2rem;
+          }
+
+          .star-icon-container {
+            display: flex;
+            align-items: center;
+            height: fit-content;
+            border: 0.4px solid #e1e7e8;
+            border-radius: 15%;
+            padding: 0 2px;
+            cursor: pointer;
+          }
+
+          .star-icon-container.disabled {
+            pointer-events: none;
+            opacity: 0.5;
           }
           
           .event-card-buttons {

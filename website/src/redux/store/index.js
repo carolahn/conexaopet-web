@@ -34,7 +34,7 @@ const logout = () => {
     try {
       // Limpa os dados persistidos
       await persistor.purge();
-      // Após limpar os dados, despacha a ação de logout
+      
       dispatch({ type: 'LOGOUT' });
     } catch (error) {
       console.error('Error logging out:', error);

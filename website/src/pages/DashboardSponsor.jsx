@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import InfiniteScroll from '../components/InfiniteScroll';
 import CupomCardList from '../components/CupomCardList';
 import SponsorCardDashboard from '../components/SponsorCardDashboard';
-import { fetchCupomList } from '../redux/actions/cupomActions';
+import { fetchCupomListByProtector } from '../redux/actions/cupomActions';
 import Toast from '../components/Toast';
 
 
@@ -17,7 +17,7 @@ const DashboardSponsor = ( props ) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const cupomList = useSelector((state) => state.cupom.cupomList);
+  const cupomListByProtector = useSelector((state) => state.cupom.cupomListByProtector[props.user?.id]);
   const nextPage = useSelector((state) => state.cupom.nextPage);
   const isLoading = useSelector((state) => state.cupom.isLoading);
 
@@ -32,13 +32,14 @@ const DashboardSponsor = ( props ) => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchCupomList());
+    dispatch(fetchCupomListByProtector(props.user.id));
+    // eslint-disable-next-line
   }, [dispatch]);
 
   const loadMoreItems = () => {
     if (nextPage) {
       const pageNumber = nextPage.split('page=')[1];
-      dispatch(fetchCupomList(pageNumber));
+      dispatch(fetchCupomListByProtector(props.user.id, pageNumber));
     }
   };
 
@@ -58,11 +59,11 @@ const DashboardSponsor = ( props ) => {
         <SponsorCardDashboard user={props.user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
 
         <InfiniteScroll
-          itemList={cupomList || []}
+          itemList={cupomListByProtector || []}
           loadMore={loadMoreItems}
           isLoading={isLoading}
         >
-          <CupomCardList cupomList={cupomList} />
+          <CupomCardList cupomList={cupomListByProtector} />
         </InfiniteScroll>
       </div>
 

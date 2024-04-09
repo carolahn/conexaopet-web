@@ -101,6 +101,10 @@ const Login = () => {
             background-color: var(--color-contrast-2) !important;
           }
 
+          .btn-publish:active {
+            transform: translateY(2px);
+          }
+
           @media (max-width: 900px) {
             .row .col-form-label {
               width: 30%;
