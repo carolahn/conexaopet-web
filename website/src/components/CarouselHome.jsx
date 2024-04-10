@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { formatarData } from '../utils/formatarData';
 import { imageCache } from './CupomCard';
@@ -11,6 +12,7 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
 	const [isAtEnd, setIsAtEnd] = useState(false);
   const [width, height] = useWindowSize(events?.length);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -86,13 +88,18 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
 
   const isAtBeginning = currentIndex === 0;
 
+  const handleEventClick = (eventId) => {
+    navigate(`/event?eventId=${eventId}`);
+  };
+  
+
   return (
     <>
     	{width >= 900 ? (
 				<div className="carousel" style={{ width: '900px' }}>
 					<div className="carousel-content" style={{ transform: `translateX(-${currentIndex * height * 0.22}px)` }}>
 						{eventList?.map((event, index) => (
-							<div key={index} className="carousel-item" style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
+							<div key={index} className="carousel-item" onClick={() => handleEventClick(event.id)} style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
 								<img src={event.eventImages[0]} alt={`event ${index + 1}`} style={{ height: '100%', objectFit: 'cover', maxWidth: `${height * 0.2}px`, display: 'block' }} />
 								<p>{formatarData(event.date_hour_initial)}</p>
 							</div>
@@ -106,9 +113,9 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
 				<div className="carousel" style={{ width: '100%' }}>
 					<div className="carousel-content" style={{ transform: `translateX(-${currentIndex * height * 0.22}px)` }}>
 						{eventList?.map((event, index) => (
-							<div key={index} className="carousel-item" style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
+							<div key={index} className="carousel-item" onClick={() => handleEventClick(event.id)} style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
 								<img src={event.eventImages[0]} alt={`event ${index + 1}`} style={{ height: '100%', objectFit: 'cover', maxWidth: `${height * 0.2}px`, display: 'block' }} />
-								<p>{formatarData(event.date_hour_inital)}</p>
+								<p>{formatarData(event.date_hour_initial)}</p>
 							</div>
 						))}
 					</div>
@@ -132,9 +139,7 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
           }
           
           .carousel-item {
-            /* flex: 0 0 100%; */
-            /* width: 250px;
-            margin-right: 50px; */
+            cursor: pointer;
           }
           
           .active {
@@ -150,8 +155,6 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
             font-size: 24px;
             color: white;
             cursor: pointer;
-            /* height: calc(100% - 1rem); */
-            /* width: 50%; */
             height: 100%;
             display: flex;
             align-items: center;

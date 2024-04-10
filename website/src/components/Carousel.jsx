@@ -1,29 +1,76 @@
 import React, { useEffect, useState } from 'react';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { formatarData } from '../utils/formatarData';
+import { imageCache } from './CupomCard';
 
-const Carousel = ({ events, loadCount, loadMoreItems, isLoading }) => {
+const Carousel = ({ events, loadMoreItems, isLoading }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 	const [lastClick, setLastClick] = useState();
 	const [isAtEnd, setIsAtEnd] = useState(false);
+  const [eventList, setEventList] = useState([]);
   const [width, height] = useWindowSize(events?.length);
 
+
+  useEffect(() => {
+    const fetchImage = async (imageURL) => {
+      try {
+        // Verifica se a imagem já está em cache
+        if (imageCache[imageURL]) {
+          return imageCache[imageURL];
+        }
+
+        const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
+        const pathAfterMedia = imageURL.substring(imageURL.indexOf('media/'));
+        const url = apiUrl + pathAfterMedia;
+
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch image from ${url}`);
+        }
+        const blob = await response.blob();
+        const file = new File([blob], imageURL.substring(imageURL.lastIndexOf('/') + 1));
+
+        // Salva a imagem no cache
+        imageCache[imageURL] = URL.createObjectURL(file);
+        return imageCache[imageURL];
+      } catch (error) {
+        console.error(`Error fetching image from ${imageURL}:`, error);
+        return null;
+      }
+    };
+
+    const fetchImages = async () => {
+      const newEventList = await Promise.all(
+        events.map(async (event) => {
+          const eventImages = await Promise.all(
+            event.images.map(async (item) => await fetchImage(item.image))
+          );
+          return { ...event, eventImages };
+        })
+      );
+      setEventList(newEventList);
+    };
+    if (events && events.length > 0) {
+      fetchImages();
+
+    }
+  }, [events]);
 
 	useEffect(() => {
 		if (width >= 900) {
 			const eventsShown = Math.floor(900 / (height * 0.22));
-			const numCanClick = events?.length - eventsShown;
+			const numCanClick = eventList?.length - eventsShown;
 			setLastClick(numCanClick);
 
 		} else {
 			const eventsShown = Math.floor(width / (height * 0.22));
-			const numCanClick = events?.length - eventsShown;
+			const numCanClick = eventList?.length - eventsShown;
 			setLastClick(numCanClick);
 		}
 	}, [currentIndex]);
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % events?.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % eventList?.length);
 	
 		if (currentIndex === 0 || currentIndex === lastClick - 1) {
 			loadMoreItems();
@@ -31,7 +78,7 @@ const Carousel = ({ events, loadCount, loadMoreItems, isLoading }) => {
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + events?.length) % events?.length);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + eventList?.length) % eventList?.length);
 		setIsAtEnd(false);
   };
 
@@ -49,14 +96,14 @@ const Carousel = ({ events, loadCount, loadMoreItems, isLoading }) => {
     	{width >= 900 ? (
 				<div className="carousel" style={{ width: '900px' }}>
 					<div className="carousel-content" style={{ transform: `translateX(-${currentIndex * height * 0.22}px)` }}>
-						{events?.map((event, index) => (
-							<div key={index} className="carousel-item" style={{ height: `${height * 0.2}px`, marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
+						{eventList?.map((event, index) => (
+							<div key={index} className="carousel-item" style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
 								<img 
-									src={event.imagens[0]} alt={`event ${index + 1}`} 
-									style={{ height: '100%', objectFit: 'cover' }} 
+									src={event.eventImages[0]} alt={`event ${index + 1}`} 
+									style={{ height: '100%', objectFit: 'cover', maxWidth: `${height * 0.2}px`, display: 'block' }} 
 									onClick={() => scrollToEvent(`event-${event.id}`)}
 								/>
-								<p>{formatarData(event.dataHoraInicio)}</p>
+								<p>{formatarData(event.date_hour_initial)}</p>
 							</div>
 						))}
 					</div>
@@ -67,14 +114,14 @@ const Carousel = ({ events, loadCount, loadMoreItems, isLoading }) => {
 
 				<div className="carousel" style={{ width: '100%' }}>
 					<div className="carousel-content" style={{ transform: `translateX(-${currentIndex * height * 0.22}px)` }}>
-						{events?.map((event, index) => (
-							<div key={index} className="carousel-item" style={{ height: `${height * 0.2}px`, marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
+						{eventList?.map((event, index) => (
+							<div key={index} className="carousel-item" style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
 								<img 
-									src={event.imagens[0]} alt={`event ${index + 1}`} 
-									style={{ height: '100%', objectFit: 'cover' }} 
+									src={event.eventImages[0]} alt={`event ${index + 1}`} 
+									style={{ height: '100%', objectFit: 'cover', maxWidth: `${height * 0.2}px`, display: 'block' }}
 									onClick={() => scrollToEvent(`event-${event.id}`)}
 								/>
-								<p>{formatarData(event.dataHoraInicio)}</p>
+								<p>{formatarData(event.date_hour_initial)}</p>
 							</div>
 						))}
 					</div>
@@ -89,6 +136,7 @@ const Carousel = ({ events, loadCount, loadMoreItems, isLoading }) => {
             position: relative;
             width: 100%;
             overflow: hidden;
+            margin: 0 auto;
           }
           
           .carousel-content {
@@ -97,9 +145,7 @@ const Carousel = ({ events, loadCount, loadMoreItems, isLoading }) => {
           }
           
           .carousel-item {
-            /* flex: 0 0 100%; */
-            /* width: 250px;
-            margin-right: 50px; */
+            cursor: pointer;
           }
           
           .active {

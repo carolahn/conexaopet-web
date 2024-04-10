@@ -4,8 +4,6 @@ import CarouselHome from '../components/CarouselHome';
 import Header from '../components/Header';
 import PetCardList from '../components/PetCardList';
 import InfiniteScroll from '../components/InfiniteScroll';
-import mockPetCardData from '../components/mockPetCardData';
-import mockEventCardData from '../components/mockEventCardData';
 import Toast from '../components/Toast';
 import { fetchPetList } from '../redux/actions/petActions';
 import { fetchEventList } from '../redux/actions/eventActions';

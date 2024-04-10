@@ -1,34 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import Carousel from '../components/Carousel';
 import mockEventCardData from '../components/mockEventCardData';
 import Header from '../components/Header';
 import InfiniteScrollEvent from '../components/InfiniteScrollEvent';
 import EventCardList from '../components/EventCardList';
+import { fetchEventList } from '../redux/actions';
 
 const Event = () => {
-	const [eventList, setEventList] = useState([]);
+	// const [eventList, setEventList] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
+  const [targetEventId, setTargetEventId] = useState('');
+  const dispatch = useDispatch();
+  const location = useLocation();
 	const events = mockEventCardData;
 	const loadCount = 6;
+  const eventList = useSelector((state) => state.event.eventList);
+  const eventNextPage = useSelector((state) => state.event.nextPage);
+  const eventIsLoading = useSelector((state) => state.event.isLoading);
 
   useEffect(() => {
-    // Carrega alguns itens iniciais ao montar o componente
-    loadMoreItems();
-  }, []);
+    const queryParams = new URLSearchParams(location.search);
+    const eventId = queryParams.get('eventId');
+    console.log("eventId: ", eventId)
 
-	const loadMoreItems = () => {
-    if (!isLoading) {
-      setIsLoading(true);
+    if (eventId) {
+      setTargetEventId(eventId);
+    }
+  }, [location.search]);
 
-      // Simulação de uma requisição assíncrona (pode ser substituído por uma chamada de API real)
-      setTimeout(() => {
-        setEventList((prevItems) => {
-          const nextItems = events.slice(prevItems.length, prevItems.length + loadCount);
-          return [...prevItems, ...nextItems];
-        });
-      
-        setIsLoading(false);
-      }, 1000); // Aguarda 1 segundo para simular o carregamento assíncrono
+  const loadMoreEvents = () => {
+    if (eventNextPage) {
+      const pageNumber = eventNextPage.split('page=')[1];
+      dispatch(fetchEventList(pageNumber));
     }
   };
 
@@ -36,11 +41,9 @@ const Event = () => {
     <div className='event-container'>
 			<div className='event-body'>
 				<Header/>
-				<Carousel events={eventList} loadCount={loadCount} loadMoreItems={loadMoreItems} isLoading={isLoading} />
-				<InfiniteScrollEvent itemList={eventList} loadCount={loadCount} loadMoreItems={loadMoreItems} isLoading={isLoading} >
-					{({ itemList, isLoading }) => (
-						<EventCardList eventList={itemList} />
-					)}
+				<Carousel events={eventList || []} loadMoreItems={loadMoreEvents} isLoading={eventIsLoading} />
+				<InfiniteScrollEvent itemList={eventList || []} loadMore={loadMoreEvents} isLoading={eventIsLoading} >
+          <EventCardList eventList={eventList || []} targetId={targetEventId} setTargetId={setTargetEventId} />
 				</InfiniteScrollEvent>
 
 			</div>

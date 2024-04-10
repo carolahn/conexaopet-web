@@ -1,29 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const InfiniteScrollEvent = ({ children, itemList, loadCount, loadMoreItems, isLoading }) => {
+const InfiniteScrollEvent = ({ children, loadMore, isLoading }) => {
+  const [isFetching, setIsFetching] = useState(false);
 
   const handleScroll = () => {
-    const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
-    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-    const documentHeight = document.documentElement.scrollHeight;
-
-    if (!isLoading && scrollY + windowHeight >= documentHeight - 200) {
-      loadMoreItems();
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 20 && !isFetching && !isLoading) {
+      setIsFetching(true);
     }
   };
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [isLoading, itemList]);
+    return () => window.removeEventListener('scroll', handleScroll);
+    // eslint-disable-next-line
+  }, [isFetching, isLoading]);
 
-  return (
-    <div>
-      {children({ itemList: itemList })}
-    </div>
-  );
+  useEffect(() => {
+    if (isFetching) {
+      loadMore();
+      setIsFetching(false);
+    }
+  }, [isFetching, loadMore]);
+
+  return <>{children}</>;
 };
 
 export default InfiniteScrollEvent;
