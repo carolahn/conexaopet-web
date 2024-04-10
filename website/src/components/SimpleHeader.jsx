@@ -10,9 +10,7 @@ const SimpleHeader = ({ title, action = 'return', onClose = null }) => {
         <div className='simple-header-title'>
           <div className='return-icon-container' >
             {action === 'return' && (
-              <Link to="/">
-                  <img src={returnIcon} alt='Voltar' className='return-icon' />
-              </Link>
+              <img src={returnIcon} alt='Voltar' className='return-icon' onClick={() => window.history.back()} />
             )}
 
             {action === 'close' && (

@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { mockTypeData, mockGenderData, mockAgeData, mockSizeData, mockBreedData, mockProtectorData, mockPersonalityData, mockGetAlong } from './mockFormData';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import MultiSelect from "./MultiSelect";
+import { fetchProtectorUsers, searchPets } from "../redux/actions";
+import { getAlongChoices, personalityChoices, petBreedChoices, petGenderChoices, petSizeChoices } from "../utils/petData";
+import { lifeStageChoices } from "../utils/petData";
+import { petTypeChoices } from "../utils/petData";
 
-const SearchPetForm = () => {
-  const [selectedSize, setSelectedSize] = useState('');
+const SearchPetForm = ({ closeModal = null }) => {
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [size, setSize] = useState('');
@@ -12,154 +16,200 @@ const SearchPetForm = () => {
   const [gender, setGender] = useState('');
   const [breed, setBreed] = useState('');
   const [protector, setProtector] = useState('');
-  const [personalities, setPersonalities] = useState([]);
-  const [convivio, setConvivio] = useState([]);
+  const [personality, setPersonality] = useState([]);
+  const [getAlong, setGetAlong] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const protectorChoices = useSelector(state => state.userReducer.protectorUsers);
+  const searchPetsError = useSelector(state => state.searchPets.error);
 
-  const handlePersonalitiesChange = (selectedPersonalities) => {
-    setPersonalities(selectedPersonalities);
+  useEffect(() => {
+    dispatch(fetchProtectorUsers());
+  }, [dispatch]);
+
+  const handlePersonalityChange = (selectedPersonality) => {
+    setPersonality(selectedPersonality);
   };
 
-  const handleConvivioChange = (selectedConvivio) => {
-    setConvivio(selectedConvivio);
+  const handleGetAlongChange = (selectedGetAlong) => {
+    setGetAlong(selectedGetAlong);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = {
-      nome: name,
-      tipo: type,
-      genero: gender,
-      idade: age,
-      porte: size,
-      raca: breed,
-      protetor: protector,
-      personalidades: personalities,
-      convivio: convivio,
+      name: name,
+      type: type,
+      gender: gender,
+      age: age,
+      size: size,
+      breed: breed,
+      owner: protector,
+      personality: personality,
+      get_along: getAlong,
+      city: city,
     };
 
     const jsonData = JSON.stringify(formData);
     console.log(jsonData);
+
+    const searchParams = Object.entries(formData)
+    .filter(([key, value]) => value !== null && value !== '' && value !== undefined)
+    .reduce((acc, [key, value]) => {
+      
+      let paramName = key;
+      let paramValue = value;
+      if (key === 'personality') {
+        if (value.length > 0) {
+          paramName = 'personality';
+          paramValue = value.join(',');
+        } else {
+          return acc; // Excluir o campo personality
+        }
+      } else if (key === 'get_along') {
+        if (value.length > 0) {
+          paramName = 'get_along';
+          paramValue = value.join(',');
+        } else {
+          return acc; // Excluir o campo get_along
+        }
+      }
+      return { ...acc, [paramName]: paramValue };
+    }, {});
+   
+    try {
+      await dispatch(searchPets(searchParams))
+      if (!searchPetsError) {
+        navigate('/search/pet');
+        closeModal();
+      }
+
+    } catch (error) {
+      console.error('Error searching pets:', error);
+    }
   };
 
 
   return (
-    <div className='search-pet-form'>
-      <form onSubmit={handleSubmit}>
-        <div className="row">
-          <label htmlFor="petType" className="col col-form-label">Tipo</label>
-          <div className="col">
-            <select className="form-select" placeholder="Selecione" id="petType" name="petType" aria-label="Selecione o tipo de animal" value={type} onChange={(e) => setType(e.target.value)}>
-              <option value=""></option>
-              {mockTypeData.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.tipo}
-                </option>
-              ))}
-            </select>
+    <>
+      <div className='search-pet-form'>
+        <form onSubmit={handleSubmit}>
+          <div className="row">
+            <label htmlFor="petType" className="col col-form-label">Tipo</label>
+            <div className="col">
+              <select className="form-select" placeholder="Selecione" id="petType" name="petType" aria-label="Selecione o tipo de animal" value={type} onChange={(e) => setType(e.target.value)}>
+                <option value=""></option>
+                {petTypeChoices.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.value}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div className="row">
-          <label htmlFor="petName" className="col col-form-label">Nome</label>
-          <div className="col">
-            <input type="text" className="form-control" id="petName" value={name} onChange={(e) => setName(e.target.value)} />
+          <div className="row">
+            <label htmlFor="petName" className="col col-form-label">Nome</label>
+            <div className="col">
+              <input type="text" className="form-control" id="petName" value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
           </div>
-        </div>
 
-        <div className="row">
-          <label htmlFor="petCity" className="col col-form-label">Cidade</label>
-          <div className="col">
-            <input type="text" className="form-control" id="petCity" value={city} onChange={(e) => setCity(e.target.value)} />
+          <div className="row">
+            <label htmlFor="petCity" className="col col-form-label">Cidade</label>
+            <div className="col">
+              <input type="text" className="form-control" id="petCity" value={city} onChange={(e) => setCity(e.target.value)} />
+            </div>
           </div>
-        </div>
 
-        <div className="row">
-          <label htmlFor="petGender" className="col col-form-label">Sexo</label>
-          <div className="col">
-            <select className="form-select" id="petGender" name="petGender" aria-label="Selecione o sexo do animal" value={gender} onChange={(e) => setGender(e.target.value)}>
-              <option value=""></option>
-              {mockGenderData.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.gender}
-                </option>
-              ))}
-            </select>
+          <div className="row">
+            <label htmlFor="petGender" className="col col-form-label">Sexo</label>
+            <div className="col">
+              <select className="form-select" id="petGender" name="petGender" aria-label="Selecione o sexo do animal" value={gender} onChange={(e) => setGender(e.target.value)}>
+                <option value=""></option>
+                {petGenderChoices.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.value}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div className="row">
-          <label htmlFor="petAge" className="col col-form-label">Idade</label>
-          <div className="col">
-            <select className="form-select" id="petAge" name="petAge" aria-label="Selecione a idade do animal" value={age} onChange={(e) => setAge(e.target.value)}>
-              <option value=""></option>
-              {mockAgeData.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.idade}
-                </option>
-              ))}
-            </select>
+          <div className="row">
+            <label htmlFor="petAge" className="col col-form-label">Idade</label>
+            <div className="col">
+              <select className="form-select" id="petAge" name="petAge" aria-label="Selecione a idade do animal" value={age} onChange={(e) => setAge(e.target.value)}>
+                <option value=""></option>
+                {lifeStageChoices.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.value}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div className="row">
-          <label htmlFor="petSize" className="col col-form-label">Porte</label>
-          <div className="col">
-          <select className="form-select" id="petSize" name="petSize" aria-label="Selecione o porte do animal" value={size} onChange={(e) => setSize(e.target.value)}>
-              <option value=""></option>
-              {mockSizeData.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.porte}
-                </option>
-              ))}
-            </select>
+          <div className="row">
+            <label htmlFor="petSize" className="col col-form-label">Porte</label>
+            <div className="col">
+            <select className="form-select" id="petSize" name="petSize" aria-label="Selecione o porte do animal" value={size} onChange={(e) => setSize(e.target.value)}>
+                <option value=""></option>
+                {petSizeChoices.map((item) => (
+                  <option key={item.id} value={item.value}>
+                    {item.value}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div className="row">
-          <label htmlFor="petBreed" className="col col-form-label">Raça</label>
-          <div className="col">
-            <select className="form-select" id="petBreed" name="petBreed" aria-label="Selecione a raça do animal" value={breed} onChange={(e) => setBreed(e.target.value)}>
-              <option value=""></option>
-              {mockBreedData.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.raca}
-                </option>
-              ))}
-            </select>
+          <div className="row">
+            <label htmlFor="petBreed" className="col col-form-label">Raça</label>
+            <div className="col">
+              <select className="form-select" id="petBreed" name="petBreed" aria-label="Selecione a raça do animal" value={breed} onChange={(e) => setBreed(e.target.value)}>
+                <option value=""></option>
+                {petBreedChoices.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.value}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div className="row">
-          <label htmlFor="petProtector" className="col col-form-label">Protetor</label>
-          <div className="col">
-            <select className="form-select" id="petProtector" name="petProtector" aria-label="Selecione o protetor" value={protector} onChange={(e) => setProtector(e.target.value)}>
-              <option value=""></option>
-              {mockProtectorData.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.nickname}
-                </option>
-              ))}
-            </select>
+          <div className="row">
+            <label htmlFor="petProtector" className="col col-form-label">Protetor</label>
+            <div className="col">
+              <select className="form-select" id="petProtector" name="petProtector" aria-label="Selecione o protetor" value={protector} onChange={(e) => setProtector(e.target.value)}>
+                <option value=""></option>
+                {protectorChoices.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.username}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div className="row">
-          <MultiSelect options={mockPersonalityData} 
-            placeholder={'Personalidade'} attribute={'personalidade'} 
-            onChange={handlePersonalitiesChange} 
-            initialValues={null}/>
-        </div>
+          <div className="row">
+            <MultiSelect options={personalityChoices} 
+              placeholder={'Personalidade'} attribute={'value'} 
+              onChange={handlePersonalityChange} 
+              initialValues={null}/>
+          </div>
 
-        <div className="row">
-          <MultiSelect options={mockGetAlong} 
-            placeholder={'Convívio'} attribute={'convivio'} 
-            onChange={handleConvivioChange}
-            initialValues={null}/>
-        </div>
+          <div className="row">
+            <MultiSelect options={getAlongChoices} 
+              placeholder={'Convívio'} attribute={'value'} 
+              onChange={handleGetAlongChange}
+              initialValues={null}/>
+          </div>
 
-        <button type="submit" className="btn w-100 btn-publish">Buscar</button>
-      </form>
+          <button type="submit" className="btn w-100 btn-publish">Buscar</button>
+        </form>
+      </div>
 
       <style>
         {`
@@ -296,8 +346,7 @@ const SearchPetForm = () => {
     
         `}
       </style>
-
-    </div>
+    </>
   );
 };
 

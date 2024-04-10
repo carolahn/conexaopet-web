@@ -13,9 +13,9 @@ const Toast = ({ message, type, onClose }) => {
   }, [onClose]);
 
   return isVisible ? (
-    <div className={`toast toast-body toast-${type}`} style={type === 'success' ? { backgroundColor: '#28a745'} : { backgroundColor: '#dc3545'} } role="alert" aria-live="assertive" aria-atomic="true">
+    <div className={`toast toast-body toast-${type}`} style={type === 'success' ? { backgroundColor: '#28a745'} : (type === 'failure' ? { backgroundColor: '#dc3545'} : {backgroundColor: '#4169E1'}) } role="alert" aria-live="assertive" aria-atomic="true">
       <button type="button" className="btn-close" onClick={() => setIsVisible(false)}>X</button>
-      <strong className={`me-auto text`}>{type === 'success' ? 'Sucesso: ' : 'Erro: '}</strong>
+      <strong className={`me-auto text`}>{type === 'success' ? 'Sucesso: ' : (type === 'failure' ? 'Erro: ' : 'Info: ')}</strong>
 
       {message}
 

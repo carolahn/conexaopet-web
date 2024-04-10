@@ -88,7 +88,7 @@ const DashboardMember = ( props ) => {
     <>
       {loading && <LoadingSpinner />}
       <div className='profile-container'>
-        <Header user={props.user} token={props.token} />
+        <Header user={props.user} token={props.token} showLogo={false} title='Minha conta'/>
         <div className='profile-body'>
           <MemberCardDashboard member={props.user} setSelectedTab={setSelectedTab} />
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Modal from 'react-modal';
 import SimpleHeader from './SimpleHeader';
 import RegisterForm from './RegisterForm';
@@ -8,6 +9,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 const EditUserModal = ({ isModalOpen, closeModal, user }) => {
+  const userFromStore = useSelector((state) => state.userReducer.user);
   const [modalStyle, setModalStyle] = useState({
     overlay: {
       zIndex: 3,
@@ -66,7 +68,7 @@ const EditUserModal = ({ isModalOpen, closeModal, user }) => {
     >
       <SimpleHeader title='Editar perfil' action='close' onClose={handleCloseModal}/>
       <div className='edit-user'>
-        <RegisterForm initialValues={user} handleCloseModal={handleCloseModal} />
+        <RegisterForm initialValues={userFromStore} handleCloseModal={handleCloseModal} />
       </div>
 
       <style>

@@ -19,7 +19,7 @@ const InfiniteScroll = ({ children, loadMore, isLoading }) => {
       loadMore();
       setIsFetching(false);
     }
-  }, [isFetching, loadMore]);
+  }, [isFetching]);
 
   return <>{children}</>;
 };

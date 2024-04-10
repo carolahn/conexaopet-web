@@ -61,14 +61,14 @@ const SearchModal = ({ isModalOpen, closeModal }) => {
       {selectedTab === 'pet' && (
         <>
           <NewPublicationHeader title='Buscar pet' closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
-          <SearchPetForm />
+          <SearchPetForm closeModal={closeModal} />
         </>
       )}
 
       {selectedTab === 'event' && (
         <>
           <NewPublicationHeader title='Buscar evento' closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab}/>
-          <SearchEventForm />
+          <SearchEventForm closeModal={closeModal} />
         </>
       )}
     </Modal>

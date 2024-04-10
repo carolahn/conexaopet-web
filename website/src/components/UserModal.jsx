@@ -13,6 +13,7 @@ import { resetPetState } from '../redux/reducers/petSlice';
 import { resetFavoritePetState } from '../redux/reducers/favoritePetSlice';
 import { resetFavoriteEventState } from '../redux/reducers/favoriteEventSlice';
 import { fetchEventList, fetchPetList } from '../redux/actions';
+import { resetSearchPetsState } from '../redux/reducers/searchPetSlice';
 
 if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
@@ -73,6 +74,7 @@ const UserModal = ({ isModalOpen, closeModal, user, token }) => {
     closeModal();
     dispatch(fetchEventList());
     dispatch(fetchPetList());
+    dispatch(resetSearchPetsState());
     navigate('/');
   };
 
@@ -107,12 +109,14 @@ const UserModal = ({ isModalOpen, closeModal, user, token }) => {
 
       {token ? (
         <div style={{ marginTop: '5px', display: 'flex', flexDirection: 'column' }}>
+          <Link to='/' style={{ marginBottom: '8px'}} onClick={closeModal}>Home</Link>
           <Link to={getDashboardLink()} style={{ marginBottom: '8px'}} onClick={closeModal}>Minha conta</Link>
           <div className='edit-user-link' onClick={openEditUserModal}>Editar conta</div>
           <Link to='/' onClick={handleLogout}>Sair</Link>
         </div>
       ) : (
         <div style={{ marginTop: '5px', display: 'flex', flexDirection: 'column' }}>
+          <Link to='/' style={{ marginBottom: '8px'}} onClick={closeModal}>Home</Link>
           <Link to='/login' style={{ marginBottom: '8px'}}>Entrar</Link>
           <Link to='/signup'>Cadastrar</Link>
         </div>

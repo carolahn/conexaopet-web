@@ -26,6 +26,7 @@ const DashboardProtector = ( props ) => {
   const eventNextPage = useSelector((state) => state.event.nextPage);
   const eventIsLoading = useSelector((state) => state.event.isLoading);
   const [loading, setLoading] = useState(true);
+  const user = useSelector((state) => state.userReducer.user);
 
   useEffect(() => {
     if (id === null || id === undefined) {
@@ -88,7 +89,7 @@ const DashboardProtector = ( props ) => {
       <div className='profile-container'>
         <div className='profile-body'>
           <Header user={props.user} token={props.token} />
-          <ProtectorCardDashboard protector={props.user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
+          <ProtectorCardDashboard protector={user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
 
           {selectedTab === 'pet' && (
             <InfiniteScroll 

@@ -7,6 +7,7 @@ import eventSlice from './eventSlice';
 import addressSlice, { resetAddressState } from './addressSlice';
 import favoritePetSlice from './favoritePetSlice';
 import favoriteEventSlice from './favoriteEventSlice';
+import searchPetSlice from './searchPetSlice';
 
 const rootReducer = combineReducers({
   authReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   event: eventSlice,
   favoritePet: favoritePetSlice,
   favoriteEvent: favoriteEventSlice,
+  searchPets: searchPetSlice, 
 });
 
 export default rootReducer;

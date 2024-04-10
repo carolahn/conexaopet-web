@@ -5,3 +5,4 @@ export * from './petActions';
 export * from './eventActions';
 export * from './addressActions';
 export * from './favoritePetActions';
+export * from './searchPetActions';

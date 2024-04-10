@@ -129,7 +129,7 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
 
   useEffect(() => {
     dispatch(fetchProtectorUsers());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     setSize(getPetSize(weight));

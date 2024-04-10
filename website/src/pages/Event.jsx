@@ -8,7 +8,7 @@ import InfiniteScrollEvent from '../components/InfiniteScrollEvent';
 import EventCardList from '../components/EventCardList';
 import { fetchEventList } from '../redux/actions';
 
-const Event = () => {
+const Event = ({ user = {}, token = '' }) => {
 	// const [eventList, setEventList] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
   const [targetEventId, setTargetEventId] = useState('');
@@ -40,7 +40,7 @@ const Event = () => {
   return (
     <div className='event-container'>
 			<div className='event-body'>
-				<Header/>
+				<Header user={user} token={token} showLogo={false} title='Eventos'/>
 				<Carousel events={eventList || []} loadMoreItems={loadMoreEvents} isLoading={eventIsLoading} />
 				<InfiniteScrollEvent itemList={eventList || []} loadMore={loadMoreEvents} isLoading={eventIsLoading} >
           <EventCardList eventList={eventList || []} targetId={targetEventId} setTargetId={setTargetEventId} />
