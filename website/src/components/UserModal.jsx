@@ -14,6 +14,8 @@ import { resetFavoritePetState } from '../redux/reducers/favoritePetSlice';
 import { resetFavoriteEventState } from '../redux/reducers/favoriteEventSlice';
 import { fetchEventList, fetchPetList } from '../redux/actions';
 import { resetSearchPetsState } from '../redux/reducers/searchPetSlice';
+import { resetSearchEventsState } from '../redux/reducers/searchEventSlice';
+import { resetUserState } from '../redux/reducers/userReducer';
 
 if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
@@ -75,6 +77,8 @@ const UserModal = ({ isModalOpen, closeModal, user, token }) => {
     dispatch(fetchEventList());
     dispatch(fetchPetList());
     dispatch(resetSearchPetsState());
+    dispatch(resetSearchEventsState());
+    dispatch(resetUserState());
     navigate('/');
   };
 

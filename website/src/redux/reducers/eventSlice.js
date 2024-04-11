@@ -5,6 +5,8 @@ const eventSlice = createSlice({
   initialState: {
     eventList: [],
     eventListByProtector: {},
+    currentEventId: null,
+    singleEvent: null,
     isLoading: false,
     nextPage: null,
     error: null,
@@ -61,10 +63,18 @@ const eventSlice = createSlice({
     deleteEventFailure(state, action) {
       state.error = action.payload;
     },
+    setCurrentEventId(state, action) {
+      state.currentPetId = action.payload;
+    },
+    setSingleEvent(state, action) {
+      state.singlePet = action.payload;
+    },
     resetEventState(state) { 
       return {
         eventList: [],
         eventListByProtector: {},
+        currentEventId: null,
+        singleEvent: null,
         isLoading: false,
         nextPage: null,
         error: null,
@@ -73,6 +83,6 @@ const eventSlice = createSlice({
   },
 });
 
-export const { setEventList, setLoading, setNextPage, setEventListByProtector, createEventFailure, updateEventSuccess, updateEventFailure, deleteEventFailure, resetEventState } = eventSlice.actions;
+export const { setEventList, setLoading, setNextPage, setEventListByProtector, createEventFailure, updateEventSuccess, updateEventFailure, deleteEventFailure, resetEventState, setCurrentEventId, setSingleEvent } = eventSlice.actions;
 
 export default eventSlice.reducer;

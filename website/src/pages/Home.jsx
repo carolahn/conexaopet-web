@@ -5,10 +5,11 @@ import Header from '../components/Header';
 import PetCardList from '../components/PetCardList';
 import InfiniteScroll from '../components/InfiniteScroll';
 import Toast from '../components/Toast';
+import FloatingButton from '../components/FloatingButton';
 import { fetchPetList } from '../redux/actions/petActions';
 import { fetchEventList } from '../redux/actions/eventActions';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { fetchCupomList, fetchFavoritePetList } from '../redux/actions';
+import { fetchCupomList, fetchCupomListBySponsor, fetchFavoritePetList } from '../redux/actions';
 import { fetchFavoriteEventList } from '../redux/actions/favoriteEventActions';
 
 
@@ -32,6 +33,9 @@ const Home = ( props ) => {
       dispatch(fetchFavoritePetList());
       dispatch(fetchFavoriteEventList());
       dispatch(fetchCupomList());
+    }
+    if (props.user && Object.keys(props.user).length !== 0 && props.user.type === 3) {
+      dispatch(fetchCupomListBySponsor(props.user.id));
     }
     // eslint-disable-next-line
   }, [dispatch]);
@@ -88,6 +92,8 @@ const Home = ( props ) => {
         {showToast && (
           <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
         )}
+
+        <FloatingButton />
 
         <style>
           {`

@@ -32,7 +32,7 @@ export const fetchCupomList = (page = 1) => async (dispatch, getState) => {
   }
 };
 
-export const fetchCupomListByProtector = (sponsorId, page = 1) => async (dispatch, getState) => {
+export const fetchCupomListBySponsor = (sponsorId, page = 1) => async (dispatch, getState) => {
   try {
     const currentState = getState();
     const nextPage = currentState.cupom.nextPage;

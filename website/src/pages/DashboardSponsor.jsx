@@ -5,8 +5,9 @@ import Header from '../components/Header';
 import InfiniteScroll from '../components/InfiniteScroll';
 import CupomCardList from '../components/CupomCardList';
 import SponsorCardDashboard from '../components/SponsorCardDashboard';
-import { fetchCupomListByProtector } from '../redux/actions/cupomActions';
+import { fetchCupomListBySponsor } from '../redux/actions/cupomActions';
 import Toast from '../components/Toast';
+import FloatingButton from '../components/FloatingButton';
 
 
 const DashboardSponsor = ( props ) => {
@@ -17,7 +18,7 @@ const DashboardSponsor = ( props ) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const cupomListByProtector = useSelector((state) => state.cupom.cupomListByProtector[props.user?.id]);
+  const cupomListBySponsor = useSelector((state) => state.cupom.cupomListBySponsor[props.user?.id]);
   const nextPage = useSelector((state) => state.cupom.nextPage);
   const isLoading = useSelector((state) => state.cupom.isLoading);
 
@@ -32,14 +33,14 @@ const DashboardSponsor = ( props ) => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchCupomListByProtector(props.user.id));
+    dispatch(fetchCupomListBySponsor(props.user.id));
     // eslint-disable-next-line
   }, [dispatch]);
 
   const loadMoreItems = () => {
     if (nextPage) {
       const pageNumber = nextPage.split('page=')[1];
-      dispatch(fetchCupomListByProtector(props.user.id, pageNumber));
+      dispatch(fetchCupomListBySponsor(props.user.id, pageNumber));
     }
   };
 
@@ -53,23 +54,27 @@ const DashboardSponsor = ( props ) => {
 
 
   return (
-    <div className='profile-container'>
-      <Header user={props.user} token={props.token} />
-      <div className='profile-body'>
-        <SponsorCardDashboard user={props.user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
+    <>
+      <div className='profile-container'>
+        <Header user={props.user} token={props.token} />
+        <div className='profile-body'>
+          <SponsorCardDashboard user={props.user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
 
-        <InfiniteScroll
-          itemList={cupomListByProtector || []}
-          loadMore={loadMoreItems}
-          isLoading={isLoading}
-        >
-          <CupomCardList cupomList={cupomListByProtector} />
-        </InfiniteScroll>
+          <InfiniteScroll
+            itemList={cupomListBySponsor || []}
+            loadMore={loadMoreItems}
+            isLoading={isLoading}
+          >
+            <CupomCardList cupomList={cupomListBySponsor} />
+          </InfiniteScroll>
+        </div>
       </div>
 
       {showToast && (
         <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
       )}
+
+      <FloatingButton />
 
       <style>
         {`
@@ -92,8 +97,7 @@ const DashboardSponsor = ( props ) => {
           }
         `}
       </style>
-      
-    </div>
+    </>
   );
 };
 

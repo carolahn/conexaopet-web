@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const DateTimePicker = ({ dateHour, setDateHour, initialValues = null, showHour = true, dataLabel = '' }) => {
+const DateTimePicker = ({ dateHour, setDateHour, initialValues = null, showHour = true, dataLabel = '', isRequired = true }) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [startTime, setStartTime] = useState('00:00');
   const [endTime, setEndTime] = useState('00:00');
@@ -96,7 +96,7 @@ const DateTimePicker = ({ dateHour, setDateHour, initialValues = null, showHour 
           id="selectedDate"
           value={selectedDate}
           onChange={handleDateChange}
-          required
+          required={isRequired ? true : false}
         />
       </div>
 

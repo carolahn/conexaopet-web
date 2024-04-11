@@ -8,6 +8,7 @@ import mockPetCardData from '../components/mockPetCardData';
 import mockEventCardData from '../components/mockEventCardData';
 import { mockProtectorData } from '../components/mockProtectorData';
 import InfiniteScroll from '../components/InfiniteScroll';
+import FloatingButton from '../components/FloatingButton';
 
 
 const ProfileProtector = () => {
@@ -15,28 +16,32 @@ const ProfileProtector = () => {
   const { id } = useParams();
 
   return (
-    <div className='profile-container'>
-      <div className='profile-body'>
-        <Header />
-        <ProtectorCard protector={mockProtectorData} setSelectedTab={setSelectedTab} />
+    <>
+      <div className='profile-container'>
+        <div className='profile-body'>
+          <Header />
+          <ProtectorCard protector={mockProtectorData} setSelectedTab={setSelectedTab} />
 
-        {selectedTab === 'pet' && (
-          <InfiniteScroll itemList={mockPetCardData}>
-            {({ itemList, isLoading }) => (
-              <PetCardList petList={itemList}/>
-            )}
-          </InfiniteScroll>
-        )}
+          {selectedTab === 'pet' && (
+            <InfiniteScroll itemList={mockPetCardData}>
+              {({ itemList, isLoading }) => (
+                <PetCardList petList={itemList}/>
+              )}
+            </InfiniteScroll>
+          )}
 
-        {selectedTab === 'event' && (
-          <InfiniteScroll itemList={mockEventCardData}>
-            {({ itemList, isLoading }) => (
-              <EventCardList eventList={itemList}/>
-            )}
-          </InfiniteScroll>
-        )}
+          {selectedTab === 'event' && (
+            <InfiniteScroll itemList={mockEventCardData}>
+              {({ itemList, isLoading }) => (
+                <EventCardList eventList={itemList}/>
+              )}
+            </InfiniteScroll>
+          )}
+        </div>
       </div>
 
+      <FloatingButton />
+      
       <style>
         {`
           .profile-container {
@@ -58,7 +63,7 @@ const ProfileProtector = () => {
           }
         `}
       </style>
-    </div>
+    </>
 
   );
 };

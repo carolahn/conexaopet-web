@@ -6,6 +6,7 @@ import { fetchProtectorUsers, searchPets } from "../redux/actions";
 import { getAlongChoices, personalityChoices, petBreedChoices, petGenderChoices, petSizeChoices } from "../utils/petData";
 import { lifeStageChoices } from "../utils/petData";
 import { petTypeChoices } from "../utils/petData";
+import Toast from '../components/Toast';
 
 const SearchPetForm = ({ closeModal = null }) => {
   const [name, setName] = useState('');
@@ -18,6 +19,7 @@ const SearchPetForm = ({ closeModal = null }) => {
   const [protector, setProtector] = useState('');
   const [personality, setPersonality] = useState([]);
   const [getAlong, setGetAlong] = useState([]);
+  const [showToast, setShowToast] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const protectorChoices = useSelector(state => state.userReducer.protectorUsers);
@@ -79,15 +81,29 @@ const SearchPetForm = ({ closeModal = null }) => {
     }, {});
    
     try {
-      await dispatch(searchPets(searchParams))
+      const action = await dispatch(searchPets(searchParams))
+      const searchResults = action.payload;
+
       if (!searchPetsError) {
-        navigate('/search/pet');
-        closeModal();
+        if (searchResults.length === 0) {
+          handleOpenToast();
+        } else {
+          navigate('/search/pet');
+          closeModal();
+        }
       }
 
     } catch (error) {
       console.error('Error searching pets:', error);
     }
+  };
+
+  const handleOpenToast = () => {
+    setShowToast(true);
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
   };
 
 
@@ -210,6 +226,10 @@ const SearchPetForm = ({ closeModal = null }) => {
           <button type="submit" className="btn w-100 btn-publish">Buscar</button>
         </form>
       </div>
+
+      {showToast && (
+        <Toast message='Nenhum animal foi encontrado' type='info' onClose={handleCloseToast} />
+      )}
 
       <style>
         {`

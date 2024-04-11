@@ -6,6 +6,7 @@ import mockEventCardData from '../components/mockEventCardData';
 import Header from '../components/Header';
 import InfiniteScrollEvent from '../components/InfiniteScrollEvent';
 import EventCardList from '../components/EventCardList';
+import FloatingButton from '../components/FloatingButton';
 import { fetchEventList } from '../redux/actions';
 
 const Event = ({ user = {}, token = '' }) => {
@@ -38,15 +39,18 @@ const Event = ({ user = {}, token = '' }) => {
   };
 
   return (
-    <div className='event-container'>
-			<div className='event-body'>
-				<Header user={user} token={token} showLogo={false} title='Eventos'/>
-				<Carousel events={eventList || []} loadMoreItems={loadMoreEvents} isLoading={eventIsLoading} />
-				<InfiniteScrollEvent itemList={eventList || []} loadMore={loadMoreEvents} isLoading={eventIsLoading} >
-          <EventCardList eventList={eventList || []} targetId={targetEventId} setTargetId={setTargetEventId} />
-				</InfiniteScrollEvent>
+    <>
+      <div className='event-container'>
+        <div className='event-body'>
+          <Header user={user} token={token} showLogo={false} title='Eventos'/>
+          <Carousel events={eventList || []} loadMoreItems={loadMoreEvents} isLoading={eventIsLoading} />
+          <InfiniteScrollEvent itemList={eventList || []} loadMore={loadMoreEvents} isLoading={eventIsLoading} >
+            <EventCardList eventList={eventList || []} targetId={targetEventId} setTargetId={setTargetEventId} />
+          </InfiniteScrollEvent>
+        </div>
+      </div>
 
-			</div>
+      <FloatingButton />
 
       <style>
         {`
@@ -68,7 +72,7 @@ const Event = ({ user = {}, token = '' }) => {
           }
         `}
       </style>
-    </div>
+    </>
   );
 };
 

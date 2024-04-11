@@ -1,5 +1,5 @@
 import axios from '../../utils/axiosConfig';
-import { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure, getPetChoicesSuccess, getPetChoicesFailure } from '../reducers/petSlice';
+import { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure, getPetChoicesSuccess, getPetChoicesFailure, setCurrentPetId, setSinglePet } from '../reducers/petSlice';
 
 export const fetchPetList = (page = 1) => async (dispatch, getState) => {
   try {
@@ -121,5 +121,23 @@ export const getPetChoices = (protectorId) => async (dispatch) => {
     console.error('Error fetching pet choices:', error);
     dispatch(getPetChoicesFailure(error.message));
     throw error;
+  }
+};
+
+export const fetchSinglePet = (petId) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+
+    const response = await axios.get(`/pets/${petId}/`);
+    const singlePet = response.data;
+
+    dispatch(setSinglePet(singlePet));
+    dispatch(setCurrentPetId(petId));
+    return singlePet;
+  } catch (error) {
+    console.error('Error fetching single pet:', error);
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
   }
 };

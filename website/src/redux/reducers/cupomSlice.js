@@ -25,7 +25,7 @@ const cupomSlice = createSlice({
     },
     setCupomListBySponsor(state, action) {
       const { sponsorId, cupomList } = action.payload;
-      state.eventListByProtector[sponsorId] = cupomList;
+      state.cupomListBySponsor[sponsorId] = cupomList;
     },
     fetchCupomListFailure(state, action) {
       state.error = action.payload;
@@ -69,6 +69,7 @@ const cupomSlice = createSlice({
     resetCupomState(state) { 
       return {
         cupomList: [],
+        cupomListBySponsor: {},
         isLoading: false,
         nextPage: null,
         expiredInactiveCount: 0,

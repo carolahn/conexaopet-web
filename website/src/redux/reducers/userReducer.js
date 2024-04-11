@@ -1,3 +1,7 @@
+export const resetUserState = () => ({
+  type: 'RESET_USER_STATE',
+});
+
 const initialState = {
   loading: false,
   error: null,
@@ -40,6 +44,8 @@ export const userReducer = (state = initialState, action) => {
         ...state,
         error: null,
       };
+    case 'RESET_USER_STATE':
+      return initialState;
     default:
       return state;
   }

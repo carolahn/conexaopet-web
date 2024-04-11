@@ -2,22 +2,21 @@ import React from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import Header from "../components/Header";
 import InfiniteScroll from "../components/InfiniteScroll";
-import PetCardList from "../components/PetCardList";
-import { searchPets } from '../redux/actions';
+import EventCardList from '../components/EventCardList';
+import { searchEvents } from '../redux/actions';
 import noResultsIcon from '../assets/images/no-results.png';
 import FloatingButton from '../components/FloatingButton';
 
-const SearchPetsResults = ({ user = {}, token = '', pets = []}) => {
+const SearchEventsResults = ({ user = {}, token = '' }) => {
   const dispatch = useDispatch();
-  const petList = useSelector((state) => state.searchPets.searchResults);
-  const nextPage = useSelector((state) => state.searchPets.nextPage);
-  const petIsLoading = useSelector((state) => state.searchPets.isLoading);
-  const searchParams = useSelector((state) => state.searchPets.searchParams);
+  const eventList = useSelector((state) => state.searchEvents.searchResults);
+  const nextPage = useSelector((state) => state.searchEvents.nextPage);
+  const petIsLoading = useSelector((state) => state.searchEvents.isLoading);
+  const searchParams = useSelector((state) => state.searchEvents.searchParams);
 
-  const loadMorePets = () => {
+  const loadMoreEvents = () => {
     if (nextPage) {
-      console.log("dispatch searchpets")
-      dispatch(searchPets(searchParams));
+      dispatch(searchEvents(searchParams));
     }
   };
 
@@ -27,10 +26,10 @@ const SearchPetsResults = ({ user = {}, token = '', pets = []}) => {
       <div className="search-results">
         <div className="search-body">
           <Header user={user} token={token} showLogo={false} title='Resultados da busca'/>
-          {petList && petList.length > 0 ? (
+          {eventList && eventList.length > 0 ? (
             <>
-              <InfiniteScroll itemList={petList || []} loadMore={loadMorePets} isLoading={petIsLoading} >
-                <PetCardList petList={petList || []}/>
+              <InfiniteScroll itemList={eventList || []} loadMore={loadMoreEvents} isLoading={petIsLoading} >
+                <EventCardList eventList={eventList || []}/>
               </InfiniteScroll>
             </>
           ) : (
@@ -42,7 +41,7 @@ const SearchPetsResults = ({ user = {}, token = '', pets = []}) => {
       </div>
 
       <FloatingButton />
-      
+
       <style>
         {`
           .search-results {
@@ -81,4 +80,4 @@ const SearchPetsResults = ({ user = {}, token = '', pets = []}) => {
   );
 };
 
-export default SearchPetsResults;
+export default SearchEventsResults;

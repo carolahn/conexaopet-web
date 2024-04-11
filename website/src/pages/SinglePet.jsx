@@ -1,30 +1,37 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import PetCard from '../components/PetCard';
-import mockPetCardData from '../components/mockPetCardData';
-import { useParams } from 'react-router-dom';
+import { fetchSinglePet } from '../redux/actions';
 
 
-const SinglePet = () => {
+const SinglePet = ({ user = {}, token = "" }) => {
   const [pet, setPet] = useState(null);
   const { id } = useParams();
+  const dispatch = useDispatch();
   
   useEffect(() => {
-    const selectedPet = mockPetCardData.find((pet) => pet.id === parseInt(id));
+    const fetchData = async () => {
+      try {
+        const result = await dispatch(fetchSinglePet(id));
+        if (result) {
+          setPet(result);
+        }
+      } catch (error) {
+        console.error('Error getting pet data:', error);
+      }
+    };
 
-    if (selectedPet) {
-      setPet(selectedPet);
-    } else {
-      setPet(null);
-    }
-    // eslint-disable-next-line
-  }, [id]);
+    fetchData();
+  }, []);
+
 
   return (
     <div className='single-pet-page' data-testid="single-pet-page">
-      <Header/>
+      <Header user={user} token={token} showLogo={false} title='Informações do pet'/>
       <div className='single-pet-body'>
-        {pet && <PetCard {...pet} />}
+        {pet && <PetCard pet={pet} />}
 				
 			</div>
 
@@ -33,7 +40,7 @@ const SinglePet = () => {
           .single-pet-page {
             width: 100%;
             max-width: 490px;
-            margin: 50px auto 0 auto;
+            margin: 70px auto 0 auto;
           }
 
           .single-pet-body {
@@ -46,7 +53,7 @@ const SinglePet = () => {
             .single-pet-page {
               display: block;
               width: 100%;
-              margin-top: 40px;
+              margin-top: 50px;
             }
           }
         `}

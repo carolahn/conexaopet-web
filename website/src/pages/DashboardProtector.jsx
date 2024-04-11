@@ -10,6 +10,7 @@ import ProtectorCardDashboard from '../components/ProtectorCardDashboard';
 import { fetchPetListByProtector, getPetChoices } from '../redux/actions/petActions';
 import { fetchEventListByProtector } from '../redux/actions/eventActions';
 import LoadingSpinner from '../components/LoadingSpinner';
+import FloatingButton from '../components/FloatingButton';
 
 const DashboardProtector = ( props ) => {
   const [selectedTab, setSelectedTab] = useState('pet');
@@ -111,32 +112,34 @@ const DashboardProtector = ( props ) => {
             </InfiniteScroll>
           )}
         </div>
-
-        {showToast && (
-          <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
-        )}
-
-        <style>
-          {`
-            .profile-container {
-              width: 100%;
-              margin-top: 70px;
-            }
-            
-            .profile-body {
-              max-width: 900px;
-              margin: 0 auto;
-              height: 100vh;
-            }
-            
-            @media (max-width: 900px) {
-              .profile-container {
-                margin-top: 50px;
-              }
-            }
-          `}
-        </style>
       </div>
+
+      {showToast && (
+        <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
+      )}
+
+      <FloatingButton />
+      
+      <style>
+        {`
+          .profile-container {
+            width: 100%;
+            margin-top: 70px;
+          }
+          
+          .profile-body {
+            max-width: 900px;
+            margin: 0 auto;
+            height: 100vh;
+          }
+          
+          @media (max-width: 900px) {
+            .profile-container {
+              margin-top: 50px;
+            }
+          }
+        `}
+      </style>
     </>
 
   );

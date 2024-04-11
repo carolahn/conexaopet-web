@@ -1,27 +1,26 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../utils/axiosConfig';
-import { setLoading, setSearchResults, setError, setCurrentPage, resetSearchPetsState, setSearchParams } from '../reducers/searchPetSlice';
+import { setLoading, resetSearchEventsState, setSearchResults, setCurrentPage, setSearchParams, setError } from '../reducers/searchEventSlice';
 
-export const searchPets = createAsyncThunk(
-  'pet/searchPets',
+export const searchEvents = createAsyncThunk(
+  'event/searchEvents',
   async (searchParams, { dispatch, getState }) => {
     try {
       dispatch(setLoading(true));
       
       const currentState = getState();
-      const nextPage = currentState.searchPets.nextPage;
-      const currentSearchParams = currentState.searchPets.searchParams;
+      const nextPage = currentState.searchEvents.nextPage;
+      const currentSearchParams = currentState.searchEvents.searchParams;
 
-      const currentPage = currentState.searchPets.currentPage;
+      const currentPage = currentState.searchEvents.currentPage;
       const nextPageNumber = nextPage ? extractPageNumberFromUrl(nextPage) : null;
 
       let searchResults = [];
 
-      // Verifica se os parâmetros de busca são diferentes dos parâmetros da última busca
       if (JSON.stringify(searchParams) !== JSON.stringify(currentSearchParams)) {
-        dispatch(resetSearchPetsState());
+        dispatch(resetSearchEventsState());
 
-        const response = await axios.get('/pets/search/', {
+        const response = await axios.get('/events/search/', {
           params: { ...searchParams, page: 1 }
         });
 
@@ -37,17 +36,15 @@ export const searchPets = createAsyncThunk(
 
 
       } else if (nextPageNumber && nextPageNumber !== currentPage) {
-      // Verifica se a próxima página é diferente da atual
-        const response = await axios.get('/pets/search/', {
+        const response = await axios.get('/events/search/', {
           params: { ...searchParams, page: nextPageNumber }
         });
 
         searchResults = response.data.results;
 
-        // Filtrar novos resultados para evitar duplicatas
-        const newResults = response.data.results.filter(result => !currentState.searchPets.searchResults.some(pet => pet.id === result.id));
+        const newResults = response.data.results.filter(result => !currentState.searchEvents.searchResults.some(event => event.id === result.id));
 
-        const updatedResults = [...currentState.searchPets.searchResults, ...newResults];
+        const updatedResults = [...currentState.searchEvents.searchResults, ...newResults];
 
         dispatch(setSearchResults({
           results: updatedResults,
@@ -56,14 +53,13 @@ export const searchPets = createAsyncThunk(
 
         dispatch(setCurrentPage(nextPageNumber)); 
         dispatch(setSearchParams(searchParams));
-
       } 
 
       dispatch(setLoading(false)); 
       return searchResults;
 
     } catch (error) {
-      console.error('Error searching pets:', error);
+      console.error('Error searching events:', error);
       dispatch(setError(error.message)); 
       dispatch(setLoading(false)); 
       throw error;

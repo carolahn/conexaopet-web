@@ -1,72 +1,113 @@
-import React, { useState } from "react";
-import { mockProtectorData, mockAddressData } from './mockFormData';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import DateTimePicker from "./DateTimePicker";
+import { fetchProtectorUsers, searchEvents } from "../redux/actions";
+import Toast from '../components/Toast';
 
 
-const SearchEventForm = () => {
+const SearchEventForm = ({ closeModal }) => {
   const [date, setDate] = useState('');
-  const [place, setPlace] = useState('');
+  const [pets, setPets] = useState('');
   const [protector, setProtector] = useState('');
   const [city, setCity] = useState('');
+  const [showToast, setShowToast] = useState(false);
+  const dispatch = useDispatch();
+  const protectorChoices = useSelector(state => state.userReducer.protectorUsers);
+  const searchEventsError = useSelector(state => state.searchEvents.error);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    dispatch(fetchProtectorUsers());
+  }, [dispatch]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = {
-      data: date,
-      local: place,
-      protetor: protector,
-      cidade: city,
+      date: date,
+      pets: pets,
+      owner: protector,
+      city: city,
     };
 
-    const jsonData = JSON.stringify(formData);
-    console.log(jsonData);
+    // const jsonData = JSON.stringify(formData);
+    // console.log(jsonData);
+
+    const searchParams = Object.fromEntries(
+      Object.entries(formData).filter(([_, value]) => value !== null && value !== '' && value !== undefined)
+    );
+
+    try {
+      const action = await dispatch(searchEvents(searchParams))
+      const searchResults = action.payload;
+      
+      if (!searchEventsError) {
+        if (searchResults.length === 0) {
+          handleOpenToast();
+        } else {
+          navigate('/search/event');
+          closeModal();
+        }
+      }
+
+    } catch (error) {
+      console.error('Error searching pets:', error);
+    }
   };
 
+  const handleOpenToast = () => {
+    setShowToast(true);
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
+  
+
   return (
-    <div className='search-event-form'>
-      <form onSubmit={handleSubmit}>
-        <div className='input-container'>
-          <DateTimePicker setDateHour={setDate} showHour={false} dataLabel='Data' />
-        </div>
-
-        <div className="row">
-          <label htmlFor="petCity" className="col-sm-2 col-form-label">Cidade</label>
-          <div className="col" style={{ width: '76%'}}>
-            <input type="text" className="form-control" id="petCity" value={city} onChange={(e) => setCity(e.target.value)} />
+    <>
+      <div className='search-event-form'>
+        <form onSubmit={handleSubmit}>
+          <div className='input-container'>
+            <DateTimePicker setDateHour={setDate} showHour={false} dataLabel='Data' isRequired={false} />
           </div>
-        </div>
 
-        <div className="row new-event-protector">
-          <label htmlFor="col col-form-label" className="col-sm-2 col-form-label">Local</label>
-          <div className="col col-select">
-            <select className="form-select" id="eventLocal" name="eventLocal" aria-label="Selecione o local" value={place} onChange={(e) => setPlace(e.target.value)}>
-              <option value=""></option>
-              {mockAddressData.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.nome}
-                </option>
-              ))}
-            </select>
+          <div className="row">
+            <label htmlFor="petCity" className="col-sm-2 col-form-label">Cidade</label>
+            <div className="col" style={{ width: '76%'}}>
+              <input type="text" className="form-control" id="petCity" value={city} onChange={(e) => setCity(e.target.value)} />
+            </div>
           </div>
-        </div>
 
-        <div className="row new-event-protector">
-          <label htmlFor="petProtector" className="col-sm-2 col-form-label">Protetor</label>
-          <div className="col col-select">
-            <select className="form-select" id="petProtector" name="petProtector" aria-label="Selecione o protetor" value={protector} onChange={(e) => setProtector(e.target.value)}>
-              <option value=""></option>
-              {mockProtectorData.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.nickname}
-                </option>
-              ))}
-            </select>
+          <div className="row">
+            <label htmlFor="petNames" className="col-sm-2 col-form-label">Animais</label>
+            <div className="col" style={{ width: '76%'}}>
+              <input type="text" className="form-control" id="petNames" value={pets} onChange={(e) => setPets(e.target.value)} />
+            </div>
           </div>
-        </div>
 
-        <button type="submit" className="btn w-100 btn-publish">Buscar</button>          
-      </form>
+          <div className="row new-event-protector">
+            <label htmlFor="petProtector" className="col-sm-2 col-form-label">Protetor</label>
+            <div className="col col-select">
+              <select className="form-select" id="petProtector" name="petProtector" aria-label="Selecione o protetor" value={protector} onChange={(e) => setProtector(e.target.value)}>
+                <option value=""></option>
+                {protectorChoices.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.username}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" className="btn w-100 btn-publish">Buscar</button>          
+        </form>
+      </div>
+
+      {showToast && (
+        <Toast message='Nenhum evento foi encontrado' type='info' onClose={handleCloseToast} />
+      )}
 
       <style>
         {`
@@ -173,7 +214,7 @@ const SearchEventForm = () => {
           }          
         `}
       </style>
-    </div>
+    </>
   );
 };
 

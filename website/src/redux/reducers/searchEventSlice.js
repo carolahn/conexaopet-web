@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const searchPetsSlice = createSlice({
-  name: 'searchPets',
+const searchEventsSlice = createSlice({
+  name: 'searchEvents',
   initialState: {
     searchResults: [],
     isLoading: false,
@@ -28,7 +28,7 @@ const searchPetsSlice = createSlice({
     setCurrentPage(state, action) { 
       state.currentPage = action.payload;
     },
-    resetSearchPetsState(state) {
+    resetSearchEventsState(state) {
       state.searchResults = [];
       state.isLoading = false;
       state.error = null;
@@ -42,5 +42,5 @@ const searchPetsSlice = createSlice({
   },
 });
 
-export const { setLoading, setSearchResults, setError, clearError, setCurrentPage, resetSearchPetsState, setSearchParams } = searchPetsSlice.actions;
-export default searchPetsSlice.reducer;
+export const { setLoading, setSearchResults, setError, clearError, setCurrentPage, resetSearchEventsState, setSearchParams } = searchEventsSlice.actions;
+export default searchEventsSlice.reducer;

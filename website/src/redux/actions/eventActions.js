@@ -1,5 +1,5 @@
 import axios from '../../utils/axiosConfig';
-import { setEventList, setLoading, setNextPage, setEventListByProtector, createEventFailure, updateEventSuccess, updateEventFailure, deleteEventFailure } from '../reducers/eventSlice';
+import { setEventList, setLoading, setNextPage, setEventListByProtector, createEventFailure, updateEventSuccess, updateEventFailure, deleteEventFailure, setCurrentEventId, setSingleEvent } from '../reducers/eventSlice';
 
 export const fetchEventList = (page = 1) => async (dispatch, getState) => {
   try {
@@ -109,5 +109,23 @@ export const deleteEvent = (eventId) => async (dispatch, getState) => {
     console.error('Error deleting event:', error);
     dispatch(deleteEventFailure(error.message));
     throw error;
+  }
+};
+
+export const fetchSingleEvent = (eventId) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+
+    const response = await axios.get(`/events/${eventId}/`);
+    const singleEvent = response.data;
+
+    dispatch(setSingleEvent(singleEvent));
+    dispatch(setCurrentEventId(eventId));
+    return singleEvent;
+  } catch (error) {
+    console.error('Error fetching single event:', error);
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
   }
 };

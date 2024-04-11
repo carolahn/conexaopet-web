@@ -14,6 +14,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { fetchFavoritePetList } from '../redux/actions/favoritePetActions';
 import { fetchFavoriteEventList } from '../redux/actions/favoriteEventActions';
 import { fetchCupomList } from '../redux/actions';
+import FloatingButton from '../components/FloatingButton';
 
 
 const DashboardMember = ( props ) => {
@@ -122,28 +123,30 @@ const DashboardMember = ( props ) => {
             </InfiniteScroll>
           )}
         </div>
-
-        <style>
-          {`
-            .profile-container {
-              width: 100%;
-              margin-top: 70px;
-            }
-            
-            .profile-body {
-              max-width: 900px;
-              margin: 0 auto;
-              height: 100vh;
-            }
-            
-            @media (max-width: 900px) {
-              .profile-container {
-                margin-top: 50px;
-              }
-            }
-          `}
-        </style>
       </div>
+
+      <FloatingButton />
+      
+      <style>
+        {`
+          .profile-container {
+            width: 100%;
+            margin-top: 70px;
+          }
+          
+          .profile-body {
+            max-width: 900px;
+            margin: 0 auto;
+            height: 100vh;
+          }
+          
+          @media (max-width: 900px) {
+            .profile-container {
+              margin-top: 50px;
+            }
+          }
+        `}
+      </style>
     </>
   );
 };

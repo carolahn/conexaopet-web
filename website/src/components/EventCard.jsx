@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { formatarData, formatarHora } from '../utils/formatarData';
 import { getUser } from '../utils/selectors';
@@ -41,6 +42,7 @@ const EventCard = ( props ) => {
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
   const [toastType, setToastType] = useState('success');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector(getUser);
   const eventError = useSelector(state => state.event.error);
   const favoriteEventList = useSelector((state) => state.favoriteEvent.favoriteEventList);
@@ -123,13 +125,6 @@ const EventCard = ( props ) => {
 
     // eslint-disable-next-line
   }, [favoriteEventList])
-
-  // const handleFavoriteClick = () => {
-  //   setIsFavorite((prevIsFavorite) => {
-  //     setStarIconSrc(prevIsFavorite ? starIcon : starFilledIcon);
-  //     return !prevIsFavorite;
-  //   });
-  // };
 
   const handleFavoriteClick = () => {
     setIsFavorite((prevIsFavorite) => {
@@ -228,6 +223,10 @@ const EventCard = ( props ) => {
     }
   };
 
+  const handleGetPetCard = (id) => {
+    navigate(`/pet/${id}`);
+  };
+
   return (
     <div className="event-card" id={props.id}>
 			<div className='event-card-header'>
@@ -324,7 +323,7 @@ const EventCard = ( props ) => {
 					<div>
 						<div className='pet-card-bar'>
 							<div className='pet-card-summary'>
-								<h2>{currentAnimal.name}</h2>
+								<h2 className='pet-card-name' onClick={() => handleGetPetCard(currentAnimal.id)}>{currentAnimal.name}</h2>
 								<p className='pet-label'>{currentAnimal.gender === 'M' ? 'macho' : 'fêmea'}</p>
 								<p className='pet-label pet-age'>{getLifeStage(currentAnimal.age_year)}</p>
 								<p className='pet-label pet-size'>{currentAnimal.size}</p>
@@ -458,6 +457,10 @@ const EventCard = ( props ) => {
           
           .event-card-summary {
             width: 80%;
+          }
+
+          .pet-card-name {
+            cursor: pointer
           }
 
           .event-followers {
