@@ -1,5 +1,6 @@
 import axios from '../../utils/axiosConfig';
 import { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure, getPetChoicesSuccess, getPetChoicesFailure, setCurrentPetId, setSinglePet } from '../reducers/petSlice';
+import { setEventList, setEventListByProtector } from '../reducers/eventSlice';
 
 export const fetchPetList = (page = 1) => async (dispatch, getState) => {
   try {
@@ -68,10 +69,16 @@ export const createPet = (protectorId, petData) => async (dispatch, getState) =>
     const response = await axios.post('/pets/', petData);
     const createdPet = response.data;
 
-    const currentPetList = currentState.pet.petListByProtector?.[protectorId] ?? [];
-    const updatedPetList = [createdPet, ...currentPetList];
+    const currentPetListByProtector = currentState.pet.petListByProtector?.[protectorId] ?? [];
+    const updatedPetListByProtector = [createdPet, ...currentPetListByProtector];
+    dispatch(setPetListByProtector({ protectorId, petList: updatedPetListByProtector }));
 
-    dispatch(setPetListByProtector({ protectorId, petList: updatedPetList }));
+    const currentPetList = currentState.pet.petList;
+    const updatedPetList = [createdPet, ...currentPetList];
+    dispatch(setPetList(updatedPetList));
+
+    dispatch(getPetChoices(protectorId));
+
   } catch (error) {
     console.error('Error creating pet:', error);
     dispatch(createPetFailure(error.message));
@@ -83,6 +90,8 @@ export const updatePet = (petId, petData) => async (dispatch) => {
   try {
     const response = await axios.put(`/pets/update/${petId}/`, petData);
     dispatch(updatePetSuccess(response.data));
+
+    dispatch(getPetChoices(response.data.owner.id));
   } catch (error) {
     console.error('Error updating pet:', error);
     dispatch(updatePetFailure(error.message));
@@ -106,6 +115,26 @@ export const deletePet = (petId) => async (dispatch, getState) => {
       const updatedPetListByProtector = petListByProtector.filter(pet => pet.id !== petId);
       dispatch(setPetListByProtector({ protectorId, petList: updatedPetListByProtector }));
     }
+
+    // Atualizar os eventos que possuem o pet removido
+    const { eventList, eventListByProtector } = getState().event;
+
+    const updatedEventList = eventList.map(event => ({
+      ...event,
+      pets: event.pets.filter(pet => pet.id !== petId)
+    }));
+    dispatch(setEventList(updatedEventList));
+
+    const currentEventListByProtector = eventListByProtector[protectorId] ?? [];
+    const updatedEventListByProtector = currentEventListByProtector.map(event => ({
+      ...event,
+      pets: event.pets.filter(pet => pet.id !== petId)
+    }));
+    dispatch(setEventListByProtector({ protectorId, eventList: updatedEventListByProtector }));
+    
+
+    dispatch(getPetChoices(protectorId));
+
   } catch (error) {
     console.error('Error deleting pet:', error);
     dispatch(deletePetFailure(error.message));

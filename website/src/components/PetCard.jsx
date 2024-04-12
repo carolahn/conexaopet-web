@@ -72,15 +72,15 @@ const PetCard = ({ pet }) => {
   
     setPetImages([]);
     
-    fetchImage(pet.owner.image, setOwnerImage);
+    fetchImage(pet.owner?.image, setOwnerImage);
   
-    pet.images.forEach(image => {
+    pet.images?.forEach(image => {
       fetchImage(image.image, (cachedImage) => {
         setPetImages(prevImages => [...prevImages, cachedImage]);
       });
     });
 
-  }, [pet.owner.image, pet.images, pet]);
+  }, [pet?.owner?.image, pet?.images, pet]);
 
 
 	useEffect(() => {
@@ -89,8 +89,8 @@ const PetCard = ({ pet }) => {
   }, [width]);
 
   useEffect(() => {
-    if (favoritePetList && favoritePetList.length > 0) {
-      const isPetFavorite = favoritePetList.some(favoritePet => favoritePet.id === pet.id);
+    if (favoritePetList && favoritePetList?.length > 0) {
+      const isPetFavorite = favoritePetList.some(favoritePet => favoritePet?.id === pet?.id);
       setIsFavorite(isPetFavorite);
       
       if(isPetFavorite) {
@@ -134,11 +134,11 @@ const PetCard = ({ pet }) => {
   };
 
 	const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % pet.images.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % pet.images?.length);
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + pet.images.length) % pet.images.length);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + pet.images?.length) % pet.images?.length);
   };
 
 	const handleChangeIndex = (index) => {
@@ -146,7 +146,7 @@ const PetCard = ({ pet }) => {
   };
 
 	const isAtBeginning = currentIndex === 0;
-  const isAtEnd = currentIndex === pet.images.length - 1;
+  const isAtEnd = currentIndex === pet.images?.length - 1;
 
 	const openDiscartModal = () => {
     setIsDiscartModalOpen(!isDiscartModalOpen);
@@ -175,7 +175,7 @@ const PetCard = ({ pet }) => {
   const handleDeletePet = (e) => {
     e.preventDefault();
     try {
-      dispatch(deletePet(pet.id));
+      dispatch(deletePet(pet?.id));
       if (!petError) {
         setToastMessage('Publicação removida');
         setToastType('success');
@@ -194,15 +194,15 @@ const PetCard = ({ pet }) => {
   };
 
   return (
-    <div className="pet-card" id={`pet-card=${pet.id}`}>
+    <div className="pet-card" id={`pet-card=${pet?.id}`}>
 			<div className='pet-card-header'>
 				<div className='pet-header'>
 					<div className='pet-avatar'>
-						<img src={ownerImage} alt={`Avatar de ${pet.owner.username}`} />
+						<img src={ownerImage} alt={`Avatar de ${pet.owner?.username}`} />
 					</div>
-					<h2>{pet.owner.username}</h2>
+					<h2>{pet.owner?.username}</h2>
 				</div>
-				{user?.id === pet.owner.id && (
+				{user?.id === pet.owner?.id && (
 					<div className='pet-options-container'>
 						<div className='icon-container' onClick={openNewPublicationModal}>
 							<img src={editIcon} alt='Buscar' className='edit-icon' />
@@ -247,7 +247,7 @@ const PetCard = ({ pet }) => {
 				<div className='pet-card-bar'>
 					<div className='pet-card-summary'>
 						<h2>{pet.name}</h2>
-						<p className={`pet-label pet-${pet.gender.toLowerCase()}`}>{pet.gender === 'M' ? 'macho' : 'fêmea'}</p>
+						<p className={`pet-label pet-${pet.gender?.toLowerCase()}`}>{pet.gender === 'M' ? 'macho' : 'fêmea'}</p>
 						<p className='pet-label pet-age'>{getLifeStage(pet.age_year)}</p>
 						<p className='pet-label pet-size'>{pet.size}</p>
 					</div>
@@ -292,8 +292,8 @@ const PetCard = ({ pet }) => {
 						<div className='pet-info-line'>
 							<img src={infoIcon} alt='Informações gerais' className='pet-info-icon'/>
 							<div className='pet-data'>
-								<p>{pet.personality.length > 0 ? `Personalidade: ${getPersonalityString(pet.personality)}`: ''}</p>
-								<p>{pet.get_along.length > 0 ? `Convive bem com: ${getAlongString(pet.get_along)}` : `Não lida bem com animais e crianças`}</p>
+								<p>{pet.personality?.length > 0 ? `Personalidade: ${getPersonalityString(pet.personality)}`: ''}</p>
+								<p>{pet.get_along?.length > 0 ? `Convive bem com: ${getAlongString(pet.get_along)}` : `Não lida bem com animais e crianças`}</p>
 							</div>
 						</div>
 						<div className='pet-info-line'>

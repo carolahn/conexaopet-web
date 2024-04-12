@@ -96,7 +96,7 @@ const CupomCard = ({ cupom }) => {
 
   const handleDeleteCupom = () => {
     try {
-      dispatch(deleteCupom(cupom.id));
+      dispatch(deleteCupom(cupom.owner.id, cupom.id));
       setToastMessage('Cupom removido');
       setToastType('success');
       handleOpenToast();

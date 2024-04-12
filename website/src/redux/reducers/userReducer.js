@@ -6,12 +6,14 @@ const initialState = {
   loading: false,
   error: null,
   protectorUsers: [],
+  user: null,
 };
 
 export const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'CREATE_USER_SUCCESS':
     case 'UPDATE_USER_SUCCESS':
+    case 'GET_USER_SUCCESS':
       localStorage.setItem('user', JSON.stringify(action.payload));
       return {
         ...state,
@@ -21,6 +23,7 @@ export const userReducer = (state = initialState, action) => {
       };
     case 'CREATE_USER_FAILURE':
     case 'UPDATE_USER_FAILURE':
+    case 'GET_USER_FAILURE':
       return {
         ...state,
         loading: false,

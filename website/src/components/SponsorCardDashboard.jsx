@@ -27,8 +27,9 @@ const SponsorCardDashboard = ({ user, setSelectedTab, setToastType, setToastMess
 
   const handleRefreshCupons = async () => {
     try {
-      const response = await dispatch(updateExpiredCupons());
-      setToastMessage('Cupons expirados atualizados.');
+      const response = await dispatch(updateExpiredCupons(user.id));
+      console.log("response handleRefresh: ", response)
+      setToastMessage(`Cupons atualizados. Removidos: ${response.results.deleted_count}`);
       setToastType('success');
       handleOpenToast();
     } catch (error) {

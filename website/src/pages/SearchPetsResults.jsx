@@ -16,7 +16,6 @@ const SearchPetsResults = ({ user = {}, token = '', pets = []}) => {
 
   const loadMorePets = () => {
     if (nextPage) {
-      console.log("dispatch searchpets")
       dispatch(searchPets(searchParams));
     }
   };

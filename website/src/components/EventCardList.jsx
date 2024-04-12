@@ -2,24 +2,34 @@ import React, { useEffect } from 'react';
 import EventCard from './EventCard';
 
 const EventCardList = ({ eventList, targetId = '', setTargetId = null }) => {
-  
+
   useEffect(() => {
-    if (targetId) {
-      setTimeout(() => {
-        const eventCard = document.getElementById(`event-${targetId}`);
-        if (eventCard) {
-          eventCard.scrollIntoView({ behavior: 'smooth' });
-        }
+    let attempts = 0;
+    const maxAttempts = 20;
+  
+    const scrollIfElementExists = () => {
+      const eventCard = document.getElementById(`event-${targetId}`);
+      if (eventCard) {
+        eventCard.scrollIntoView({ behavior: 'smooth' });
         setTargetId('');
-        console.log("eventCard: ", eventCard)
-      }, 1200); 
-    
+      } else {
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(scrollIfElementExists, 500);
+        } else {
+          console.log(`Elemento com ID "event-${targetId}" não encontrado após ${maxAttempts} tentativas.`);
+          setTargetId('');
+        }
+      }
+    };
+  
+    if (targetId) {
+      setTimeout(scrollIfElementExists, 1000); 
     }
-    // eslint-disable-next-line
   }, [eventList, targetId]);
  
   return (
-    <div className='event-card-list'>
+    <div className='event-card-list' key={`event-list-${targetId}`}>
       {eventList.map((event, index) => (
         <EventCard key={index} event={event} id={`event-${event.id}`} />
       ))}

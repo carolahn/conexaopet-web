@@ -58,10 +58,16 @@ const cupomSlice = createSlice({
       state.error = action.payload;
     },
     updateExpiredCuponsSuccess(state, action) {
+      const { cupons } = action.payload.results;
+      const { sponsorId } = action.payload;
+
+      // Filtra os cupons da lista atual para manter apenas os cupons do sponsorId que estão presentes na resposta
+      const updatedCupomList = state.cupomList.filter(cupom =>
+        cupom.owner.id !== sponsorId || cupons.some(responseCupom => responseCupom.id === cupom.id)
+      );
+
+      state.cupomList = updatedCupomList;
       state.error = null;
-      state.expiredInactiveCount = action.payload.expired_inactive_count;
-      state.expiredActiveCount = action.payload.expired_active_count;
-      state.cupomList = action.payload.results.cupons;
     },
     updateExpiredCuponsFailure(state, action) {
       state.error = action.payload;

@@ -50,33 +50,8 @@ const EventCard = ( props ) => {
 
   
   useEffect(() => {
-    const fetchImage = async (imageURL, setImage) => {
-      try {
-        // Verifica se a imagem já está em cache
-        if (imageCache[imageURL]) {
-          setImage(imageCache[imageURL]);
-          return;
-        }
-  
-        const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
-        const pathAfterMedia = imageURL.substring(imageURL.indexOf('media/'));
-        const url = apiUrl + pathAfterMedia;
-  
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch image from ${url}`);
-        }
-        const blob = await response.blob();
-        const file = new File([blob], imageURL.substring(imageURL.lastIndexOf('/') + 1));
-  
-        // Salva a imagem no cache
-        imageCache[imageURL] = URL.createObjectURL(file);
-        setImage(imageCache[imageURL]);
-      } catch (error) {
-        console.error(`Error fetching image from ${imageURL}:`, error);
-      }
-    };
-  
+    setAllImages([]);
+
     fetchImage(props.event.owner.image, setOwnerImage);
 
     props.event.images.forEach(image => {
@@ -94,7 +69,34 @@ const EventCard = ( props ) => {
       });
     });
     // eslint-disable-next-line
-  }, []);
+  }, [props.event.pets, props.event.images, props.event]);
+
+  const fetchImage = async (imageURL, setImage) => {
+    try {
+      // Verifica se a imagem já está em cache
+      if (imageCache[imageURL]) {
+        setImage(imageCache[imageURL]);
+        return;
+      }
+
+      const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
+      const pathAfterMedia = imageURL.substring(imageURL.indexOf('media/'));
+      const url = apiUrl + pathAfterMedia;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image from ${url}`);
+      }
+      const blob = await response.blob();
+      const file = new File([blob], imageURL.substring(imageURL.lastIndexOf('/') + 1));
+
+      // Salva a imagem no cache
+      imageCache[imageURL] = URL.createObjectURL(file);
+      setImage(imageCache[imageURL]);
+    } catch (error) {
+      console.error(`Error fetching image from ${imageURL}:`, error);
+    }
+  };
 
   useEffect(() => {
     const nullPetImages = allImages.filter(imageObj => imageObj.petId === null);
@@ -104,7 +106,8 @@ const EventCard = ( props ) => {
 
 	useEffect(() => {
     setCurrentIndex(0);
-  }, [width]);
+  }, [width, props.event]);
+
 
 	useEffect(() => {
     updateCurrentAnimal();
@@ -228,7 +231,7 @@ const EventCard = ( props ) => {
   };
 
   return (
-    <div className="event-card" id={props.id}>
+    <div className="event-card" key={props.event.id} id={`event-${props.event.id}`}>
 			<div className='event-card-header'>
         <div className='event-header'>
           <div className='event-avatar'>
@@ -254,7 +257,7 @@ const EventCard = ( props ) => {
 						<div className="event-carousel" style={{ width: '500px', maxHeight: '500px', marginBottom: '8px' }}>
 							<div className="event-carousel-content" style={{ transform: `translateX(-${currentIndex * 500}px)` }}>
 								{sortedImages?.map((imageObj, index) => (
-									<div key={index} style={{ width: '500px' }}>
+									<div key={index} style={{ width: '500px' }} id={`event-${props.id}-image-${index}`}>
 										<img src={imageObj.image} alt={`Foto do evento`} className='event-image' style={{ height: '100%', objectFit: 'cover', maxWidth: '500px', display: 'block'}}/>
 									</div>
 								))}
@@ -267,7 +270,7 @@ const EventCard = ( props ) => {
 						<div className="event-carousel" style={{ height: `${width - 30}px`, width: `${width - 30}px` }}>
 							<div className="event-carousel-content" style={{ transform: `translateX(-${currentIndex * (width - 30)}px)` }}>
 								{sortedImages?.map((imageObj, index) => (
-									<div key={index} style={{ width: `${width - 30}px` }}>
+									<div key={index} style={{ width: `${width - 30}px` }} id={`event-${props.id}-image-${index}`}>
 										<img src={imageObj.image} alt={`Foto do evento`} className='event-image' style={{ height: `${width - 30}px`, width: `${width - 30}px`, objectFit: 'cover' }}/>
 									</div>
 								))}

@@ -33,20 +33,20 @@ const petSlice = createSlice({
     },
     updatePetSuccess(state, action) {
       state.error = null;
-      // Atualize os dados do cupom na lista de cupons existente
+      // Atualize os dados do pet na lista de cupons existente
       let updatedIndex = state.petList.findIndex(pet => pet.id === action.payload.id);
       if (updatedIndex !== -1) {
         state.petList[updatedIndex] = action.payload;
       }
 
+      // Substitui o pet atualizado na lista de pets para o ownerId específico
       const ownerId = action.payload.owner.id;
       const petList = state.petListByProtector;
-
       if (petList.hasOwnProperty(ownerId)) { 
         const updatedPetListByProtector = { ...petList }; 
         updatedPetListByProtector[ownerId] = updatedPetListByProtector[ownerId].map(pet => {
           if (pet.id === action.payload.id) {
-            return action.payload; // Substitui o pet atualizado na lista de pets para o ownerId específico
+            return action.payload; 
           }
           return pet; 
         });
@@ -54,7 +54,6 @@ const petSlice = createSlice({
         state.petListByProtector = updatedPetListByProtector; 
         
       } else {
-        console.log('Não há pets do protetor:', ownerId);
         state.error = `Não há pets do protetor: ${ownerId}`;
       }
     },

@@ -30,3 +30,12 @@ export const fetchProtectorUsers = () => async (dispatch) => {
 export const clearUserError = () => ({
   type: 'CLEAR_USER_ERROR',
 });
+
+export const getUser = (userId) => async (dispatch) => {
+  try {
+    const response = await axios.get(`/users/${userId}/`);
+    dispatch({ type: 'GET_USER_SUCCESS', payload: response.data });
+  } catch (error) {
+    dispatch({ type: 'GET_USER_FAILURE', payload: error.response.data });
+  }
+};

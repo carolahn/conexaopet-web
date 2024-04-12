@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import Carousel from '../components/Carousel';
-import mockEventCardData from '../components/mockEventCardData';
 import Header from '../components/Header';
 import InfiniteScrollEvent from '../components/InfiniteScrollEvent';
 import EventCardList from '../components/EventCardList';
@@ -10,13 +9,10 @@ import FloatingButton from '../components/FloatingButton';
 import { fetchEventList } from '../redux/actions';
 
 const Event = ({ user = {}, token = '' }) => {
-	// const [eventList, setEventList] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
   const [targetEventId, setTargetEventId] = useState('');
   const dispatch = useDispatch();
   const location = useLocation();
-	const events = mockEventCardData;
-	const loadCount = 6;
   const eventList = useSelector((state) => state.event.eventList);
   const eventNextPage = useSelector((state) => state.event.nextPage);
   const eventIsLoading = useSelector((state) => state.event.isLoading);
@@ -24,7 +20,6 @@ const Event = ({ user = {}, token = '' }) => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const eventId = queryParams.get('eventId');
-    console.log("eventId: ", eventId)
 
     if (eventId) {
       setTargetEventId(eventId);

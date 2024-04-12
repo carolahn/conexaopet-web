@@ -49,12 +49,12 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
       }
     };
 
-    fetchImage(protector.image, setOwnerImage);
+    fetchImage(protector?.image, setOwnerImage);
 
   }, [protector?.image]);
 
   const handleWhatsAppClick = () => {
-    window.open(`https://web.whatsapp.com/send?phone=${protector.phone}`, '_blank');
+    window.open(`https://web.whatsapp.com/send?phone=${protector?.phone}`, '_blank');
   };
 
   const handleSelectPet = () => {
@@ -94,14 +94,14 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
   };
 
   return (
-    <div key={protector.id} className='protector-card'>
+    <div key={protector?.id} className='protector-card'>
 
       <div className='protector-card-header'>
 				<div className='protector-avatar'>
 					<img src={ownerImage} alt={`Avatar de ${protector?.username}`} />
 				</div>
         <div className='protector-name-button'>
-				  <h2>{protector.username}</h2>
+				  <h2>{protector?.username}</h2>
           <div className='protector-buttons'>
             <div className='whatsapp-icon-container' onClick={handleWhatsAppClick}>
               <img src={whatsappIcon} alt='Whatsapp' className='whatsapp-icon icon' />
@@ -117,7 +117,7 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
 			</div>
 
       <div className='protector-card-description'>
-        {protector.description}
+        {protector?.description}
       </div>
 
       <div className='protector-card-tabs'>
@@ -132,7 +132,7 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
         </div>
       </div>
     
-      <DonationModal isModalOpen={isDonationModalOpen} closeModal={closeDonationModal} pix={protector.pix} />
+      <DonationModal isModalOpen={isDonationModalOpen} closeModal={closeDonationModal} pix={protector?.pix} />
       <NewPublicationModal user={protector} isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} style={{ zIndex: '3'}}/>
       <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={closeEditUserModal} user={protector}/>
 

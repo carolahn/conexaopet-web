@@ -5,7 +5,7 @@ const PetCardList = ({ petList }) => {
   return (
     <div className="pet-card-list">
       {petList.map((pet, index) => (
-        <PetCard key={index} pet={pet} id={`pet-${pet.id}`} />
+        <PetCard key={index} pet={pet} id={`pet-${pet?.id}`} />
       ))}
 
       <style>

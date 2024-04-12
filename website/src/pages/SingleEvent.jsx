@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Header from '../components/Header';
-import mockEventCardData from '../components/mockEventCardData';
 import { useParams } from 'react-router-dom';
 import EventCard from '../components/EventCard';
 import { fetchSingleEvent } from '../redux/actions';
@@ -23,21 +22,10 @@ const SingleEvent = ({ user = {}, token = "" }) => {
         console.error('Error getting event data:', error);
       }
     };
-
     fetchData();
+    // eslint-disable-next-line
   }, []);
 
-  
-  // useEffect(() => {
-  //   const selectedEvent = mockEventCardData.find((event) => event.id === parseInt(id));
-  //   console.log(selectedEvent);
-  //   if (selectedEvent) {
-  //     setEvent(selectedEvent);
-  //   } else {
-  //     setEvent(null);
-  //   }
-  //   // eslint-disable-next-line
-  // }, [id]);
 
   return (
     <div className='single-event-page' data-testid="single-event-page">

@@ -30,8 +30,6 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
   // Recuperar valores do localStorage ao iniciar, se for criação de novo pet
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('formData'));
-    console.log("initialValues: ", initialValues)
-    console.log("localStorage: ", storedData)
 
     setWeight(initialValues? initialValues.weight : (storedData ? storedData.weight : ''));
     setName(initialValues? initialValues.name : (storedData ? storedData.name : ''));
@@ -48,42 +46,36 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
       setOwner(initialValues.owner.id);
     }
     
+    if (initialValues && initialValues.images) {
+      setImages(initialValues.images);
+    }
     // let petImages = [];
     // if (initialValues && initialValues.images) {
-    //   petImages = initialValues.images.map(image => new File([image], `image${Date.now()}.jpg`, { type: 'image/jpeg' }));
+    //   petImages = initialValues.images.map(image =>  image.image );
     // } else if (storedData && storedData.images) {
-    //   petImages = storedData.images.map(image => new File([image], `image${Date.now()}.jpg`, { type: 'image/jpeg' }));
+    //   petImages = storedData.images;
     // }
 
-    // // Defina as imagens recuperadas
-    // setImages(petImages);
-    let petImages = [];
-    if (initialValues && initialValues.images) {
-      petImages = initialValues.images.map(image =>  image.image );
-    } else if (storedData && storedData.images) {
-      petImages = storedData.images;
-    }
-
-    if (petImages.length > 0) {
-      const promises = petImages.map((imageUrl) => {
-        return new Promise((resolve) => {
-          fetch(imageUrl)
-            .then((res) => res.blob())
-            .then((blob) => {
-              const file = new File([blob], `image${Date.now()}.jpg`, { type: 'image/jpeg' });
-              resolve(file);
-            });
-        });
-      });
+    // if (petImages.length > 0) {
+    //   const promises = petImages.map((imageUrl) => {
+    //     return new Promise((resolve) => {
+    //       fetch(imageUrl)
+    //         .then((res) => res.blob())
+    //         .then((blob) => {
+    //           const file = new File([blob], `image${Date.now()}.jpg`, { type: 'image/jpeg' });
+    //           resolve(file);
+    //         });
+    //     });
+    //   });
   
-      Promise.all(promises)
-        .then((files) => {
-          setImages(files);
-        })
-        .catch((error) => {
-          console.error('Error loading images:', error);
-        });
-    }
+    //   Promise.all(promises)
+    //     .then((files) => {
+    //       setImages(files);
+    //     })
+    //     .catch((error) => {
+    //       console.error('Error loading images:', error);
+    //     });
+    // }
     // eslint-disable-next-line
   }, []);
   
@@ -190,6 +182,8 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
     images?.forEach((value, index) => {
       formData.append('image[]', value);
     });
+
+    console.log("images de create update: ", images)
    
     try {
       if (initialValues) {
@@ -231,8 +225,6 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
       console.error('Error: ', error);
     }
   };
-
-  console.log("initialValues petform: ", initialValues)
 
   return (
     <div className='new-pet-form'>

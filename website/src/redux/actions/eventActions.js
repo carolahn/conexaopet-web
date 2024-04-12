@@ -68,10 +68,13 @@ export const createEvent = (protectorId, eventData) => async (dispatch, getState
     const response = await axios.post('/events/', eventData);
     const createdEvent = response.data;
 
-    const currentEventList = currentState.event.eventListByProtector?.[protectorId] ?? [];
-    const updatedEventList = [createdEvent, ...currentEventList];
+    const currentEventListByProtector = currentState.event.eventListByProtector?.[protectorId] ?? [];
+    const updatedEventListByProtector = [createdEvent, ...currentEventListByProtector];
+    dispatch(setEventListByProtector({ protectorId, eventList: updatedEventListByProtector }));
 
-    dispatch(setEventListByProtector({ protectorId, eventList: updatedEventList }));
+    const currentEventList = currentState.event.eventList;
+    const updatedEventList = [createdEvent, ...currentEventList];
+    dispatch(setEventList(updatedEventList));
 
   } catch (error) {
     console.error('Error creating event:', error);
@@ -99,7 +102,7 @@ export const deleteEvent = (eventId) => async (dispatch, getState) => {
     const updatedEventList = eventList.filter(event => event.id !== eventId);
     dispatch(setEventList(updatedEventList));
 
-    const protectorId = getState().authReducer.user.id; // ou qualquer outra forma de obter o ID do protetor
+    const protectorId = getState().authReducer.user.id; 
     const eventListByProtector = getState().event.eventListByProtector[protectorId];
     if (eventListByProtector) {
       const updatedEventListByProtector = eventListByProtector.filter(event => event.id !== eventId);

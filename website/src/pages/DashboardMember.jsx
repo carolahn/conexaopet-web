@@ -4,9 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import PetCardList from '../components/PetCardList';
 import EventCardList from '../components/EventCardList';
-import mockPetCardData from '../components/mockPetCardData';
-import mockEventCardData from '../components/mockEventCardData';
-import { mockMemberData, mockCupomData } from '../components/mockFormData';
 import InfiniteScroll from '../components/InfiniteScroll';
 import MemberCardDashboard from '../components/MemberCardDashboard';
 import CupomCardList from '../components/CupomCardList';
@@ -33,7 +30,6 @@ const DashboardMember = ( props ) => {
   const cupomNextPage = useSelector((state) => state.cupom.nextPage);
   const cupomIsLoading = useSelector((state) => state.cupom.isLoading);
 
-  console.log("favoritePetList: ", favoritePetList)
   useEffect(() => {
     if (id === null || id === undefined) {
       navigate('/');
@@ -58,11 +54,12 @@ const DashboardMember = ( props ) => {
 
   };
 
-  // useEffect(() => {
-  //   dispatch(fetchFavoritePetList());
-  //   dispatch(fetchFavoriteEventList());
-  //   dispatch(fetchCupomList());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchFavoritePetList());
+    dispatch(fetchFavoriteEventList());
+    dispatch(fetchCupomList());
+    // eslint-disable-next-line
+  }, []);
 
   const loadMoreFavoritePets = () => {
     if (favoritePetNextPage) {

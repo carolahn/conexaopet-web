@@ -9,8 +9,6 @@ import FloatingButton from '../components/FloatingButton';
 import { fetchPetList } from '../redux/actions/petActions';
 import { fetchEventList } from '../redux/actions/eventActions';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { fetchCupomList, fetchCupomListBySponsor, fetchFavoritePetList } from '../redux/actions';
-import { fetchFavoriteEventList } from '../redux/actions/favoriteEventActions';
 
 
 const Home = ( props ) => {
@@ -29,14 +27,6 @@ const Home = ( props ) => {
   useEffect(() => {
     dispatch(fetchPetList());
     dispatch(fetchEventList());
-    if (props.token !== null) {
-      dispatch(fetchFavoritePetList());
-      dispatch(fetchFavoriteEventList());
-      dispatch(fetchCupomList());
-    }
-    if (props.user && Object.keys(props.user).length !== 0 && props.user.type === 3) {
-      dispatch(fetchCupomListBySponsor(props.user.id));
-    }
     // eslint-disable-next-line
   }, [dispatch]);
 
@@ -84,7 +74,7 @@ const Home = ( props ) => {
           <Header user={props.user} token={props.token} />
           <CarouselHome events={eventList} loadMore={loadMoreEvents} isLoading={eventIsLoading} />
           <InfiniteScroll itemList={petList || []} loadMore={loadMorePets} isLoading={petIsLoading}>
-            <PetCardList petList={petList} />
+            <PetCardList petList={petList || []} />
           </InfiniteScroll>
 
         </div>

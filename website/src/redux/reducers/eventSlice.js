@@ -32,15 +32,15 @@ const eventSlice = createSlice({
     },
     updateEventSuccess(state, action) {
       state.error = null;
-      // Atualize os dados do cupom na lista de cupons existente
+      // Atualize os dados do event na lista de cupons existente
       let updatedIndex = state.eventList.findIndex(event => event.id === action.payload.id);
       if (updatedIndex !== -1) {
         state.eventList[updatedIndex] = action.payload;
       }
 
+      // Substitui o event atualizado na lista de events para o ownerId específico
       const ownerId = action.payload.owner.id;
       const eventList = state.eventListByProtector;
-
       if (eventList.hasOwnProperty(ownerId)) { 
         const updatedEventListByProtector = { ...eventList }; 
         updatedEventListByProtector[ownerId] = updatedEventListByProtector[ownerId].map(event => {

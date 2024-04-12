@@ -51,10 +51,11 @@ const AddressForm = ({ addressList, setAddress, initialValues }) => {
   }, [addressData]);
 
   useEffect(() => {
-    if (addressData && Object.keys(addressData).length !== 0 && addressData?.id) {
+    if (addressData && Object.keys(addressData).length !== 0 && addressData?.id && addressList.length > 0) {
       // Se for um novo name, deve remover o address.id
-      if (!addressList.some(address => address.name.toLowerCase() === addressData.name.toLowerCase())) {
-        delete addressData?.id;
+      if (addressData?.id && !addressList.some(address => address.name.toLowerCase() === addressData.name.toLowerCase())) {
+        const { id, ...newAddressData } = addressData; 
+        setAddressData(newAddressData);
       }
   
       // Se name já existir, mas não for selecionado da lista
@@ -85,7 +86,7 @@ const AddressForm = ({ addressList, setAddress, initialValues }) => {
     address?.name.toLowerCase().includes(addressData?.name.toLowerCase())
   ) : [];
 
-  console.log("address: ", addressData)
+
   return (
     <div style={{ position: 'relative', width: '100%' }}>
         <span style={nameContainerStyles}>

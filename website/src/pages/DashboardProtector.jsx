@@ -11,6 +11,7 @@ import { fetchPetListByProtector, getPetChoices } from '../redux/actions/petActi
 import { fetchEventListByProtector } from '../redux/actions/eventActions';
 import LoadingSpinner from '../components/LoadingSpinner';
 import FloatingButton from '../components/FloatingButton';
+import { getUser } from '../redux/actions';
 
 const DashboardProtector = ( props ) => {
   const [selectedTab, setSelectedTab] = useState('pet');
@@ -37,7 +38,6 @@ const DashboardProtector = ( props ) => {
     }
 
     showLoadingSpiner();
-
     // eslint-disable-next-line
   }, []);
 
@@ -58,9 +58,9 @@ const DashboardProtector = ( props ) => {
     dispatch(fetchPetListByProtector(props.user.id));
     dispatch(fetchEventListByProtector(props.user.id));
     dispatch(getPetChoices(props.user.id));
-    console.log("dispatch petChoices");
+    dispatch(getUser(props.user.id));
     // eslint-disable-next-line
-  }, [dispatch]);
+  }, []);
 
   const loadMorePets = () => {
     if (petNextPage) {

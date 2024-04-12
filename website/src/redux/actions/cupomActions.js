@@ -64,9 +64,15 @@ export const fetchCupomListBySponsor = (sponsorId, page = 1) => async (dispatch,
 };
 
 
-export const createCupom = (cupomData) => async (dispatch) => {
+export const createCupom = (cupomData) => async (dispatch, getState) => {
   try {
+    const currentState = getState();
     const response = await axios.post('/cupons/', cupomData);
+    const sponsorId = response.data.owner.id;
+    const currentCupomList = currentState.cupom.cupomListBySponsor?.[sponsorId] ?? [];
+    const updatedCupomList = [response.data, ...currentCupomList];
+    
+    dispatch(setCupomListBySponsor({ sponsorId, cupomList: updatedCupomList }));
     dispatch(createCupomSuccess(response.data));
   } catch (error) {
     console.error('Error creating cupom:', error);
@@ -75,9 +81,19 @@ export const createCupom = (cupomData) => async (dispatch) => {
   }
 };
 
-export const updateCupom = (cupomId, cupomData) => async (dispatch) => {
+export const updateCupom = (cupomId, cupomData) => async (dispatch, getState) => {
   try {
+    const currentState = getState();
     const response = await axios.put(`/cupons/update/${cupomId}/`, cupomData);
+    const sponsorId = response.data.owner.id;
+    const currentCupomList = currentState.cupom.cupomListBySponsor?.[sponsorId] ?? [];
+    let updatedCupomList = [...currentCupomList];
+    const updatedIndex = currentCupomList.findIndex(cupom => cupom.id === response.data.id);
+    if (updatedIndex !== -1) {
+      updatedCupomList[updatedIndex] = response.data;
+    }
+    
+    dispatch(setCupomListBySponsor({ sponsorId, cupomList: updatedCupomList }));
     dispatch(updateCupomSuccess(response.data));
   } catch (error) {
     console.error('Error updating cupom:', error);
@@ -86,9 +102,15 @@ export const updateCupom = (cupomId, cupomData) => async (dispatch) => {
   }
 };
 
-export const deleteCupom = (cupomId) => async (dispatch) => {
+export const deleteCupom = (sponsorId, cupomId) => async (dispatch, getState) => {
+  
   try {
+    const currentState = getState();
     await axios.delete(`/cupons/delete/${cupomId}/`);
+
+    const currentCupomList = currentState.cupom.cupomListBySponsor?.[sponsorId] ?? [];
+    const updatedCupomList = currentCupomList.filter(cupom => cupom.id !== cupomId);
+    dispatch(setCupomListBySponsor({ sponsorId, cupomList: updatedCupomList }));
     dispatch(deleteCupomSuccess(cupomId));
   } catch (error) {
     console.error('Error deleting cupom:', error);
@@ -97,11 +119,17 @@ export const deleteCupom = (cupomId) => async (dispatch) => {
   }
 };
 
-export const updateExpiredCupons = () => async (dispatch) => {
+export const updateExpiredCupons = (sponsorId) => async (dispatch) => {
   try {
     const response = await axios.get('/cupons/update_expired/');
-    dispatch(updateExpiredCuponsSuccess(response.data));
+    console.log("response: ", response)
+    console.log("response.data: ", response.data)
+
+    dispatch(setCupomListBySponsor({ sponsorId, cupomList: response.data.results.cupons }));
     dispatch(setNextPage(response.data.next));
+    dispatch(updateExpiredCuponsSuccess({ ...response.data, sponsorId: sponsorId }));
+    return response.data;
+
   } catch (error) {
     console.error('Error updating expired cupons:', error);
     dispatch(updateExpiredCuponsFailure(error.message));

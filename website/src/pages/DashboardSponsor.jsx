@@ -34,6 +34,7 @@ const DashboardSponsor = ( props ) => {
 
   useEffect(() => {
     dispatch(fetchCupomListBySponsor(props.user.id));
+    dispatch(fetchCupomListBySponsor(props.user.id));
     // eslint-disable-next-line
   }, [dispatch]);
 
@@ -65,7 +66,7 @@ const DashboardSponsor = ( props ) => {
             loadMore={loadMoreItems}
             isLoading={isLoading}
           >
-            <CupomCardList cupomList={cupomListBySponsor} />
+            <CupomCardList cupomList={cupomListBySponsor || []} />
           </InfiniteScroll>
         </div>
       </div>

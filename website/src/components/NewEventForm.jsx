@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { mockPetData, mockAddressData, mockProtectorData } from './mockFormData';
 import ImageUploader from './ImageUploader';
 import MultiSelect from './MultiSelect';
 import DateTimePicker from './DateTimePicker';
 import AddressForm from './AddressForm';
 import isEqual from 'lodash/isEqual';
-import { fetchProtectorUsers, getAddressList, createAddress, createEvent, updateEvent } from "../redux/actions";
+import { fetchProtectorUsers, getAddressList, createAddress, createEvent, updateEvent, getPetChoices } from "../redux/actions";
 import { fetchImage } from '../utils/imageUtils';
 
 const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessage, handleOpenToast, handleCloseModal }) => {
@@ -27,65 +26,24 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
   const petListByProtector = useSelector((state) => state.pet.petListByProtector[user?.id]);
   const petChoices = useSelector(state => state.pet.petChoices);
 
-  console.log("initialValues_eventform: ", initialValues)
+
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('eventFormData'));
    
     setPets(initialValues ? initialValues.pets : (storedData ? storedData.pets : []));
     setDateHour(initialValues ? initialValues.date_hour : (storedData ? storedData.dateHour : ''));
     setAddress(initialValues ? initialValues.address : (storedData ? storedData.address : {}));
-    // setProtector(initialValues? initialValues.owner.id : (storedData ? storedData.owner : ''));
     setDescription(initialValues ? initialValues.description : (storedData ? storedData.description : ''));
 
     if (initialValues && initialValues.owner) {
       setOwner(initialValues.owner.id);
     }
 
-    let eventImages = [];
     if (initialValues && initialValues.images) {
-      eventImages = initialValues.images.map(image => image.image);
-    } else if (storedData && storedData.images) {
-      eventImages = storedData.images;
+      setImages(initialValues.images);
     }
-
-    if (eventImages.length > 0) {
-      const promises = eventImages.map((imageUrl) => {
-        return new Promise((resolve) => {
-          fetch(imageUrl)
-            .then((res) => res.blob())
-            .then((blob) => {
-              const file = new File([blob], `image${Date.now()}.jpg`, { type: 'image/jpeg' });
-              resolve(file);
-            });
-        });
-      });
-  
-      Promise.all(promises)
-        .then((files) => {
-          setImages(files);
-        })
-        .catch((error) => {
-          console.error('Error loading images:', error);
-        });
-    }
-
     // eslint-disable-next-line
   }, []);
-
-
-  // Recuperar valores do localStorage ao iniciar
-  // useEffect(() => {
-  //   const storedData = JSON.parse(localStorage.getItem('eventFormData'));
-
-  //   if (storedData) {
-  //     setImages(storedData.images || []);
-  //     setAnimals(storedData.animals || []);
-  //     setDateHour(storedData.dateHour || {});
-  //     setAddress(storedData.address || {});
-  //     setProtector(storedData.protector || '');
-  //     setDescription(storedData.description || '');
-  //   }
-  // }, []);
 
   // Armazenar valores no localStorage sempre que houver uma alteração
   useEffect(() => {
@@ -123,20 +81,17 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
   useEffect(() => {
     dispatch(fetchProtectorUsers());
     dispatch(getAddressList());
-  }, [dispatch])
+  }, [dispatch]);
 
   const handleImagesChange = (selectedImages) => {
     setImages(selectedImages);
   }
 
   const handleAnimalsChange = (selectedAnimals) => {
-    console.log("selectedAnimals handle: ", selectedAnimals);
     if (selectedAnimals !== null && !isEqual(pets, selectedAnimals)) {
       setPets(selectedAnimals);
     }
   };
-
-  console.log("pets: ", pets);
 
   useEffect(() => {
     if (eventFromStore && !isEqual(initialValues, eventFromStore)) {
@@ -147,28 +102,11 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
       });
 
     }
-    
     // eslint-disable-next-line
   }, [eventFromStore, eventListByProtectorFromStore]);
 
-  // useEffect(() => {
-  //   let petOptions = petListByProtector?.map((pet) => {
-  //     return {
-  //       id: pet.id,
-  //       value: pet.name
-  //     };
-  //   });
-    
-  //   setPetChoices(petOptions);
-  //   // eslint-disable-next-line
-  // }, []);
-
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Limpando localStorage após o envio do formulário
-    // localStorage.removeItem('eventFormData');
-    // console.log("date_hour_initial: ", dateHour?.date_hour_initial);
 
     if (!address?.id) {
       dispatch(createAddress(address))
@@ -202,6 +140,8 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
                   handleCloseModal();
                 }, 2000);
                 handleOpenToast();
+                // Limpando localStorage após o envio do formulário
+                localStorage.removeItem('eventFormData');
               } else {
                 setToastMessage(`Erro: ${eventError}`);
                 setToastType('failure');

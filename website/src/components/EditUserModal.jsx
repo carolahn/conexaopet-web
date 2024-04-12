@@ -3,13 +3,15 @@ import { useSelector } from 'react-redux';
 import Modal from 'react-modal';
 import SimpleHeader from './SimpleHeader';
 import RegisterForm from './RegisterForm';
+import { getUser } from '../utils/selectors';
 
 if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
 }
 
-const EditUserModal = ({ isModalOpen, closeModal, user }) => {
+const EditUserModal = ({ isModalOpen, closeModal }) => {
   const userFromStore = useSelector((state) => state.userReducer.user);
+  
   const [modalStyle, setModalStyle] = useState({
     overlay: {
       zIndex: 3,

@@ -22,8 +22,8 @@ const SinglePet = ({ user = {}, token = "" }) => {
         console.error('Error getting pet data:', error);
       }
     };
-
     fetchData();
+    // eslint-disable-next-line
   }, []);
 
 

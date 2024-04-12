@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import SimpleHeader from '../components/SimpleHeader';
-import { login } from '../redux/actions';
+import { getUser, login } from '../redux/actions';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -11,10 +11,12 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const token = useSelector((state) => state.authReducer.token);
+  const user = useSelector((state) => state.authReducer.user);
 
   useEffect(() => {
     if (token) {
       navigate('/');
+      dispatch(getUser(user.id));
     }
   }, [token, navigate]);
 
