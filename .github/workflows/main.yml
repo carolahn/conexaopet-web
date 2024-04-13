@@ -21,147 +21,147 @@ jobs:
       - name: Running Test
         run: |
           cd website
-          npm test
+          npx jest
 
-  release:
-    name: Release
-    runs-on: ubuntu-20.04
-    needs: [test]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+  # release:
+  #   name: Release
+  #   runs-on: ubuntu-20.04
+  #   needs: [test]
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v2
 
-      - name: Determine If Version Changed
-        id: version_changed
-        run: |
-          last_commit_message=$(git log -1 --pretty=%B)
-          version_pattern="chore: v[0-9]+\.[0-9]+\.[0-9]+"
+  #     - name: Determine If Version Changed
+  #       id: version_changed
+  #       run: |
+  #         last_commit_message=$(git log -1 --pretty=%B)
+  #         version_pattern="chore: v[0-9]+\.[0-9]+\.[0-9]+"
           
-          if [[ $last_commit_message =~ $version_pattern ]]; then
-            last_commit_version=$(echo "${BASH_REMATCH[0]}" | grep -oP "[0-9]+\.[0-9]+\.[0-9]+")
-          else
-            last_commit_version=""
-          fi
+  #         if [[ $last_commit_message =~ $version_pattern ]]; then
+  #           last_commit_version=$(echo "${BASH_REMATCH[0]}" | grep -oP "[0-9]+\.[0-9]+\.[0-9]+")
+  #         else
+  #           last_commit_version=""
+  #         fi
 
-          echo "::set-output name=version_changed::$(test -n "$last_commit_version" && echo "true" || echo "false")"
-          echo "::set-output name=current_version::$last_commit_version"
+  #         echo "::set-output name=version_changed::$(test -n "$last_commit_version" && echo "true" || echo "false")"
+  #         echo "::set-output name=current_version::$last_commit_version"
 
-      - name: Set up Node.js
-        if: steps.version_changed.outputs.version_changed == 'true'
-        uses: actions/setup-node@v3
-        with:
-          node-version: '19.6.1'
+  #     - name: Set up Node.js
+  #       if: steps.version_changed.outputs.version_changed == 'true'
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '19.6.1'
 
-      - name: Install Dependencies
-        if: steps.version_changed.outputs.version_changed == 'true'
-        run: |
-          cd website
-          npm install
+  #     - name: Install Dependencies
+  #       if: steps.version_changed.outputs.version_changed == 'true'
+  #       run: |
+  #         cd website
+  #         npm install
 
-      - name: Build
-        if: steps.version_changed.outputs.version_changed == 'true'
-        run: |
-          cd website
-          npm run build
+  #     - name: Build
+  #       if: steps.version_changed.outputs.version_changed == 'true'
+  #       run: |
+  #         cd website
+  #         npm run build
 
-      - name: Create Release
-        if: steps.version_changed.outputs.version_changed == 'true'
-        uses: softprops/action-gh-release@v1
-        with:
-          files: website/build/* 
-          token: ${{ secrets.MY_GITHUB_TOKEN }}
-          tag_name: v${{ steps.version_changed.outputs.current_version }}
+  #     - name: Create Release
+  #       if: steps.version_changed.outputs.version_changed == 'true'
+  #       uses: softprops/action-gh-release@v1
+  #       with:
+  #         files: website/build/* 
+  #         token: ${{ secrets.MY_GITHUB_TOKEN }}
+  #         tag_name: v${{ steps.version_changed.outputs.current_version }}
         
 
-  deploy:
-    name: Deploying
-    needs: [test]
-    runs-on: ubuntu-20.04
-    env:
-        EC2_HOST_DNS: ${{ secrets.EC2_HOST_DNS }}
-        REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-    steps:
-      - name: Install docker on EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST_DNS }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY_PEM }}
-          script: |
-              sudo su
-              sudo apt-get update
-              yes | sudo apt-get install docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              sudo usermod -aG docker ubuntu
-              exec bash
-      - name: Install docker-compose on EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST_DNS }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY_PEM }}
-          script: |
-              sudo su
-              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-              sudo chmod +x /usr/local/bin/docker-compose
-              docker-compose --version
-      - name: Deploying Application
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST_DNS }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY_PEM }}
-          script: |
-              sudo su
-              docker stop website nginx
-              docker rm website nginx
-              docker rmi conexaopet-web-nginx conexaopet-web-website
-              rm -rf conexaopet-web
-              git clone https://github.com/carolahn/conexaopet-web.git
-              cd conexaopet-web
-              rm -rf /website/build/*
-              docker-compose -f docker-compose.prod.yml up --build -d
+  # deploy:
+  #   name: Deploying
+  #   needs: [test]
+  #   runs-on: ubuntu-20.04
+  #   env:
+  #       EC2_HOST_DNS: ${{ secrets.EC2_HOST_DNS }}
+  #       REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+  #   steps:
+  #     - name: Install docker on EC2
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.EC2_HOST_DNS }}
+  #         username: ${{ secrets.EC2_USERNAME }}
+  #         key: ${{ secrets.EC2_SSH_KEY_PEM }}
+  #         script: |
+  #             sudo su
+  #             sudo apt-get update
+  #             yes | sudo apt-get install docker.io
+  #             sudo systemctl start docker
+  #             sudo systemctl enable docker
+  #             sudo usermod -aG docker $USER
+  #             sudo usermod -aG docker ubuntu
+  #             exec bash
+  #     - name: Install docker-compose on EC2
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.EC2_HOST_DNS }}
+  #         username: ${{ secrets.EC2_USERNAME }}
+  #         key: ${{ secrets.EC2_SSH_KEY_PEM }}
+  #         script: |
+  #             sudo su
+  #             sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  #             sudo chmod +x /usr/local/bin/docker-compose
+  #             docker-compose --version
+  #     - name: Deploying Application
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.EC2_HOST_DNS }}
+  #         username: ${{ secrets.EC2_USERNAME }}
+  #         key: ${{ secrets.EC2_SSH_KEY_PEM }}
+  #         script: |
+  #             sudo su
+  #             docker stop website nginx
+  #             docker rm website nginx
+  #             docker rmi conexaopet-web-nginx conexaopet-web-website
+  #             rm -rf conexaopet-web
+  #             git clone https://github.com/carolahn/conexaopet-web.git
+  #             cd conexaopet-web
+  #             rm -rf /website/build/*
+  #             docker-compose -f docker-compose.prod.yml up --build -d
 
 
-  push-to-dockerhub:
-    name: Push to Docker Hub
-    runs-on: ubuntu-20.04
-    needs: [release]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # push-to-dockerhub:
+  #   name: Push to Docker Hub
+  #   runs-on: ubuntu-20.04
+  #   needs: [release]
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Determine If Version Changed
-        id: version_changed
-        run: |
-          last_commit_message=$(git log -1 --pretty=%B)
-          version_pattern="chore: v[0-9]+\.[0-9]+\.[0-9]+"
+  #     - name: Determine If Version Changed
+  #       id: version_changed
+  #       run: |
+  #         last_commit_message=$(git log -1 --pretty=%B)
+  #         version_pattern="chore: v[0-9]+\.[0-9]+\.[0-9]+"
           
-          if [[ $last_commit_message =~ $version_pattern ]]; then
-            last_commit_version=$(echo "${BASH_REMATCH[0]}" | grep -oP "[0-9]+\.[0-9]+\.[0-9]+")
-          else
-            last_commit_version=""
-          fi
+  #         if [[ $last_commit_message =~ $version_pattern ]]; then
+  #           last_commit_version=$(echo "${BASH_REMATCH[0]}" | grep -oP "[0-9]+\.[0-9]+\.[0-9]+")
+  #         else
+  #           last_commit_version=""
+  #         fi
 
-          echo "::set-output name=version_changed::$(test -n "$last_commit_version" && echo "true" || echo "false")"
-          echo "::set-output name=current_version::$last_commit_version"
+  #         echo "::set-output name=version_changed::$(test -n "$last_commit_version" && echo "true" || echo "false")"
+  #         echo "::set-output name=current_version::$last_commit_version"
 
-      - name: Set up Node.js
-        if: steps.version_changed.outputs.version_changed == 'true'
-        uses: actions/setup-node@v3
-        with:
-          node-version: '19.6.1'
+  #     - name: Set up Node.js
+  #       if: steps.version_changed.outputs.version_changed == 'true'
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '19.6.1'
 
-      - name: Build and push Docker images
-        if: steps.version_changed.outputs.version_changed == 'true'
-        run: |          
-          cd website
-          docker build -t ${{ secrets.DOCKERHUB_WEBSITE_URL }}:v${{ steps.version_changed.outputs.current_version }} .
-          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-          docker push ${{ secrets.DOCKERHUB_WEBSITE_URL }}:v${{ steps.version_changed.outputs.current_version }}
-          cd ../nginx
-          docker build -t ${{ secrets.DOCKERHUB_SERVER_URL }}:v${{ steps.version_changed.outputs.current_version }} .
-          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-          docker push ${{ secrets.DOCKERHUB_SERVER_URL }}:v${{ steps.version_changed.outputs.current_version }}
+  #     - name: Build and push Docker images
+  #       if: steps.version_changed.outputs.version_changed == 'true'
+  #       run: |          
+  #         cd website
+  #         docker build -t ${{ secrets.DOCKERHUB_WEBSITE_URL }}:v${{ steps.version_changed.outputs.current_version }} .
+  #         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+  #         docker push ${{ secrets.DOCKERHUB_WEBSITE_URL }}:v${{ steps.version_changed.outputs.current_version }}
+  #         cd ../nginx
+  #         docker build -t ${{ secrets.DOCKERHUB_SERVER_URL }}:v${{ steps.version_changed.outputs.current_version }} .
+  #         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+  #         docker push ${{ secrets.DOCKERHUB_SERVER_URL }}:v${{ steps.version_changed.outputs.current_version }}

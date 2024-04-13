@@ -48,6 +48,7 @@ const ConfirmEventModal = ({ isModalOpen, closeModal, handleConfirm, isConfirmed
       onRequestClose={closeModal}
       contentLabel='Confirm Event Modal'
       style={modalStyle}
+      ariaHideApp={false}
     >
       <div className="modal-header" style={{ display: 'flex', justifyContent: 'end'}}>
         <div className='close-icon-container' onClick={closeModal}>
