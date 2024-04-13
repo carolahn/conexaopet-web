@@ -16,7 +16,8 @@ jobs:
       - name: Installing dependencies
         run: |
           cd website
-          npm install
+          npm install --legacy-peer-deps
+
 
       - name: Running Test
         run: |
