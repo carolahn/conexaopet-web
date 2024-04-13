@@ -2,6 +2,7 @@ import axios from '../../utils/axiosConfig';
 import { setFavoritePetList, setLoading, fetchFavoritePetFailure, addToFavoritePetList, removeFromFavoritePetList } from '../reducers/favoritePetSlice';
 import { setPetList, setPetListByProtector, setSinglePet } from '../reducers/petSlice';
 import { setSearchResults } from '../reducers/searchPetSlice';
+import { setFavoriteEventList } from '../reducers/favoriteEventSlice';
 
 
 export const fetchFavoritePetList = () => async (dispatch, getState) => {
@@ -67,6 +68,14 @@ export const addFavoritePet = (pet) => async (dispatch, getState) => {
     });
     dispatch(setSearchResults({ results: updatedSearchResults, next: nextPage }));
 
+    // Atualizar favoriteEvent
+    const favoriteEvents = currentState.favoriteEvent.favoriteEventList;
+    const updatedFavoriteEvents = favoriteEvents.map(event => ({
+      ...event,
+      pets: event.pets.map(item => (item.id === responseData.pet.id ? responseData.pet : item)),
+    }));
+    dispatch(setFavoriteEventList(updatedFavoriteEvents));
+
   } catch (error) {
     console.error('Error adding favorite pet:', error);
     dispatch(fetchFavoritePetFailure(error.message));
@@ -119,6 +128,14 @@ export const removeFavoritePet = (pet) => async (dispatch, getState) => {
       return item;
     });
     dispatch(setSearchResults({ results: updatedSearchResults, next: nextPage }));
+
+    // Atualizar favoriteEvent
+    const favoriteEvents = currentState.favoriteEvent.favoriteEventList;
+    const updatedFavoriteEvents = favoriteEvents.map(event => ({
+      ...event,
+      pets: event.pets.map(item => (item.id === responseData.pet.id ? responseData.pet : item)),
+    }));
+    dispatch(setFavoriteEventList(updatedFavoriteEvents));
 
   } catch (error) {
     console.error('Error removing favorite pet:', error);

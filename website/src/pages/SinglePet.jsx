@@ -38,7 +38,7 @@ const SinglePet = ({ user = {}, token = "" }) => {
     <div className='single-pet-page' data-testid="single-pet-page">
       <Header user={user} token={token} showLogo={false} title='Informações do pet'/>
       <div className='single-pet-body'>
-        {pet && <PetCard pet={pet} />}
+        {pet && <PetCard pet={pet} key={`single-pet-${pet.id}`}/>}
 				
 			</div>
 

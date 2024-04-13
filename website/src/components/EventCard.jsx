@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { isEqual } from 'lodash';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { formatarData, formatarHora } from '../utils/formatarData';
 import { getUser } from '../utils/selectors';
@@ -25,7 +26,7 @@ import Toast from './Toast';
 import DiscartModal from './DiscartModal';
 import NewPublicationModal from './NewPublicationModal';
 import ConfirmEventModal from './ConfirmEventModal';
-import { deleteEvent, confirmEvent } from '../redux/actions';
+import { deleteEvent, confirmEvent, addFavoritePet, removeFavoritePet } from '../redux/actions';
 import { addFavoriteEvent, removeFavoriteEvent } from '../redux/actions/favoriteEventActions';
 
 
@@ -51,7 +52,8 @@ const EventCard = ( props ) => {
   const eventError = useSelector(state => state.event.error);
   const favoriteEventList = useSelector((state) => state.favoriteEvent.favoriteEventList);
   const favoriteEventError = useSelector((state) => state.favoriteEvent.error);
-
+  const favoritePetList = useSelector((state) => state.favoritePet.favoritePetList);
+  const [previousFavoriteEventList, setPreviousFavoriteEventList] = useState([]);
   
   useEffect(() => {
     setAllImages([]);
@@ -110,16 +112,16 @@ const EventCard = ( props ) => {
 
 	useEffect(() => {
     setCurrentIndex(0);
-  }, [width, props.event]);
+  }, [width]);
 
 
 	useEffect(() => {
     updateCurrentAnimal();
     // eslint-disable-next-line
-	}, [currentIndex]);
+	}, [currentIndex, favoritePetList]);
 
   useEffect(() => {
-    if (favoriteEventList && favoriteEventList.length > 0) {
+    if (favoriteEventList && favoriteEventList.length > 0 && !isEqual(previousFavoriteEventList, favoriteEventList)) {
       const isEventFavorite = favoriteEventList.some(favoriteEvent => favoriteEvent.id === props.event.id);
       setIsFavorite(isEventFavorite);
       
@@ -128,10 +130,21 @@ const EventCard = ( props ) => {
       } else {
         setStarIconSrc(starIcon);
       }
+
+      setPreviousFavoriteEventList(favoriteEventList);
     }
 
     // eslint-disable-next-line
-  }, [favoriteEventList])
+  }, [favoriteEventList]);
+
+  const handleFavoritePetClick = (pet) => {
+    if (favoritePetList.filter(item => item.id === pet.id).length > 0) {
+      dispatch(removeFavoritePet(pet));
+      
+    } else {
+      dispatch(addFavoritePet(pet)); 
+    }
+  };
 
   const handleFavoriteClick = () => {
     setIsFavorite((prevIsFavorite) => {
@@ -263,6 +276,7 @@ const EventCard = ( props ) => {
     }
     console.log("confirmado");
   };
+  
 
   return (
     <div className="event-card" key={props.event.id} id={`event-${props.event.id}`}>
@@ -369,7 +383,10 @@ const EventCard = ( props ) => {
 								<p className='pet-label pet-size'>{currentAnimal.size}</p>
 							</div>
 							<div className='pet-card-buttons'>
-								
+                <div className={`star-icon-container ${user ? '' : 'disabled'}`} onClick={() => handleFavoritePetClick(currentAnimal)}>
+                  <div className='pet-followers'>{currentAnimal.followers}</div>
+                  <img src={favoritePetList.filter(pet => pet.id === currentAnimal.id).length > 0 ? starFilledIcon : starIcon} alt='Favorito' className='star-icon' />
+                </div>
 								<div className='more-icon-container' onClick={handleMoreInfoClick}>
 									<img src={moreIcon} alt='Saiba mais' className='more-icon' />
 								</div>
