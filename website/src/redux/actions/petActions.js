@@ -1,13 +1,14 @@
 import axios from '../../utils/axiosConfig';
 import { setPetList, setLoading, setNextPage, setPetListByProtector, createPetFailure, updatePetSuccess, updatePetFailure, deletePetFailure, getPetChoicesSuccess, getPetChoicesFailure, setCurrentPetId, setSinglePet } from '../reducers/petSlice';
 import { setEventList, setEventListByProtector } from '../reducers/eventSlice';
+import { setSearchResults as setSearchPetResults } from '../reducers/searchPetSlice';
+import { setSearchResults as setSearchEventResults } from '../reducers/searchEventSlice';
 
 export const fetchPetList = (page = 1) => async (dispatch, getState) => {
   try {
     const currentState = getState();
     const nextPage = currentState.pet.nextPage;
 
-    // Verifica se a próxima página é diferente da atual
     if (nextPage !== page) {
       dispatch(setLoading(true));
 
@@ -17,8 +18,6 @@ export const fetchPetList = (page = 1) => async (dispatch, getState) => {
 
       // Filtra os novos resultados para remover duplicatas
       const newResults = data.results.filter(result => !currentPetList.some(pet => pet.id === result.id));
-
-      // Concatena os novos resultados com os existentes
       const updatedPetList = [...currentPetList, ...newResults];
 
       dispatch(setPetList(updatedPetList));
@@ -37,7 +36,6 @@ export const fetchPetListByProtector = (protectorId, page = 1) => async (dispatc
     const currentState = getState();
     const nextPage = currentState.pet.nextPage;
 
-    // Verifica se a próxima página é diferente da atual
     if (nextPage !== page) {
       dispatch(setLoading(true));
 
@@ -47,8 +45,6 @@ export const fetchPetListByProtector = (protectorId, page = 1) => async (dispatc
       const currentPetList = currentState.pet.petListByProtector?.[protectorId] ?? [];
       // Filtra os novos resultados para remover duplicatas
       const newResults = data.results.filter(result => !currentPetList.some(pet => pet.id === result.id));
-
-      // Concatena os novos resultados com os existentes
       const updatedPetList = [...currentPetList, ...newResults];
 
       dispatch(setPetListByProtector({ protectorId, petList: updatedPetList }));
@@ -86,10 +82,57 @@ export const createPet = (protectorId, petData) => async (dispatch, getState) =>
   }
 };
 
-export const updatePet = (petId, petData) => async (dispatch) => {
+export const updatePet = (petId, petData) => async (dispatch, getState) => {
   try {
     const response = await axios.put(`/pets/update/${petId}/`, petData);
     dispatch(updatePetSuccess(response.data));
+
+    // Atualizar resultados da busca
+    const currentState = getState();
+    const searchResults = currentState.searchPets.searchResults;
+    const nextPage = currentState.searchPets.nextPage;
+    const updatedSearchResults = searchResults.map(item => {
+      if (item.id === petId) {
+        return response.data;
+      }
+      return item;
+    });
+    dispatch(setSearchPetResults({ results: updatedSearchResults, next: nextPage }));
+
+    // Atualizar os eventos
+    const protectorId = response.data.owner.id;
+    const { eventList, eventListByProtector } = currentState.event;
+
+    const updatedEventList = eventList.map(event => ({
+      ...event,
+      pets: event.pets.map(pet => (pet.id === petId ? response.data : pet)),
+    }));
+    dispatch(setEventList(updatedEventList));
+
+    if (eventListByProtector.hasOwnProperty(protectorId)) {
+      const updatedEventListByProtector = eventListByProtector[protectorId].map(event => ({
+        ...event,
+        pets: event.pets.map(pet => (pet.id === petId ? response.data : pet)),
+      }));
+      dispatch(setEventListByProtector({ protectorId, eventList: updatedEventListByProtector }));
+    }
+
+    // Atualizar favoritos - somente se o member puder atualizar pet
+    // const favoritePets = searchResults.favoritePet.favoritePetList;
+    // const updatedFavoritePets = favoritePets.map(item => {
+    //   if (item.id === petId) {
+    //     return response.data;
+    //   }
+    //   return item;
+    // });
+    // dispatch(setFavoritePetList(updatedFavoritePets));
+
+    // const favoriteEvents = searchResults.favoriteEvent.favoriteEventList;
+    // const updatedFavoriteEvents = favoriteEvents.map(event => ({
+    //   ...event,
+    //   pets: event.pets.map(pet => (pet.id === petId ? response.data : pet)),
+    // }));
+    // dispatch(setFavoriteEventList(updatedFavoritePets));
 
     dispatch(getPetChoices(response.data.owner.id));
   } catch (error) {
@@ -132,6 +175,20 @@ export const deletePet = (petId) => async (dispatch, getState) => {
     }));
     dispatch(setEventListByProtector({ protectorId, eventList: updatedEventListByProtector }));
     
+    // Remover pet das buscas
+    const currentState = getState();
+    const searchPetResults = currentState.searchPets.searchResults;
+    const nextPage = currentState.searchPets.nextPage;
+    const updatedSearchResults = searchPetResults.filter(pet => pet.id !== petId);
+    dispatch(setSearchPetResults({ results: updatedSearchResults, next: nextPage }));
+
+    const searchEventResults = currentState.searchEvents.searchResults;
+    const eventNextPage = currentState.searchPets.nextPage;
+    const updatedSearchEventResults = searchEventResults.map(event => ({
+      ...event,
+      pets: event.pets.filter(pet => pet.id !== petId)
+    }));
+    dispatch(setSearchEventResults({ results: updatedSearchEventResults, next: eventNextPage }));
 
     dispatch(getPetChoices(protectorId));
 

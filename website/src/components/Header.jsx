@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import userIcon from '../assets/images/user.png';
@@ -8,6 +9,8 @@ import searchFilledIcon from '../assets/images/search-filled.png';
 import returnIcon from '../assets/images/return.png';
 import UserModal from './UserModal';
 import SearchModal from './SearchModal';
+import { resetSearchEventsState } from '../redux/reducers/searchEventSlice';
+import { resetSearchPetsState } from '../redux/reducers/searchPetSlice';
 
 const Header = ({ user, token, showLogo = true, title = '' }) => {
   const [isVisible, setIsVisible] = useState(true);
@@ -16,6 +19,7 @@ const Header = ({ user, token, showLogo = true, title = '' }) => {
 	const [userIconSrc, setUserIconSrc] = useState(userIcon);
 	const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 	const [searchIconSrc, setSearchIconSrc] = useState(searchIcon);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,6 +59,8 @@ const Header = ({ user, token, showLogo = true, title = '' }) => {
 			setIsSearchModalOpen(false);
 			setSearchIconSrc(searchIcon);
 		} else {
+      dispatch(resetSearchEventsState());
+      dispatch(resetSearchPetsState());
 			setIsSearchModalOpen(true);
 			setSearchIconSrc(searchFilledIcon);
 		}

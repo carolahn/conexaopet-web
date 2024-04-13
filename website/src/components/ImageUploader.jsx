@@ -51,11 +51,8 @@ const ImageUploader = ({ label, onChange, initialValues=[], dataRecovered=[] }) 
   }, []);
 
   useEffect(() => {
-    console.log('initialValues: ', initialValues)
-    console.log('dataRecovered: ', dataRecovered)
     if (initialValues.length === 0 && dataRecovered && dataRecovered.length > 0 && !isEqual(selectedImages, dataRecovered)) {
       setSelectedImages(dataRecovered);
-      console.log("datarecovered")
     }
     // eslint-disable-next-line
   }, [dataRecovered]);
@@ -159,7 +156,6 @@ const ImageUploader = ({ label, onChange, initialValues=[], dataRecovered=[] }) 
                 onError={(e) => console.error('Erro ao carregar imagem:', e)}
                 alt={`Imagem ${index + 1}`}
                 style={width > 900 ? imagePreviewStyles : imagePreviewMobileStyles} 
-                onClick={() => console.log(`Clicou na miniatura ${index + 1}`)}
               />
               <button onClick={() => removeImage(index)} style={removeButtonStyles}>
                 <img src={trashIcon} alt="Remover" style={trashIconStyles} />

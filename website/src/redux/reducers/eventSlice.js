@@ -64,10 +64,10 @@ const eventSlice = createSlice({
       state.error = action.payload;
     },
     setCurrentEventId(state, action) {
-      state.currentPetId = action.payload;
+      state.currentEventId = action.payload;
     },
     setSingleEvent(state, action) {
-      state.singlePet = action.payload;
+      state.singleEvent = action.payload;
     },
     resetEventState(state) { 
       return {

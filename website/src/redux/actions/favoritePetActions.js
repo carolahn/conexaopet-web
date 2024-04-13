@@ -1,40 +1,7 @@
-// import axios from '../../utils/axiosConfig';
-// import { setFavoritePetList, setLoading, setNextPage, fetchFavoritePetFailure } from '../reducers/favoritePetSlice';
-
-// export const fetchFavoritePetList = (page = 1) => async (dispatch, getState) => {
-//   try {
-//     const currentState = getState();
-//     const nextPage = currentState.favoritePet.nextPage;
-
-//     // Verifica se a próxima página é diferente da atual
-//     if (nextPage !== page) {
-//       dispatch(setLoading(true));
-
-//       const response = await axios.get(`/favorite_pets/?page=${page}`);
-//       const data = response.data;
-//       const currentFavoritePetList = currentState.favoritePet.favoritePetList;
-
-//       // Filtra os novos resultados para remover duplicatas
-//       const newResults = data.results.filter(result => !currentFavoritePetList.some(pet => pet.id === result.id));
-
-//       // Concatena os novos resultados com os existentes
-//       const updatedFavoritePetList = [...currentFavoritePetList, ...newResults];
-
-//       dispatch(setFavoritePetList(updatedFavoritePetList));
-//       dispatch(setNextPage(data.next));
-//     }
-//   } catch (error) {
-//     console.error('Error fetching favorite pets list:', error);
-//     dispatch(fetchFavoritePetFailure(error.message));
-//     throw error;
-//   } finally {
-//     dispatch(setLoading(false));
-//   }
-// };
-
 import axios from '../../utils/axiosConfig';
 import { setFavoritePetList, setLoading, fetchFavoritePetFailure, addToFavoritePetList, removeFromFavoritePetList } from '../reducers/favoritePetSlice';
-import { setPetList, setPetListByProtector } from '../reducers/petSlice';
+import { setPetList, setPetListByProtector, setSinglePet } from '../reducers/petSlice';
+import { setSearchResults } from '../reducers/searchPetSlice';
 
 
 export const fetchFavoritePetList = () => async (dispatch, getState) => {
@@ -85,6 +52,21 @@ export const addFavoritePet = (pet) => async (dispatch, getState) => {
       }
     }
 
+    // Atualiza single pet
+    dispatch(setSinglePet(responseData.pet));
+
+    // Atualizar resultados da busca
+    const currentState = getState();
+    const searchResults = currentState.searchPets.searchResults;
+    const nextPage = currentState.searchPets.nextPage;
+    const updatedSearchResults = searchResults.map(item => {
+      if (item.id === pet.id) {
+        return responseData.pet;
+      }
+      return item;
+    });
+    dispatch(setSearchResults({ results: updatedSearchResults, next: nextPage }));
+
   } catch (error) {
     console.error('Error adding favorite pet:', error);
     dispatch(fetchFavoritePetFailure(error.message));
@@ -122,6 +104,21 @@ export const removeFavoritePet = (pet) => async (dispatch, getState) => {
         dispatch(setPetListByProtector({ protectorId: ownerId, petList: protectorPetList }));
       }
     }
+
+    // Atualiza single pet
+    dispatch(setSinglePet(responseData.pet));
+
+    // Atualizar resultados da busca
+    const currentState = getState();
+    const searchResults = currentState.searchPets.searchResults;
+    const nextPage = currentState.searchPets.nextPage;
+    const updatedSearchResults = searchResults.map(item => {
+      if (item.id === pet.id) {
+        return responseData.pet;
+      }
+      return item;
+    });
+    dispatch(setSearchResults({ results: updatedSearchResults, next: nextPage }));
 
   } catch (error) {
     console.error('Error removing favorite pet:', error);

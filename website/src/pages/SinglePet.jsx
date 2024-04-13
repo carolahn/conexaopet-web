@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import PetCard from '../components/PetCard';
@@ -9,7 +9,9 @@ import { fetchSinglePet } from '../redux/actions';
 const SinglePet = ({ user = {}, token = "" }) => {
   const [pet, setPet] = useState(null);
   const { id } = useParams();
+  const singlePet = useSelector((state) => state.pet.singlePet);
   const dispatch = useDispatch();
+
   
   useEffect(() => {
     const fetchData = async () => {
@@ -25,6 +27,11 @@ const SinglePet = ({ user = {}, token = "" }) => {
     fetchData();
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    setPet(singlePet);
+
+  }, [singlePet]);
 
 
   return (

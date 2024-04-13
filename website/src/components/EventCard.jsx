@@ -17,12 +17,15 @@ import quoteIcon from '../assets/images/quote.png';
 import clockIcon from '../assets/images/clock.png';
 import editIcon from '../assets/images/edit.png';
 import trashIcon from '../assets/images/trash.png';
+import checkIcon from '../assets/images/check.png';
+import checkFilledIcon from '../assets/images/check-filled.png';
 import { imageCache } from './CupomCard';
 import { getPersonalityString, getAlongString, getLifeStage, getPetType } from '../utils/petData';
 import Toast from './Toast';
 import DiscartModal from './DiscartModal';
 import NewPublicationModal from './NewPublicationModal';
-import { deleteEvent } from '../redux/actions';
+import ConfirmEventModal from './ConfirmEventModal';
+import { deleteEvent, confirmEvent } from '../redux/actions';
 import { addFavoriteEvent, removeFavoriteEvent } from '../redux/actions/favoriteEventActions';
 
 
@@ -38,6 +41,7 @@ const EventCard = ( props ) => {
   const [sortedImages, setSortedImages] = useState([]);
   const [isDiscartModalOpen, setIsDiscartModalOpen] = useState(false);
 	const [isNewPublicationModalOpen, setIsNewPublicationModalOpen] = useState(false);
+  const [isConfirmEventModalOpen, setIsConfirmEventModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
   const [toastType, setToastType] = useState('success');
@@ -197,6 +201,14 @@ const EventCard = ( props ) => {
 		setIsNewPublicationModalOpen(false);
 	};
 
+  const openConfirmEventModal = () => {
+    setIsConfirmEventModalOpen(!isDiscartModalOpen);
+  };
+
+	const closeConfirmEventModal = () => {
+    setIsConfirmEventModalOpen(false);
+  };
+
   const handleOpenToast = () => {
     setShowToast(true);
   };
@@ -230,6 +242,28 @@ const EventCard = ( props ) => {
     navigate(`/pet/${id}`);
   };
 
+  const handleConfirmEvent = () => {
+    const currentIsConfirmed = props.event.is_confirmed;
+    try {
+      dispatch(confirmEvent(props.event.id, !currentIsConfirmed));
+      if (!eventError) {
+        setToastMessage(currentIsConfirmed ? 'Evento foi desconfirmado' :  'Evento foi confirmado');
+        setToastType('success');
+        setTimeout(() => {
+          closeConfirmEventModal();
+        }, 1000);
+        handleOpenToast();
+      } else {
+        setToastMessage(`Erro: ${eventError}`);
+        setToastType('failure');
+        handleOpenToast();
+      }
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+    console.log("confirmado");
+  };
+
   return (
     <div className="event-card" key={props.event.id} id={`event-${props.event.id}`}>
 			<div className='event-card-header'>
@@ -241,11 +275,14 @@ const EventCard = ( props ) => {
         </div>
         {user?.id === props.event.owner.id && (
           <div className='event-options-container'>
+            <div className='icon-container' onClick={openConfirmEventModal}>
+              <img src={props.event.is_confirmed ? checkFilledIcon : checkIcon} alt={props.event.is_confirmed ? 'Cancelar' : 'Confirmar'} className='check-icon' />
+            </div>
             <div className='icon-container' onClick={openNewPublicationModal}>
-              <img src={editIcon} alt='Buscar' className='edit-icon' />
+              <img src={editIcon} alt='Editar' className='edit-icon' />
             </div>
             <div className='icon-container' onClick={openDiscartModal}>
-              <img src={trashIcon} alt='Perfil' className='trash-icon' />
+              <img src={trashIcon} alt='Remover' className='trash-icon' />
             </div>
           </div>
         )}
@@ -332,9 +369,7 @@ const EventCard = ( props ) => {
 								<p className='pet-label pet-size'>{currentAnimal.size}</p>
 							</div>
 							<div className='pet-card-buttons'>
-								<div className='star-icon-container' onClick={handleFavoriteClick}>
-									<img src={starIconSrc} alt='Favorito' className='star-icon' />
-								</div>
+								
 								<div className='more-icon-container' onClick={handleMoreInfoClick}>
 									<img src={moreIcon} alt='Saiba mais' className='more-icon' />
 								</div>
@@ -387,6 +422,7 @@ const EventCard = ( props ) => {
 
       <NewPublicationModal isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} initialValues={props.event} editType={'event'} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
 			<DiscartModal isModalOpen={isDiscartModalOpen} closeModal={closeDiscartModal} handleConfirm={handleDeleteEvent} />
+      <ConfirmEventModal isModalOpen={isConfirmEventModalOpen} closeModal={closeConfirmEventModal} handleConfirm={handleConfirmEvent} isConfirmed={props.event.is_confirmed} />
 
       {showToast && (
         <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
@@ -435,12 +471,17 @@ const EventCard = ( props ) => {
           
           }
           
+          .check-icon {
+            height: 23px;
+            cursor: pointer;
+          }
+
           .edit-icon, .trash-icon {
             height: 20px;
             cursor: pointer;
           }
           
-          .edit-icon {
+          .check-icon, .edit-icon {
             margin-right: 5px;
           }
           
@@ -666,6 +707,11 @@ const EventCard = ( props ) => {
             width: 20%;
             display: flex;
             justify-content: end;
+          }
+
+          .pet-followers {
+            margin-right: 3px;
+            font-size: 1.2rem;
           }
           
           .star-icon, .more-icon {

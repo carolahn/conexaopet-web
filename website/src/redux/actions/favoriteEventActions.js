@@ -1,41 +1,7 @@
-// import axios from '../../utils/axiosConfig';
-// import { setFavoriteEventList, setLoading, setNextPage, fetchFavoriteEventFailure } from '../reducers/favoriteEventSlice';
-
-// export const fetchFavoriteEventList = (page = 1) => async (dispatch, getState) => {
-//   try {
-//     const currentState = getState();
-//     const nextPage = currentState.favoriteEvent.nextPage;
-
-//     // Verifica se a próxima página é diferente da atual
-//     if (nextPage !== page) {
-//       dispatch(setLoading(true));
-
-//       const response = await axios.get(`/favorite_events/?page=${page}`);
-//       const data = response.data;
-//       const currentFavoriteEventList = currentState.favoriteEvent.favoriteEventList;
-
-//       // Filtra os novos resultados para remover duplicatas
-//       const newResults = data.results.filter(result => !currentFavoriteEventList.some(event => event.id === result.id));
-
-//       // Concatena os novos resultados com os existentes
-//       const updatedFavoriteEventList = [...currentFavoriteEventList, ...newResults];
-
-//       dispatch(setFavoriteEventList(updatedFavoriteEventList));
-//       dispatch(setNextPage(data.next));
-//     }
-//   } catch (error) {
-//     console.error('Error fetching favorite events list:', error);
-//     dispatch(fetchFavoriteEventFailure(error.message));
-//     throw error;
-//   } finally {
-//     dispatch(setLoading(false));
-//   }
-// };
-
-
 import axios from '../../utils/axiosConfig';
 import { setFavoriteEventList, setLoading, fetchFavoriteEventFailure, addToFavoriteEventList, removeFromFavoriteEventList } from '../reducers/favoriteEventSlice';
-import { setEventList, setEventListByProtector } from '../reducers/eventSlice'; 
+import { setEventList, setEventListByProtector, setSingleEvent } from '../reducers/eventSlice'; 
+import { setSearchResults } from '../reducers/searchEventSlice';
 
 export const fetchFavoriteEventList = () => async (dispatch, getState) => {
   try {
@@ -85,6 +51,21 @@ export const addFavoriteEvent = (event) => async (dispatch, getState) => {
       }
     }
 
+    // Atualiza single event
+    dispatch(setSingleEvent(responseData.event));
+
+    // Atualizar resultados da busca
+    const currentState = getState();
+    const searchResults = currentState.searchEvents.searchResults;
+    const nextPage = currentState.searchEvents.nextPage;
+    const updatedSearchResults = searchResults.map(item => {
+      if (item.id === event.id) {
+        return responseData.event;
+      }
+      return item;
+    });
+    dispatch(setSearchResults({ results: updatedSearchResults, next: nextPage }));
+
   } catch (error) {
     console.error('Error adding favorite event:', error);
     dispatch(fetchFavoriteEventFailure(error.message));
@@ -122,6 +103,21 @@ export const removeFavoriteEvent = (event) => async (dispatch, getState) => {
         dispatch(setEventListByProtector({ protectorId: ownerId, eventList: protectorEventList }));
       }
     }
+
+    // Atualiza single event
+    dispatch(setSingleEvent(responseData.event));
+
+    // Atualizar resultados da busca
+    const currentState = getState();
+    const searchResults = currentState.searchEvents.searchResults;
+    const nextPage = currentState.searchEvents.nextPage;
+    const updatedSearchResults = searchResults.map(item => {
+      if (item.id === event.id) {
+        return responseData.event;
+      }
+      return item;
+    });
+    dispatch(setSearchResults({ results: updatedSearchResults, next: nextPage }));
 
   } catch (error) {
     console.error('Error removing favorite event:', error);

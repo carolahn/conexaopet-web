@@ -53,8 +53,8 @@ const SearchPetForm = ({ closeModal = null }) => {
       city: city,
     };
 
-    const jsonData = JSON.stringify(formData);
-    console.log(jsonData);
+    // const jsonData = JSON.stringify(formData);
+    // console.log(jsonData);
 
     const searchParams = Object.entries(formData)
     .filter(([key, value]) => value !== null && value !== '' && value !== undefined)

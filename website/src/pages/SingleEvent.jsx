@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import { useParams } from 'react-router-dom';
 import EventCard from '../components/EventCard';
@@ -9,6 +9,7 @@ import { fetchSingleEvent } from '../redux/actions';
 const SingleEvent = ({ user = {}, token = "" }) => {
   const [event, setEvent] = useState(null);
   const { id } = useParams();
+  const singleEvent = useSelector((state) => state.event.singleEvent);
   const dispatch = useDispatch();
   
   useEffect(() => {
@@ -25,6 +26,10 @@ const SingleEvent = ({ user = {}, token = "" }) => {
     fetchData();
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    setEvent(singleEvent);
+  }, [singleEvent]);
 
 
   return (
