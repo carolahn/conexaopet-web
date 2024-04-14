@@ -74,56 +74,56 @@ jobs:
           tag_name: v${{ steps.version_changed.outputs.current_version }}
         
 
-  # deploy:
-  #   name: Deploying
-  #   needs: [test]
-  #   runs-on: ubuntu-20.04
-  #   env:
-  #       EC2_HOST_DNS: ${{ secrets.EC2_HOST_DNS }}
-  #       REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-  #   steps:
-  #     - name: Install docker on EC2
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.EC2_HOST_DNS }}
-  #         username: ${{ secrets.EC2_USERNAME }}
-  #         key: ${{ secrets.EC2_SSH_KEY_PEM }}
-  #         script: |
-  #             sudo su
-  #             sudo apt-get update
-  #             yes | sudo apt-get install docker.io
-  #             sudo systemctl start docker
-  #             sudo systemctl enable docker
-  #             sudo usermod -aG docker $USER
-  #             sudo usermod -aG docker ubuntu
-  #             exec bash
-  #     - name: Install docker-compose on EC2
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.EC2_HOST_DNS }}
-  #         username: ${{ secrets.EC2_USERNAME }}
-  #         key: ${{ secrets.EC2_SSH_KEY_PEM }}
-  #         script: |
-  #             sudo su
-  #             sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  #             sudo chmod +x /usr/local/bin/docker-compose
-  #             docker-compose --version
-  #     - name: Deploying Application
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.EC2_HOST_DNS }}
-  #         username: ${{ secrets.EC2_USERNAME }}
-  #         key: ${{ secrets.EC2_SSH_KEY_PEM }}
-  #         script: |
-  #             sudo su
-  #             docker stop website nginx
-  #             docker rm website nginx
-  #             docker rmi conexaopet-web-nginx conexaopet-web-website
-  #             rm -rf conexaopet-web
-  #             git clone https://github.com/carolahn/conexaopet-web.git
-  #             cd conexaopet-web
-  #             rm -rf /website/build/*
-  #             docker-compose -f docker-compose.prod.yml up --build -d
+  deploy:
+    name: Deploying
+    needs: [test]
+    runs-on: ubuntu-20.04
+    env:
+        EC2_HOST_DNS: ${{ secrets.EC2_HOST_DNS }}
+        REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+    steps:
+      - name: Install docker on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST_DNS }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY_PEM }}
+          script: |
+              sudo su
+              sudo apt-get update
+              yes | sudo apt-get install docker.io
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              sudo usermod -aG docker $USER
+              sudo usermod -aG docker ubuntu
+              exec bash
+      - name: Install docker-compose on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST_DNS }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY_PEM }}
+          script: |
+              sudo su
+              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+              docker-compose --version
+      - name: Deploying Application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST_DNS }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY_PEM }}
+          script: |
+              sudo su
+              docker stop website nginx
+              docker rm website nginx
+              docker rmi conexaopet-web-nginx conexaopet-web-website
+              rm -rf conexaopet-web
+              git clone https://github.com/carolahn/conexaopet-web.git
+              cd conexaopet-web
+              rm -rf /website/build/*
+              docker-compose -f docker-compose.prod.yml up --build -d
 
 
   push-to-dockerhub:
