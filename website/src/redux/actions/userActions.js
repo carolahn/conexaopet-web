@@ -39,3 +39,13 @@ export const getUser = (userId) => async (dispatch) => {
     dispatch({ type: 'GET_USER_FAILURE', payload: error.response.data });
   }
 };
+
+export const fetchProfileUser = (userId) => async (dispatch) => {
+  dispatch({ type: 'FETCH_USER_REQUEST' });
+  try {
+    const response = await axios.get(`/users/${userId}/`);
+    dispatch({ type: 'FETCH_USER_SUCCESS', payload: response.data });
+  } catch (error) {
+    dispatch({ type: 'FETCH_USER_FAILURE', payload: error.response.data });
+  }
+};

@@ -6,11 +6,12 @@ import InfiniteScroll from '../components/InfiniteScroll';
 import CupomCardList from '../components/CupomCardList';
 import SponsorCardDashboard from '../components/SponsorCardDashboard';
 import { fetchCupomListBySponsor } from '../redux/actions/cupomActions';
+import { fetchProfileUser } from '../redux/actions';
 import Toast from '../components/Toast';
 import FloatingButton from '../components/FloatingButton';
 
 
-const DashboardSponsor = ( props ) => {
+const ProfileSponsor = ( props ) => {
   const [selectedTab, setSelectedTab] = useState('cupom');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
@@ -18,30 +19,22 @@ const DashboardSponsor = ( props ) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const cupomListBySponsor = useSelector((state) => state.cupom.cupomListBySponsor[props.user?.id]);
+  const cupomListBySponsor = useSelector((state) => state.cupom.cupomListBySponsor[id]);
   const nextPage = useSelector((state) => state.cupom.nextPage);
   const isLoading = useSelector((state) => state.cupom.isLoading);
+  const profileUser = useSelector((state) => state.userReducer.profileUser);
 
 
   useEffect(() => {
-    if (id === null || id === undefined) {
-      navigate('/');
-    } else if (props.user.id != id) {
-      navigate('/');
-    }
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
-    dispatch(fetchCupomListBySponsor(props.user.id));
-    dispatch(fetchCupomListBySponsor(props.user.id));
+    dispatch(fetchCupomListBySponsor(id));
+    dispatch(fetchProfileUser(id));
     // eslint-disable-next-line
   }, [dispatch]);
 
   const loadMoreItems = () => {
     if (nextPage) {
       const pageNumber = nextPage.split('page=')[1];
-      dispatch(fetchCupomListBySponsor(props.user.id, pageNumber));
+      dispatch(fetchCupomListBySponsor(id, pageNumber));
     }
   };
 
@@ -57,9 +50,9 @@ const DashboardSponsor = ( props ) => {
   return (
     <>
       <div className='profile-container'>
-        <Header user={props.user} token={props.token} />
+        <Header user={props.user} token={props.token} showLogo={false} title='Perfil do patrocinador' />
         <div className='profile-body'>
-          <SponsorCardDashboard sponsor={props.user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
+          <SponsorCardDashboard sponsor={profileUser} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
 
           <InfiniteScroll
             itemList={cupomListBySponsor || []}
@@ -102,4 +95,4 @@ const DashboardSponsor = ( props ) => {
   );
 };
 
-export default DashboardSponsor;
+export default ProfileSponsor;

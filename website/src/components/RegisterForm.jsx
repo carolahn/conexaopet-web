@@ -216,13 +216,6 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
                   <input type="text" id="userPix" aria-label="Insira a chave pix" value={pix} onChange={(e) => setPix(e.target.value)} />
                 </div>
               </div>
-              <div className="row">
-                <div className="col">
-                  <div className="input-group">
-                    <textarea type="text" id="userDescription" placeholder="Descrição" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(e.target.value)}/>
-                  </div>
-                </div>
-              </div>
             </>
         )}
 
@@ -235,6 +228,18 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
                 </div>
             </div>
         )}
+
+        { // eslint-disable-next-line
+          (userType == '2' || userType == '3') && (
+            <div className="row">
+              <div className="col">
+                <div className="input-group">
+                  <textarea type="text" id="userDescription" placeholder="Descrição" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(e.target.value)}/>
+                </div>
+              </div>
+            </div>
+          )
+        }
 
         <button type="submit" className="btn w-100 btn-publish">{initialValues ? 'Salvar' : 'Cadastrar'}</button>
       </form>

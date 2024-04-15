@@ -7,6 +7,7 @@ const initialState = {
   error: null,
   protectorUsers: [],
   user: null,
+  profileUser: null,
 };
 
 export const userReducer = (state = initialState, action) => {
@@ -46,6 +47,25 @@ export const userReducer = (state = initialState, action) => {
       return {
         ...state,
         error: null,
+      };
+    case 'FETCH_USER_REQUEST':
+      return {
+        ...state,
+        loading: true,
+        error: null, 
+      };
+    case 'FETCH_USER_SUCCESS':
+      return {
+        ...state,
+        profileUser: action.payload,
+        loading: false, 
+        error: null,
+      };
+    case 'FETCH_USER_FAILURE':
+      return {
+        ...state,
+        loading: false, 
+        error: action.payload,
       };
     case 'RESET_USER_STATE':
       return initialState;

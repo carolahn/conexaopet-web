@@ -89,7 +89,12 @@ const MultiSelect = ({ options, placeholder, attribute, onChange, initialValues=
           }}
         >
           {options.map((option, index) => (
-            <div key={`multiselect-${option.id}-${index}`} style={optionContainerStyles}>
+            //////////
+            <div
+              key={`multiselect-${option.id}-${index}`}
+              style={optionContainerStyles}
+              onClick={() => handleOptionChange(option.id)} // Manipula o clique na div
+            >
               <input
                 type="checkbox"
                 id={`${option.id}-${index}`}
@@ -97,6 +102,7 @@ const MultiSelect = ({ options, placeholder, attribute, onChange, initialValues=
                 checked={selectedOptions.includes(option.id)}
                 onChange={() => handleOptionChange(option.id)}
                 style={checkboxStyles}
+                onClick={(e) => e.stopPropagation()} // Impede a propagação do clique para a div pai
               />
               <label htmlFor={option.id} style={labelStyles}>
                 {option[attribute]}
@@ -125,15 +131,18 @@ const optionContainerStyles = {
   alignItems: 'center',
   color: '#000000',
   fontSize: '1rem',
+  cursor: 'pointer',
 };
 
 const checkboxStyles = {
   marginRight: '5px',
+  cursor: 'pointer',
 };
 
 const labelStyles = {
   margin: '0',
   color: '#000000',
+  cursor: 'pointer',
 };
 
 export default MultiSelect;

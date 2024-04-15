@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { getUser } from '../utils/selectors';
 import starIcon from '../assets/images/star.png';
@@ -36,6 +37,7 @@ const PetCard = ({ pet }) => {
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
   const [toastType, setToastType] = useState('success');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector(getUser);
   const petError = useSelector(state => state.pet.error);
   const favoritePetList = useSelector((state) => state.favoritePet.favoritePetList);
@@ -193,6 +195,10 @@ const PetCard = ({ pet }) => {
     }
   };
 
+  const handleGetOwner = (id) => {
+    navigate(`/protector/${id}`);
+  };
+
   return (
     <div className="pet-card" id={`pet-card=${pet?.id}`}>
 			<div className='pet-card-header'>
@@ -200,7 +206,7 @@ const PetCard = ({ pet }) => {
 					<div className='pet-avatar'>
 						<img src={ownerImage} alt={`Avatar de ${pet.owner?.username}`} />
 					</div>
-					<h2>{pet.owner?.username}</h2>
+					<h2 className='pet-header-owner' onClick={() => handleGetOwner(pet.owner?.id)}>{pet.owner?.username}</h2>
 				</div>
 				{user?.id === pet.owner?.id && (
 					<div className='pet-options-container'>
@@ -252,7 +258,7 @@ const PetCard = ({ pet }) => {
 						<p className='pet-label pet-size'>{pet.size}</p>
 					</div>
 					<div className='pet-card-buttons'>
-						<div className={`star-icon-container ${user ? '' : 'disabled'}`} onClick={handleFavoriteClick}>
+						<div className={`star-icon-container ${(user && user.type === 1) ? '' : 'disabled'}`} onClick={handleFavoriteClick}>
               <div className='pet-followers'>{pet.followers}</div>
 							<img src={starIconSrc} alt='Favorito' className='star-icon' />
 						</div>
@@ -332,6 +338,16 @@ const PetCard = ({ pet }) => {
           .pet-header {
             display: flex;
             align-items: center;
+          }
+
+          .pet-header-owner {
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s ease;
+          }
+
+          .pet-header-owner:hover {
+            color: #666; 
           }
           
           .pet-avatar {
@@ -522,6 +538,14 @@ const PetCard = ({ pet }) => {
           
             .pet-card-images-container {
               margin-bottom: 5px;
+            }
+          }
+
+          @media (max-width: 532px) {
+            .pet-label {
+              padding: 5px 7px;
+              margin-right: 7px;
+              font-size: 0.7rem;
             }
           }
             

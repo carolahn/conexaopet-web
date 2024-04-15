@@ -276,6 +276,10 @@ const EventCard = ( props ) => {
     }
     console.log("confirmado");
   };
+
+  const handleGetOwner = (id) => {
+    navigate(`/protector/${id}`);
+  };
   
 
   return (
@@ -285,7 +289,7 @@ const EventCard = ( props ) => {
           <div className='event-avatar'>
             <img src={ownerImage} alt={`Avatar de ${props.event.owner.username}`} />
           </div>
-          <h2>{props.event.owner.username}</h2>
+          <h2 className='event-header-owner' onClick={() => handleGetOwner(props.event.owner?.id)}>{props.event.owner.username}</h2>
         </div>
         {user?.id === props.event.owner.id && (
           <div className='event-options-container'>
@@ -341,7 +345,7 @@ const EventCard = ( props ) => {
 							<p className='event-label'>{props.event.address.name}</p>
 						</div>
 						<div className='event-card-buttons'>
-							<div className={`star-icon-container ${user ? '' : 'disabled'}`} onClick={handleFavoriteClick}>
+							<div className={`star-icon-container ${(user && user.type === 1) ? '' : 'disabled'}`} onClick={handleFavoriteClick}>
                 <div className='event-followers'>{props.event.followers}</div>
 								<img src={starIconSrc} alt='Favorito' className='star-icon' />
 							</div>
@@ -467,6 +471,16 @@ const EventCard = ( props ) => {
             display: flex;
             align-items: center;
           }
+
+          .event-header-owner {
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s ease;
+          }
+
+          .event-header-owner:hover {
+            color: #666; 
+          }
             
           .event-avatar {
             width: 50px;
@@ -521,7 +535,13 @@ const EventCard = ( props ) => {
           }
 
           .pet-card-name {
-            cursor: pointer
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s ease;
+          }
+
+          .pet-card-name:hover {
+            color: #666; 
           }
 
           .event-followers {
@@ -859,6 +879,14 @@ const EventCard = ( props ) => {
           
             .pet-card-images-container {
               margin-bottom: 5px;
+            }
+          }
+
+          @media (max-width: 532px) {
+            .pet-label, .event-label {
+              padding: 5px 7px;
+              margin-right: 7px;
+              font-size: 0.7rem;
             }
           }
             

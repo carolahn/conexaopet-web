@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import SimpleHeader from '../components/SimpleHeader';
-import { getUser, login } from '../redux/actions';
+import { fetchFavoritePetList, getUser, login } from '../redux/actions';
+import { fetchFavoriteEventList } from '../redux/actions/favoriteEventActions';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -17,6 +18,8 @@ const Login = () => {
     if (token) {
       navigate('/');
       dispatch(getUser(user.id));
+      dispatch(fetchFavoritePetList());
+      dispatch(fetchFavoriteEventList());
     }
   }, [token, navigate]);
 

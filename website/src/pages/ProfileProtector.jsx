@@ -1,44 +1,117 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
-import ProtectorCard from '../components/ProtectorCard';
 import PetCardList from '../components/PetCardList';
 import EventCardList from '../components/EventCardList';
-import mockPetCardData from '../components/mockPetCardData';
-import mockEventCardData from '../components/mockEventCardData';
-import { mockProtectorData } from '../components/mockProtectorData';
+import Toast from '../components/Toast';
 import InfiniteScroll from '../components/InfiniteScroll';
+import ProtectorCardDashboard from '../components/ProtectorCardDashboard';
+import { fetchPetListByProtector, getPetChoices } from '../redux/actions/petActions';
+import { fetchEventListByProtector } from '../redux/actions/eventActions';
+import LoadingSpinner from '../components/LoadingSpinner';
 import FloatingButton from '../components/FloatingButton';
+import { getUser, fetchProfileUser } from '../redux/actions';
 
 
-const ProfileProtector = () => {
+const ProfileProtector = ( props ) => {
   const [selectedTab, setSelectedTab] = useState('pet');
   const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Alterações salvas');
+  const [toastType, setToastType] = useState('success');
+  const petListByProtector = useSelector((state) => state.pet.petListByProtector[id]);
+  const petNextPage = useSelector((state) => state.pet.nextPage);
+  const petIsLoading = useSelector((state) => state.pet.isLoading);
+  const eventListByProtector = useSelector((state) => state.event.eventListByProtector[id]);
+  const eventNextPage = useSelector((state) => state.event.nextPage);
+  const eventIsLoading = useSelector((state) => state.event.isLoading);
+  const [loading, setLoading] = useState(true);
+  const user = useSelector((state) => state.userReducer.user);
+  const profileUser = useSelector((state) => state.userReducer.profileUser);
+
+
+  useEffect(() => {
+    showLoadingSpiner();
+  }, [selectedTab]);
+
+  const showLoadingSpiner = () => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000); 
+
+  };
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchPetListByProtector(id));
+      dispatch(fetchEventListByProtector(id));
+      dispatch(getPetChoices(id));
+      dispatch(fetchProfileUser(id));
+    }
+    // eslint-disable-next-line
+  }, [id]);
+
+  const loadMorePets = () => {
+    if (petNextPage) {
+      const pageNumber = petNextPage.split('page=')[1];
+      dispatch(fetchPetListByProtector(id, pageNumber));
+    }
+  };
+
+  const loadMoreEvents = () => {
+    if (eventNextPage) {
+      const pageNumber = eventNextPage.split('page=')[1];
+      dispatch(fetchEventListByProtector(id, pageNumber));
+    }
+  };
+
+  const handleOpenToast = () => {
+    setShowToast(true);
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
+
 
   return (
     <>
+      {loading && <LoadingSpinner />}
       <div className='profile-container'>
         <div className='profile-body'>
-          <Header />
-          <ProtectorCard protector={mockProtectorData} setSelectedTab={setSelectedTab} />
+          <Header user={props?.user} token={props?.token} showLogo={false} title='Perfil do protetor' />
+          <ProtectorCardDashboard protector={profileUser} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
 
           {selectedTab === 'pet' && (
-            <InfiniteScroll itemList={mockPetCardData}>
-              {({ itemList, isLoading }) => (
-                <PetCardList petList={itemList}/>
-              )}
+            <InfiniteScroll 
+              itemList={petListByProtector || []}
+              loadMore={loadMorePets}
+              isLoading={petIsLoading}
+            >
+              <PetCardList petList={petListByProtector || []} />
             </InfiniteScroll>
           )}
 
           {selectedTab === 'event' && (
-            <InfiniteScroll itemList={mockEventCardData}>
-              {({ itemList, isLoading }) => (
-                <EventCardList eventList={itemList}/>
-              )}
+            <InfiniteScroll 
+              itemList={eventListByProtector || []}
+              loadMore={loadMoreEvents}
+              isLoading={eventIsLoading}
+            >
+              <EventCardList eventList={eventListByProtector || []} />
             </InfiniteScroll>
           )}
         </div>
       </div>
+
+      {showToast && (
+        <Toast message={toastMessage} type={toastType} onClose={handleCloseToast} />
+      )}
 
       <FloatingButton />
       
@@ -47,7 +120,6 @@ const ProfileProtector = () => {
           .profile-container {
             width: 100%;
             margin-top: 70px;
-            
           }
           
           .profile-body {

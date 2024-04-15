@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import webIcon from '../assets/images/web.png';
 import editIcon from '../assets/images/edit.png';
 import trashIcon from '../assets/images/trash.png';
@@ -26,6 +27,7 @@ const CupomCard = ({ cupom }) => {
   const [isDeleteConfirmed, setIsDeleteConfirmed] = useState(false);
   const user = useSelector(getUser);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
 
   const handleOpenWebsite = () => {
@@ -123,6 +125,10 @@ const CupomCard = ({ cupom }) => {
     }, 3000);
   };
 
+  const handleGetOwner = (id) => {
+    navigate(`/sponsor/${id}`);
+  };
+
   return (
     <div className='cupom-card' id={cupom.id}>
       <div className='cupom-card-header'>
@@ -130,7 +136,7 @@ const CupomCard = ({ cupom }) => {
           <div className='cupom-avatar'>
             <img src={ownerImage} alt={`Avatar de ${cupom.owner.username}`} />
           </div>
-          <h2>{cupom.owner.username}</h2>
+          <h2 className='cupom-header-owner' onClick={() => handleGetOwner(cupom.owner?.id)}>{cupom.owner.username}</h2>
         </div>
         <div className='cupom-card-edit-buttons'>
           {cupom.owner.id === user?.id && (
@@ -198,6 +204,16 @@ const CupomCard = ({ cupom }) => {
             align-items: center;
             justify-content: space-between;
             padding: 0 0 7px 3px;
+          }
+
+          .cupom-header-owner {
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s ease;
+          }
+
+          .cupom-header-owner:hover {
+            color: #666; 
           }
             
           .cupom-avatar {

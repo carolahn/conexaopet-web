@@ -15,6 +15,7 @@ import SingleEvent from '../pages/SingleEvent';
 import LoadingSpinner from '../components/LoadingSpinner';
 import SearchPetsResults from '../pages/SearchPetsResults';
 import SearchEventsResults from '../pages/SearchEventsResults';
+import ProfileSponsor from '../pages/ProfileSponsor';
 
 
 const AppRoutes = () => {
@@ -43,7 +44,8 @@ const AppRoutes = () => {
         <Route path="/pet/:id" element={<SinglePet user={user} token={token}/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/protector/:id" element={<ProfileProtector/>} />
+        <Route path="/protector/:id" element={<ProfileProtector user={user} token={token}/>} />
+        <Route path="/sponsor/:id" element={<ProfileSponsor user={user} token={token}/>} />
         <Route path="/dashboard/protector/:id" element={<DashboardProtector user={user} token={token} />} />
         <Route path="/dashboard/member/:id" element={<DashboardMember user={user} token={token} />} />
         <Route path="/dashboard/sponsor/:id" element={<DashboardSponsor user={user} token={token} />} />

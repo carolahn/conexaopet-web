@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import NewPublicationModal from './NewPublicationModal';
 import DonationModal from './DonationModal';
 import whatsappIcon from '../assets/images/whatsapp.png';
@@ -12,6 +13,7 @@ import plusIcon from '../assets/images/plus.png';
 import EditUserModal from './EditUserModal';
 import { imageCache } from './CupomCard';
 
+
 const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setToastMessage, handleOpenToast }) => {
   const [pawIconSrc, setPawIconSrc] = useState(pawFilledIcon);
   const [calendarIconSrc, setCalendarIconSrc] = useState(calendarIcon);
@@ -20,6 +22,7 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
   const [isNewPublicationModalOpen, setIsNewPublicationModalOpen] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [ownerImage, setOwnerImage] = useState(null);
+  const user = useSelector((state) => state.userReducer.user);
   
   useEffect(() => {
     const fetchImage = async (imageURL, setImage) => {
@@ -109,9 +112,11 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
             <div className='donation-icon-container' onClick={openDonationModal}>
               <img src={donationIcon} alt='Para doar' className='donation-icon icon' />
             </div>
-            <div className='edit-icon-container' onClick={openEditUserModal}>
-              <img src={editIcon} alt='Editar perfil' className='edit-icon icon' />
-            </div>
+            {user?.id === protector?.id && (
+              <div className='edit-icon-container' onClick={openEditUserModal}>
+                <img src={editIcon} alt='Editar perfil' className='edit-icon icon' />
+              </div>
+            )}
           </div>
         </div>
 			</div>
@@ -125,16 +130,22 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
           <img src={pawIconSrc} alt='Animais disponíveis' className='paw-icon' />
         </div>
         <div className='calendar-icon-container' onClick={handleSelectEvent}>
-          <img src={calendarIconSrc} alt='Próximos eventos' className='calendar-icon' />
+          <img src={calendarIconSrc} alt='Próximos eventos' className={`calendar-icon ${user?.id === protector?.id ? '' : 'no-margin-right'}`} />
         </div>
-        <div className='plus-icon-container' onClick={openNewPublicationModal}>
-          <img src={plusIconSrc} alt='Nova publicação' className='plus-icon' />
-        </div>
+        {user?.id === protector?.id && (
+          <div className='plus-icon-container' onClick={openNewPublicationModal}>
+            <img src={plusIconSrc} alt='Nova publicação' className='plus-icon' />
+          </div>
+        )}
       </div>
     
       <DonationModal isModalOpen={isDonationModalOpen} closeModal={closeDonationModal} pix={protector?.pix} />
-      <NewPublicationModal user={protector} isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} style={{ zIndex: '3'}}/>
-      <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={closeEditUserModal} user={protector}/>
+      {user?.id === protector?.id && (
+        <>
+          <NewPublicationModal user={protector} isModalOpen={isNewPublicationModalOpen} closeModal={closeNewPublicationModal} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} style={{ zIndex: '3'}}/>
+          <EditUserModal isModalOpen={isEditUserModalOpen} closeModal={closeEditUserModal} user={protector}/>
+        </>
+      )}
 
       <style>
         {`
@@ -217,6 +228,10 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
           .protector-card-tabs .paw-icon, .protector-card-tabs .calendar-icon  {
             margin-right: 50px;
           }
+
+          .calendar-icon.no-margin-right {
+            margin-right: 0;
+          }
           
           .protector-card-description {
             white-space: pre-line;
@@ -227,11 +242,6 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
             .protector-card {
               width: calc(100% - 30px);
             }
-          
-            /* .protector-avatar {
-              width: 32px;
-              height: 32px;
-            } */
           
             .protector-card-images-container {
               margin-bottom: 5px;

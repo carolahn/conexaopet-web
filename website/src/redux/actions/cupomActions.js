@@ -41,7 +41,7 @@ export const fetchCupomListBySponsor = (sponsorId, page = 1) => async (dispatch,
     if (nextPage !== page) {
       dispatch(setLoading(true));
 
-      const response = await axios.get(`/cupons/user/?page=${page}`);
+      const response = await axios.get(`/cupons/user/${sponsorId}/?page=${page}`);
       const data = response.data;
       const currentCupomList = currentState.cupom.cupomListBySponsor?.[sponsorId] ?? [];
 
