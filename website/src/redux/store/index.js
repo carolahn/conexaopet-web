@@ -103,10 +103,10 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 let enhancer = applyMiddleware(thunk);
 
 // Verifica se estamos em ambiente de desenvolvimento
-// if (process.env.NODE_ENV === 'development') {
-//   const { composeWithDevTools } = require('redux-devtools-extension');
-//   enhancer = composeWithDevTools(enhancer);
-// }
+if (process.env.NODE_ENV === 'development') {
+  const { composeWithDevTools } = require('redux-devtools-extension');
+  enhancer = composeWithDevTools(enhancer);
+}
 
 const store = createStore(persistedReducer, enhancer);
 const persistor = persistStore(store);
