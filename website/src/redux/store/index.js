@@ -14,7 +14,6 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 import { thunk } from 'redux-thunk';
 import rootReducer from '../reducers';
-// import { rootReducerWithLogout } from '../reducers'
 
 const persistConfig = {
   key: 'root', // chave para armazenar os dados no armazenamento
@@ -23,7 +22,6 @@ const persistConfig = {
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-// const persistedReducer = persistReducer(persistConfig, rootReducerWithLogout);
 
 const enhancer = composeWithDevTools(applyMiddleware(thunk));
 const store = createStore(persistedReducer, enhancer);
