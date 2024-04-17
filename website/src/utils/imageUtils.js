@@ -8,9 +8,19 @@ export const fetchImage = async (imageURL, setImage) => {
       return;
     }
 
+    let pathAfterMedia = '';
+
+    if (imageURL.includes('profile_images')) {
+      pathAfterMedia = imageURL.substring(imageURL.indexOf('profile_images'));
+    } else if (imageURL.includes('event_images')) {
+      pathAfterMedia = imageURL.substring(imageURL.indexOf('event_images'));
+    } else if (imageURL.includes('pet_images')) {
+      pathAfterMedia = imageURL.substring(imageURL.indexOf('pet_images'));
+    } else if (imageURL.includes('cupom_images')) {
+      pathAfterMedia = imageURL.substring(imageURL.indexOf('cupom_images'));
+    }
     const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
-    const pathAfterMedia = imageURL.substring(imageURL.indexOf('media/'));
-    const url = apiUrl + pathAfterMedia;
+    const url = apiUrl + 'media/' + pathAfterMedia;
 
     const response = await fetch(url);
     if (!response.ok) {

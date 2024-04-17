@@ -27,9 +27,23 @@ const ImageUploader = ({ label, onChange, initialValues=[], dataRecovered=[] }) 
             initialValues.map(async (path) => {
               // if (path == undefined) return '';
               
-              const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
-              const pathAfterMedia = path?.substring(path.indexOf('media/'));
-              const url = apiUrl + pathAfterMedia;
+              // const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
+              // const pathAfterMedia = path?.substring(path.indexOf('media/'));
+              // const url = apiUrl + pathAfterMedia;
+
+            let pathAfterMedia = '';
+
+            if (path.includes('profile_images')) {
+              pathAfterMedia = path.substring(path.indexOf('profile_images'));
+            } else if (path.includes('event_images')) {
+              pathAfterMedia = path.substring(path.indexOf('event_images'));
+            } else if (path.includes('pet_images')) {
+              pathAfterMedia = path.substring(path.indexOf('pet_images'));
+            } else if (path.includes('cupom_images')) {
+              pathAfterMedia = path.substring(path.indexOf('cupom_images'));
+            }
+            const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
+            const url = apiUrl + 'media/' + pathAfterMedia;
               
               const response = await fetch(url);
               if (!response.ok) {

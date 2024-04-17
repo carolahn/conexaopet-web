@@ -128,7 +128,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
       {
         // eslint-disable-next-line 
         (userType == '2' || userType == '3') && (
-          <ImageUploader label='Selecione o avatar' onChange={handleImagesChange} initialValues={[initialValues?.image]}/>
+          <ImageUploader label='Selecione o avatar' onChange={handleImagesChange} initialValues={[initialValues?.image]} required/>
       )}
       <form onSubmit={handleSubmit} aria-label="Cadastro de Usuário" encType="multipart/form-data" >
 
@@ -138,7 +138,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
           <div className="col col-form-input">
             <select className="form-select" placeholder="Selecione" id="userType" name="userType" 
               aria-label="Selecione o tipo de usuário"
-              disabled={initialValues ? true : false}
+              disabled={initialValues ? true : false} required
               value={userType} onChange={(e) => setUserType(e.target.value)}>
               <option value=""></option>
               {mockUserTypeData.map((item) => (
@@ -153,28 +153,28 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
         <div className="row">
           <label htmlFor="userName" className="col col-form-label">Nome</label>
           <div className="col col-form-input">
-            <input type="text" id="userName" aria-label="Insira o nome do usuário" value={name} onChange={(e) => setName(e.target.value)} />
+            <input type="text" id="userName" aria-label="Insira o nome do usuário" value={name} onChange={(e) => setName(e.target.value)} required/>
           </div>
         </div>
 
         <div className="row">
           <label htmlFor="userUsername" className="col col-form-label">Username</label>
           <div className="col col-form-input">
-            <input type="text" id="userUsername" aria-label="Insira o apelido do usuário" value={username} onChange={(e) => setUsername(e.target.value)} />
+            <input type="text" id="userUsername" aria-label="Insira o apelido do usuário" value={username} onChange={(e) => setUsername(e.target.value)} required/>
           </div>
         </div>
 
         <div className="row">
           <label htmlFor="userEmail" className="col col-form-label">E-mail</label>
           <div className="col col-form-input">
-            <input type="email" id="userEmail" aria-label="Insira o email do usuário" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input type="email" id="userEmail" aria-label="Insira o email do usuário" value={email} onChange={(e) => setEmail(e.target.value)} required/>
           </div>
         </div>
 
         <div className="row">
           <label htmlFor="userPhone" className="col col-form-label">Celular</label>
           <div className="col col-form-input">
-            <input type="text" id="userPhone" aria-label="Insira o telefone do usuário" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <input type="text" id="userPhone" aria-label="Insira o telefone do usuário" value={phone} onChange={(e) => setPhone(e.target.value)} required/>
           </div>
         </div>
 
@@ -185,13 +185,13 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
             </div>
             <div className='input-cidade-container col-form-input'>
               <div className="input-cidade">
-                  <input type="text" id="userCity" aria-label="Insira a cidade" value={city} onChange={(e) => setCity(e.target.value)} />
+                  <input type="text" id="userCity" aria-label="Insira a cidade" value={city} onChange={(e) => setCity(e.target.value)} required />
               </div>
               <div className='label-uf'>
                 <label htmlFor="userUf" className="col col-form-label">UF</label>
               </div>
               <div className="input-uf">
-                  <input type="text" id="userUf" aria-label="Insira a UF" value={uf} onChange={(e) => setUf(e.target.value)} />
+                  <input type="text" id="userUf" aria-label="Insira a UF" value={uf} onChange={(e) => setUf(e.target.value)} required/>
               </div>
 
             </div>
@@ -202,7 +202,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
           <div className="row">
             <label htmlFor="userPassword" className="col col-form-label">Senha</label>
             <div className="col col-form-input">
-              <input type="password" id="userPassword" aria-label="Insira a senha" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <input type="password" id="userPassword" aria-label="Insira a senha" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
           </div>
         )}
@@ -213,7 +213,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
               <div className="row">
                 <label htmlFor="userPix" className="col col-form-label">Chave pix</label>
                 <div className="col col-form-input">
-                  <input type="text" id="userPix" aria-label="Insira a chave pix" value={pix} onChange={(e) => setPix(e.target.value)} />
+                  <input type="text" id="userPix" aria-label="Insira a chave pix" value={pix} onChange={(e) => setPix(e.target.value)} required/>
                 </div>
               </div>
             </>
@@ -224,7 +224,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
             <div className="row">
               <label htmlFor="userSite" className="col col-form-label">Site</label>
               <div className="col col-form-input">
-                <input type="text" id="userSite" aria-label="Insira o site" value={site} onChange={(e) => setSite(e.target.value)} />
+                <input type="text" id="userSite" aria-label="Insira o site" value={site} onChange={(e) => setSite(e.target.value)} required/>
                 </div>
             </div>
         )}

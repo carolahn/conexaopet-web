@@ -27,8 +27,8 @@ const SponsorCardDashboard = ({ sponsor, setSelectedTab, setToastType, setToastM
         }
 
         const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
-        const pathAfterMedia = imageURL.substring(imageURL.indexOf('media/'));
-        const url = apiUrl + pathAfterMedia;
+        const pathAfterMedia = imageURL.substring(imageURL.indexOf('profile_images/'));
+        const url = apiUrl + 'media/' + pathAfterMedia;
 
         const response = await fetch(url);
         if (!response.ok) {

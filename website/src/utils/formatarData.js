@@ -19,9 +19,9 @@ export const formatarDataHora = (dataHora) => {
 export const formatarData = (dataHora) => {
   const data = new Date(dataHora);
   
-  const dia = data.getDate().toString().padStart(2, '0');
-  const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-  const ano = data.getFullYear().toString().slice(-2);
+  const dia = data.getUTCDate().toString().padStart(2, '0');
+  const mes = (data.getUTCMonth() + 1).toString().padStart(2, '0');
+  const ano = data.getUTCFullYear().toString().slice(-2);
 
   return `${dia}/${mes}/${ano}`;
 };

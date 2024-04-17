@@ -4,15 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import SimpleHeader from '../components/SimpleHeader';
 import { fetchFavoritePetList, getUser, login } from '../redux/actions';
 import { fetchFavoriteEventList } from '../redux/actions/favoriteEventActions';
+import Toast from '../components/Toast';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const token = useSelector((state) => state.authReducer.token);
   const user = useSelector((state) => state.authReducer.user);
+  const userError = useSelector((state) => state.authReducer.error);
 
   useEffect(() => {
     if (token) {
@@ -26,31 +29,55 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await dispatch(login(username, password)); 
+    try {
+      await dispatch(login(username, password)); 
+
+      if (userError) {
+        handleOpenToast();
+      }
+
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const handleOpenToast = () => {
+    setShowToast(true);
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
   };
 
   return (
-    <div className='login-container'>
-      <SimpleHeader title='Login' />
-      <div className='login-body'>
-        <form onSubmit={handleSubmit}>
-          <div className="row">
-            <label htmlFor="user" className="col col-form-label">Usuário</label>
-            <div className="col">
-              <input type="text" className="form-control" id="user" value={username} onChange={(e) => setUsername(e.target.value)} />
+    <>
+    
+      <div className='login-container'>
+        <SimpleHeader title='Login' />
+        <div className='login-body'>
+          <form onSubmit={handleSubmit}>
+            <div className="row">
+              <label htmlFor="user" className="col col-form-label">Usuário</label>
+              <div className="col">
+                <input type="text" className="form-control" id="user" value={username} onChange={(e) => setUsername(e.target.value)} />
+              </div>
             </div>
-          </div>
 
-          <div className="row">
-            <label htmlFor="password" className="col col-form-label">Senha</label>
-            <div className="col">
-              <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <div className="row">
+              <label htmlFor="password" className="col col-form-label">Senha</label>
+              <div className="col">
+                <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              </div>
             </div>
-          </div>
 
-          <button type="submit" className="btn btn-publish">Entrar</button>
-        </form>
+            <button type="submit" className="btn btn-publish">Entrar</button>
+          </form>
+        </div>
       </div>
+
+      {showToast && (
+        <Toast message='Usuário e/ou senha inválidos' type='failure' onClose={handleCloseToast} />
+      )}
 
       <style>
         {`
@@ -121,7 +148,7 @@ const Login = () => {
 
         `}
       </style>
-    </div>
+    </>
   );
 };
 
