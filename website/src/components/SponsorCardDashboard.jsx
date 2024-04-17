@@ -168,6 +168,7 @@ const SponsorCardDashboard = ({ sponsor, setSelectedTab, setToastType, setToastM
           .sponsor-card-tabs {
             display: flex;
             justify-content: center;
+            padding-top: 30px;
           }
           
           .sponsor-card-tabs .cupom-icon, .refresh-icon {

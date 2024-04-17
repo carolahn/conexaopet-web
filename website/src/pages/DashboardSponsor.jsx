@@ -21,6 +21,7 @@ const DashboardSponsor = ( props ) => {
   const cupomListBySponsor = useSelector((state) => state.cupom.cupomListBySponsor[props.user?.id]);
   const nextPage = useSelector((state) => state.cupom.nextPage);
   const isLoading = useSelector((state) => state.cupom.isLoading);
+  const user = useSelector((state) => state.userReducer.user);
 
 
   useEffect(() => {
@@ -59,7 +60,7 @@ const DashboardSponsor = ( props ) => {
       <div className='profile-container'>
         <Header user={props.user} token={props.token} />
         <div className='profile-body'>
-          <SponsorCardDashboard sponsor={props.user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
+          <SponsorCardDashboard sponsor={user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
 
           <InfiniteScroll
             itemList={cupomListBySponsor || []}

@@ -61,7 +61,8 @@ const CupomCard = ({ cupom }) => {
 
         const apiUrl = process.env.REACT_APP_API_URL.replace('api', '');
         const pathAfterMedia = imageURL.substring(imageURL.indexOf('media/'));
-        const url = apiUrl + pathAfterMedia;
+        // const url = apiUrl + pathAfterMedia;
+        const url = apiUrl + 'media' + imageURL;
 
         const response = await fetch(url);
         if (!response.ok) {
