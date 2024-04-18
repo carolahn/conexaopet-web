@@ -290,17 +290,17 @@ const EventCard = ( props ) => {
           <div className='event-avatar'>
             <img src={ownerImage} alt={`Avatar de ${props.event.owner.username}`} />
           </div>
-          <h2 className='event-header-owner' onClick={() => handleGetOwner(props.event.owner?.id)}>{props.event.owner.username}</h2>
+          <h2 className='event-header-owner' onClick={() => handleGetOwner(props.event.owner?.id)} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleGetOwner(props.event.owner?.id);}}>{props.event.owner.username}</h2>
         </div>
         {user?.id === props.event.owner.id && (
           <div className='event-options-container'>
-            <div className='icon-container' onClick={openConfirmEventModal}>
+            <div className='icon-container' onClick={openConfirmEventModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openConfirmEventModal();}}>
               <img src={props.event.is_confirmed ? checkFilledIcon : checkIcon} alt={props.event.is_confirmed ? 'Cancelar' : 'Confirmar'} className='check-icon' />
             </div>
-            <div className='icon-container' onClick={openNewPublicationModal}>
+            <div className='icon-container' onClick={openNewPublicationModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openNewPublicationModal();}}>
               <img src={editIcon} alt='Editar' className='edit-icon' />
             </div>
-            <div className='icon-container' onClick={openDiscartModal}>
+            <div className='icon-container' onClick={openDiscartModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openDiscartModal();}}>
               <img src={trashIcon} alt='Remover' className='trash-icon' />
             </div>
           </div>
@@ -346,17 +346,17 @@ const EventCard = ( props ) => {
 							<p className='event-label'>{props.event.address.name}</p>
 						</div>
 						<div className='event-card-buttons'>
-							<div className={`star-icon-container ${(user && user.type === 1) ? '' : 'disabled'}`} onClick={handleFavoriteClick}>
+							<div className={`star-icon-container ${(user && user.type === 1) ? '' : 'disabled'}`} onClick={handleFavoriteClick} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleFavoriteClick();}}>
                 <div className='event-followers'>{props.event.followers}</div>
 								<img src={starIconSrc} alt='Favorito' className='star-icon' />
 							</div>
-							<div className='more-icon-container' onClick={handleMoreInfoClick}>
+							<div className='more-icon-container' onClick={handleMoreInfoClick} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleMoreInfoClick();}}>
 								<img src={moreIcon} alt='Saiba mais' className='more-icon' />
 							</div>
 						</div>
 					</div>
 					{isMoreInfoVisible && (
-						<div className='event-info'>
+						<div className='event-info' tabIndex={0}>
 							<div className='event-info-line'>
 								<img src={pinIcon} alt='Endereço' className='event-info-icon'/>
 								<div className='event-data'>
@@ -382,23 +382,23 @@ const EventCard = ( props ) => {
 					<div>
 						<div className='pet-card-bar'>
 							<div className='pet-card-summary'>
-								<h2 className='pet-card-name' onClick={() => handleGetPetCard(currentAnimal.id)}>{currentAnimal.name}</h2>
+								<h2 className='pet-card-name' onClick={() => handleGetPetCard(currentAnimal.id)} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleGetPetCard(currentAnimal.id);}}>{currentAnimal.name}</h2>
 								<p className='pet-label'>{currentAnimal.gender === 'M' ? 'macho' : 'fêmea'}</p>
 								<p className='pet-label pet-age'>{getLifeStage(currentAnimal.age_year)}</p>
 								<p className='pet-label pet-size'>{currentAnimal.size}</p>
 							</div>
 							<div className='pet-card-buttons'>
-                <div className={`star-icon-container ${user ? '' : 'disabled'}`} onClick={() => handleFavoritePetClick(currentAnimal)}>
+                <div className={`star-icon-container ${user ? '' : 'disabled'}`} onClick={() => handleFavoritePetClick(currentAnimal)} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleFavoritePetClick(currentAnimal);}}>
                   <div className='pet-followers'>{currentAnimal.followers}</div>
                   <img src={favoritePetList.filter(pet => pet.id === currentAnimal.id).length > 0 ? starFilledIcon : starIcon} alt='Favorito' className='star-icon' />
                 </div>
-								<div className='more-icon-container' onClick={handleMoreInfoClick}>
+								<div className='more-icon-container' onClick={handleMoreInfoClick} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleMoreInfoClick();}}>
 									<img src={moreIcon} alt='Saiba mais' className='more-icon' />
 								</div>
 							</div>
 						</div>
 						{isMoreInfoVisible && (
-							<div className='pet-info'>
+							<div className='pet-info' tabIndex={0}>
 								<div className='pet-info-row'>
 									<div className='pet-info-col'>
 										<img src={pinIcon} alt='Cidade' className='pet-info-icon'/>
@@ -576,6 +576,10 @@ const EventCard = ( props ) => {
             height: 24px;
           }
           
+          .more-icon {
+            padding: 0 5px;
+          }
+
           .event-label {
             display: inline-block;
             padding: 5px 10px;

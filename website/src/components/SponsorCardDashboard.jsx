@@ -80,7 +80,7 @@ const SponsorCardDashboard = ({ sponsor, setSelectedTab, setToastType, setToastM
 
   return (
     <>
-      <div id={sponsor?.id} className='sponsor-card'>
+      <div id={sponsor?.id} className='sponsor-card' tabIndex={0}>
         <div className='sponsor-card-header'>
           <div className='sponsor-avatar'>
             <img src={ownerImage} alt={`Avatar de ${sponsor?.username}`} />
@@ -95,15 +95,15 @@ const SponsorCardDashboard = ({ sponsor, setSelectedTab, setToastType, setToastM
         </div>
 
         <div className='sponsor-card-tabs'>
-          <div className='cupom-icon-container' onClick={handleSelectCupom}>
+          <div className='cupom-icon-container' onClick={handleSelectCupom} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectCupom();}}>
             <img src={cupomIconSrc} alt='Cupons ativos' className={`cupom-icon ${user?.id === sponsor?.id ? '' : 'no-margin-right'}`} />
           </div>
           { user?.id === sponsor?.id && (
             <>
-              <div className='refresh-icon-container' onClick={handleRefreshCupons}>
+              <div className='refresh-icon-container' onClick={handleRefreshCupons} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleRefreshCupons();}}>
                 <img src={refreshIcon} alt='Atualizar cupons expirados' className='refresh-icon' />
               </div>
-              <div className='plus-icon-container' onClick={openNewCupomModal}>
+              <div className='plus-icon-container' onClick={openNewCupomModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openNewCupomModal();}}>
                 <img src={plusIcon} alt='Novo cupom' className='plus-icon' />
               </div>
             </>

@@ -58,6 +58,8 @@ const NewCupomModal = ({ user, isModalOpen, closeModal, initialValues = null, se
       contentLabel='User Modal'
       style={modalStyle}
       appElement={document.getElementById('root')}
+      shouldCloseOnEsc={true}
+      shouldFocusAfterRender={true}
     >
         <NewPublicationHeader title={initialValues ? 'Editar cupom' : 'Novo cupom'} closeModal={closeModal} setSelectedTab={setSelectedTab} selectedTab={selectedTab} showButtons={false}/>
         <NewCupomForm user={user} initialValues={initialValues} handleCloseModal={closeModal} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />

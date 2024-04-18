@@ -104,19 +104,25 @@ const UserModal = ({ isModalOpen, closeModal, user, token }) => {
       onRequestClose={closeModal}
       contentLabel='User Modal'
       style={modalStyle}
+      aria={{
+        labelledby: 'modal-title',
+        describedby: 'modal-description'
+      }}
+      shouldCloseOnEsc={true}
+      shouldFocusAfterRender={true}
     >
       <div className="modal-header" style={{ display: 'flex', justifyContent: 'end'}}>
-        <div className='close-icon-container' onClick={closeModal}>
+        <div className='close-icon-container' onClick={closeModal} tabIndex={0} role="button" aria-label="Fechar modal" onKeyDown={(e) => {if (e.key === 'Enter') closeModal();}}>
           <img src={closeIcon} alt='Fechar' className='close-icon' style={{ height: '15px', cursor: 'pointer' }} />
         </div>
       </div>
 
       {token ? (
         <div style={{ marginTop: '5px', display: 'flex', flexDirection: 'column' }}>
-          <Link to='/' style={{ marginBottom: '8px'}} onClick={closeModal}>Home</Link>
-          <Link to={getDashboardLink()} style={{ marginBottom: '8px'}} onClick={closeModal}>Minha conta</Link>
-          <div className='edit-user-link' onClick={openEditUserModal}>Editar conta</div>
-          <Link to='/' onClick={handleLogout}>Sair</Link>
+          <Link to='/' style={{ marginBottom: '8px'}} onClick={closeModal} onKeyDown={(e) => {if (e.key === 'Enter') {navigate('/');closeModal();}}}>Home</Link>
+          <Link to={getDashboardLink()} style={{ marginBottom: '8px'}} onClick={closeModal} onKeyDown={(e) => {if (e.key === 'Enter') {navigate(getDashboardLink());closeModal();}}}>Minha conta</Link>
+          <div className='edit-user-link' onClick={openEditUserModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openEditUserModal();}}>Editar conta</div>
+          <Link to='/' onClick={handleLogout} onKeyDown={(e) => {if (e.key === 'Enter') {navigate('/');handleLogout();}}}>Sair</Link>
         </div>
       ) : (
         <div style={{ marginTop: '5px', display: 'flex', flexDirection: 'column' }}>

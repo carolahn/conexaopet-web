@@ -57,6 +57,8 @@ const SearchModal = ({ isModalOpen, closeModal }) => {
       onRequestClose={closeModal}
       contentLabel='User Modal'
       style={modalStyle}
+      shouldCloseOnEsc={true}
+      shouldFocusAfterRender={true}
     >
       {selectedTab === 'pet' && (
         <>

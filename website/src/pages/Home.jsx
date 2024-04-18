@@ -25,8 +25,8 @@ const Home = ( props ) => {
   const eventIsLoading = useSelector((state) => state.event.isLoading);
 
   useEffect(() => {
-    dispatch(fetchPetList());
     dispatch(fetchEventList());
+    dispatch(fetchPetList());
     // eslint-disable-next-line
   }, [dispatch]);
 

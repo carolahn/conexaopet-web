@@ -48,8 +48,8 @@ const ProfileProtector = ( props ) => {
 
   useEffect(() => {
     if (id) {
-      dispatch(fetchPetListByProtector(id));
       dispatch(fetchEventListByProtector(id));
+      dispatch(fetchPetListByProtector(id));
       dispatch(getPetChoices(id));
       dispatch(fetchProfileUser(id));
     }

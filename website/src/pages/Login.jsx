@@ -21,8 +21,8 @@ const Login = () => {
     if (token) {
       navigate('/');
       dispatch(getUser(user.id));
-      dispatch(fetchFavoritePetList());
       dispatch(fetchFavoriteEventList());
+      dispatch(fetchFavoritePetList());
     }
   }, [token, navigate]);
 

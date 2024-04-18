@@ -72,40 +72,38 @@ const Header = ({ user, token, showLogo = true, title = '' }) => {
   };
 
   return (
-    <div className={`header ${isVisible ? 'visible' : 'hidden'}`}>
-			<div className='header-body'>
-        {showLogo ? (
-          <Link to="/">
-            <img src={logo} alt='Logo Conexão Pet' className='logo' />
-          </Link>
-        ) : (
-          <div className='header-title-container'>
-            <div className='return-icon-container'>
-              <img src={returnIcon} alt='Voltar' className='return-icon' onClick={() => window.history.back()} />
+    <>
+      <header className={`header ${isVisible ? 'visible' : 'hidden'}`}>
+        <div className='header-body'>
+          {showLogo ? (
+            <Link to="/" aria-label="Home">
+              <img src={logo} alt='Logo Conexão Pet' className='logo' />
+            </Link>
+          ) : (
+            <div className='header-title-container'>
+              <div className='return-icon-container'>
+                <button aria-label="Voltar" className='return-button' onClick={() => window.history.back()}>
+                  <img src={returnIcon} alt='Voltar' className='return-icon' />
+                </button>
+              </div>
+              <h2>{title}</h2>
             </div>
-            <h2>{title}</h2>
+          )}
+
+          <div className='menu-options-container'>
+            <div className='search-icon-container' onClick={openSearchModal} aria-label="Abrir Busca" tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openSearchModal();}}>
+              <img src={searchIconSrc} alt='Buscar' className='search-icon' />
+            </div>
+            <div className='user-icon-container' onClick={openUserModal} aria-label="Abrir Perfil" tabIndex={0} role="button"onKeyDown={(e) => {if (e.key === 'Enter') openUserModal();}}>
+              <img src={userIconSrc} alt='Perfil' className='user-icon' />
+            </div>
           </div>
-        )}
+        </div>
+      </header>
 
-				<div className='menu-options-container'>
-					<div className='search-icon-container' onClick={openSearchModal}>
-						<img src={searchIconSrc} alt='Buscar' className='search-icon' />
-					</div>
-					<div className='user-icon-container' onClick={openUserModal}>
-						<img src={userIconSrc} alt='Perfil' className='user-icon' />
-					</div>
-				</div>
-			</div>
+      <UserModal isModalOpen={isUserModalOpen} closeModal={closeUserModal} user={user} token={token} />
 
-			<UserModal isModalOpen={isUserModalOpen} closeModal={closeUserModal} user={user} token={token} >
-				<h2>Opções do Usuário</h2>
-        <button onClick={closeUserModal}>Fechar</button>
-			</UserModal>
-
-			<SearchModal isModalOpen={isSearchModalOpen} closeModal={closeSearchModal}>
-				<h2>Opções do Usuário</h2>
-        <button onClick={closeSearchModal}>Fechar</button>
-			</SearchModal>
+      <SearchModal isModalOpen={isSearchModalOpen} closeModal={closeSearchModal} />
 
       <style>
         {`
@@ -137,9 +135,18 @@ const Header = ({ user, token, showLogo = true, title = '' }) => {
             cursor: pointer;
           }
 
+          button {
+            appearance: none; 
+            background-color: transparent; 
+            border: none; 
+            padding: 0; 
+            margin: 0; 
+            cursor: pointer; 
+          }
+
           .return-icon-container {
             height: 100%;
-            padding-right: 10px;
+            padding: 15px;
             display: flex;
             align-items: center;
             cursor: pointer;
@@ -164,11 +171,13 @@ const Header = ({ user, token, showLogo = true, title = '' }) => {
           .user-icon {
             height: 24px;
             cursor: pointer;
+            padding: 0 3px;
           }
           
           .search-icon {
             height: 27px;
             cursor: pointer;
+            padding: 0 3px;
           }
           
           .visible {
@@ -196,7 +205,7 @@ const Header = ({ user, token, showLogo = true, title = '' }) => {
           }
         `}
       </style>
-    </div>
+    </>
   );
 };
 

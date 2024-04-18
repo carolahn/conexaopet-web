@@ -131,21 +131,21 @@ const CupomCard = ({ cupom }) => {
   };
 
   return (
-    <div className='cupom-card' id={cupom.id}>
+    <div className='cupom-card' id={cupom.id} tabIndex={0}>
       <div className='cupom-card-header'>
         <div className='cupom-card-username'>
           <div className='cupom-avatar'>
             <img src={ownerImage} alt={`Avatar de ${cupom.owner.username}`} />
           </div>
-          <h2 className='cupom-header-owner' onClick={() => handleGetOwner(cupom.owner?.id)}>{cupom.owner.username}</h2>
+          <h2 className='cupom-header-owner' onClick={() => handleGetOwner(cupom.owner?.id)} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleGetOwner(cupom.owner?.id);}}>{cupom.owner.username}</h2>
         </div>
         <div className='cupom-card-edit-buttons'>
           {cupom.owner.id === user?.id && (
             <>
-              <div className='edit-icon-container' onClick={openNewCupomModal}>
+              <div className='edit-icon-container' onClick={openNewCupomModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openNewCupomModal();}}>
                 <img src={editIcon} alt='Editar cupom' className='edit-icon' />
               </div>
-              <div className='trash-icon-container' onClick={openDiscartModal}>
+              <div className='trash-icon-container' onClick={openDiscartModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openDiscartModal();}}>
                 <img src={trashIcon} alt='Excluir cupom' className='trash-icon' />
               </div>
             </>
@@ -160,24 +160,24 @@ const CupomCard = ({ cupom }) => {
       <div className='cupom-card-bar'>
         <div className='cupom-card-summary'>
           <input className='cupom-value' type="text" value={cupom.value.toUpperCase()} readOnly style={{ height: '1.2rem'}} />
-          <div className='copy-icon-container' onClick={copyToClipboard} style={{ marginLeft: '7px'}}>
+          <div className='copy-icon-container' onClick={copyToClipboard} style={{ marginLeft: '7px'}} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') copyToClipboard();}}>
             <img src={copyIcon} alt='Copiar o cupom' className='copy-icon' style={{ height: '24px', cursor: 'pointer' }} />
             <span>{isCopied && ' Copiado '}</span>
           </div>
           
         </div>
         <div className='cupom-card-buttons'>
-          <div className='web-icon-container' onClick={handleOpenWebsite}>
+          <div className='web-icon-container' onClick={handleOpenWebsite} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleOpenWebsite();}}>
             <img src={webIcon} alt='Saiba mais' className='web-icon' />
           </div>
         </div>
       </div>
 
-      <div className='cupom-card-expiration'>
+      <div className='cupom-card-expiration' tabIndex={0}>
         <div>Validade: {formatarData(cupom.expiration)}</div>
       </div>
 
-      <div className='cupom-card-description'>
+      <div className='cupom-card-description' tabIndex={0}>
         { cupom.description }
       </div>
 

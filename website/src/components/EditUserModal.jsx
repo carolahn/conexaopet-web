@@ -67,6 +67,8 @@ const EditUserModal = ({ isModalOpen, closeModal }) => {
       contentLabel='Edit User Modal'
       style={modalStyle}
       appElement={document.getElementById('root')}
+      shouldCloseOnEsc={true}
+      shouldFocusAfterRender={true}
     >
       <SimpleHeader title='Editar perfil' action='close' onClose={handleCloseModal}/>
       <div className='edit-user'>

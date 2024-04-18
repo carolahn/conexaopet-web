@@ -106,14 +106,14 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
         <div className='protector-name-button'>
 				  <h2>{protector?.username}</h2>
           <div className='protector-buttons'>
-            <div className='whatsapp-icon-container' onClick={handleWhatsAppClick}>
+            <div className='whatsapp-icon-container' onClick={handleWhatsAppClick} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleWhatsAppClick();}}>
               <img src={whatsappIcon} alt='Whatsapp' className='whatsapp-icon icon' />
             </div>
-            <div className='donation-icon-container' onClick={openDonationModal}>
+            <div className='donation-icon-container' onClick={openDonationModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openDonationModal();}}>
               <img src={donationIcon} alt='Para doar' className='donation-icon icon' />
             </div>
             {user?.id === protector?.id && (
-              <div className='edit-icon-container' onClick={openEditUserModal}>
+              <div className='edit-icon-container' onClick={openEditUserModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openEditUserModal();}}>
                 <img src={editIcon} alt='Editar perfil' className='edit-icon icon' />
               </div>
             )}
@@ -126,14 +126,14 @@ const ProtectorCardDashboard = ({ protector, setSelectedTab, setToastType, setTo
       </div>
 
       <div className='protector-card-tabs'>
-        <div className='paw-icon-container' onClick={handleSelectPet}>
+        <div className='paw-icon-container' onClick={handleSelectPet} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectPet();}}>
           <img src={pawIconSrc} alt='Animais disponíveis' className='paw-icon' />
         </div>
-        <div className='calendar-icon-container' onClick={handleSelectEvent}>
+        <div className='calendar-icon-container' onClick={handleSelectEvent} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectEvent();}}>
           <img src={calendarIconSrc} alt='Próximos eventos' className={`calendar-icon ${user?.id === protector?.id ? '' : 'no-margin-right'}`} />
         </div>
         {user?.id === protector?.id && (
-          <div className='plus-icon-container' onClick={openNewPublicationModal}>
+          <div className='plus-icon-container' onClick={openNewPublicationModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openNewPublicationModal();}}>
             <img src={plusIconSrc} alt='Nova publicação' className='plus-icon' />
           </div>
         )}

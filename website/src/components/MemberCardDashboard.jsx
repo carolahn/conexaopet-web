@@ -34,13 +34,13 @@ const MemberCardDashboard = ({ member, setSelectedTab}) => {
 
   return (
     <div className='member-card-tabs'>
-      <div className='paw-icon-container' onClick={handleSelectPet}>
+      <div className='paw-icon-container' onClick={handleSelectPet} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectPet();}}>
         <img src={pawIconSrc} alt='Animais favoritos' className='paw-icon' />
       </div>
-      <div className='calendar-icon-container' onClick={handleSelectEvent}>
+      <div className='calendar-icon-container' onClick={handleSelectEvent} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectEvent();}}>
         <img src={calendarIconSrc} alt='Eventos favoritos' className='calendar-icon' />
       </div>
-      <div className='cupom-icon-container' onClick={handleSelectCupom}>
+      <div className='cupom-icon-container' onClick={handleSelectCupom} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectCupom();}}>
         <img src={cupomIconSrc} alt='Cupons ativos' className='cupom-icon' />
       </div>
 

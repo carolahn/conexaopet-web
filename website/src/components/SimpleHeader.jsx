@@ -8,17 +8,19 @@ const SimpleHeader = ({ title, action = 'return', onClose = null }) => {
     <div className='simple-header'>
       <div className='simple-header-body'>
         <div className='simple-header-title'>
-          <div className='return-icon-container' >
             {action === 'return' && (
-              <img src={returnIcon} alt='Voltar' className='return-icon' onClick={() => window.history.back()} />
+              <div className='return-icon-container' aria-label="Abrir Busca" tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') window.history.back();}}>
+                <img src={returnIcon} alt='Voltar' className='return-icon' onClick={() => window.history.back()}/>
+              </div>
             )}
 
             {action === 'close' && (
-              <div onClick={onClose}>
-                <img src={closeIcon} alt='Fechar' className='return-icon' />
-              </div>
+              <div className='return-icon-container' aria-label="Abrir Busca" tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') onClose();}}>
+                <div onClick={onClose}>
+                  <img src={closeIcon} alt='Fechar' className='return-icon' />
+                </div>
+                </div>
             )}
-          </div>
 
           <h2>{title}</h2>  
         </div>

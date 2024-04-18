@@ -40,32 +40,32 @@ const ProtectorCard = ({ protector, setSelectedTab }) => {
   return (
     <div className='protector-card'>
 
-      <div className='protector-card-header'>
+      <div className='protector-card-header' tabIndex={0}>
 				<div className='protector-avatar'>
 					<img src={protector.imagem} alt={`Avatar de ${protector.nickname}`} />
 				</div>
         <div className='protector-name-button'>
 				  <h2>{protector.nickname}</h2>
           <div className='protector-buttons'>
-            <div className='whatsapp-icon-container' onClick={handleWhatsAppClick}>
+            <div className='whatsapp-icon-container' onClick={handleWhatsAppClick} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleWhatsAppClick();}}>
               <img src={whatsappIcon} alt='Whatsapp' className='whatsapp-icon icon' />
             </div>
-            <div className='donation-icon-container' onClick={openDonationModal}>
+            <div className='donation-icon-container' onClick={openDonationModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') openDonationModal();}}>
               <img src={donationIcon} alt='Para doar' className='donation-icon icon' />
             </div>
           </div>
         </div>
 			</div>
 
-      <div className='protector-card-description'>
+      <div className='protector-card-description' tabIndex={0}>
         {protector.descricao}
       </div>
 
       <div className='protector-card-tabs'>
-        <div className='paw-icon-container' onClick={handleSelectPet}>
+        <div className='paw-icon-container' onClick={handleSelectPet} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectPet();}}>
           <img src={pawIconSrc} alt='Animais disponíveis' className='paw-icon' />
         </div>
-        <div className='calendar-icon-container' onClick={handleSelectEvent}>
+        <div className='calendar-icon-container' onClick={handleSelectEvent} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectEvent();}}>
           <img src={calendarIconSrc} alt='Próximos eventos' className='calendar-icon' />
         </div>
       </div>

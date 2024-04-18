@@ -30,9 +30,9 @@ const NewPublicationHeader = ({ title, closeModal, setSelectedTab, selectedTab, 
   };
 
   return (
-    <div className='new-publication-header'>
+    <header className='new-publication-header'>
       <div className='header-title'>
-        <div className='close-icon-container' onClick={closeModal}>
+        <div className='close-icon-container' aria-label='Fechar' onClick={closeModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') closeModal();}}>
           <img src={closeIcon} alt='Fechar' className='close-icon' />
         </div>
         <h2>{title}</h2>
@@ -40,10 +40,10 @@ const NewPublicationHeader = ({ title, closeModal, setSelectedTab, selectedTab, 
 
       {showButtons && (
         <div className='menu-options-container'>
-          <div className='paw-icon-container' onClick={handleSelectPet}>
+          <div className='paw-icon-container' onClick={handleSelectPet} aria-label='Buscar pet' tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectPet();}}>
             <img src={pawIconSrc} alt='Novo animal' className='paw-icon' />
           </div>
-          <div className='calendar-icon-container' onClick={handleSelectEvent}>
+          <div className='calendar-icon-container' onClick={handleSelectEvent} aria-label='Buscar evento' tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleSelectEvent();}}>
             <img src={calendarIconSrc} alt='Novo evento' className='calendar-icon' />
           </div>
         </div>
@@ -73,7 +73,7 @@ const NewPublicationHeader = ({ title, closeModal, setSelectedTab, selectedTab, 
           
           .close-icon-container {
             height: 100%;
-            padding-right: 10px;
+            padding: 15px;
             display: flex;
             align-items: center;
             cursor: pointer;
@@ -111,7 +111,7 @@ const NewPublicationHeader = ({ title, closeModal, setSelectedTab, selectedTab, 
         `}
       </style>
 
-    </div>
+    </header>
   );
 };
 

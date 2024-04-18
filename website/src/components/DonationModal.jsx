@@ -57,15 +57,15 @@ const DonationModal = ({ isModalOpen, closeModal, pix }) => {
       style={modalStyle}
     >
       <div className="modal-header" style={{ display: 'flex', justifyContent: 'end'}}>
-        <div className='close-icon-container' onClick={closeModal}>
+        <div className='close-icon-container' onClick={closeModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') closeModal();}}>
           <img src={closeIcon} alt='Fechar' className='close-icon' style={{ height: '15px', cursor: 'pointer' }} />
         </div>
       </div>
-      <h2 style={{ marginBottom: '15px'}}>Para doar:</h2>
+      <h2 style={{ marginBottom: '15px'}} tabIndex={0}>Para doar:</h2>
       <label style={{ fontSize: '1.3rem' }}>Chave PIX:</label>
       <div style={{ marginTop: '5px', display: 'flex' }}>
         <input type="text" value={pix} readOnly style={{ height: '1.2rem'}} />
-        <div className='copy-icon-container' onClick={copyToClipboard} style={{ marginLeft: '7px'}}>
+        <div className='copy-icon-container' onClick={copyToClipboard} style={{ marginLeft: '7px'}} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') copyToClipboard();}}>
           <img src={copyIcon} alt='Copiar chave pix' className='copy-icon' style={{ height: '24px', cursor: 'pointer' }} />
           <span>{isCopied && ' Copiado '}</span>
         </div>

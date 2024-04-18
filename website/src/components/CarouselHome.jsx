@@ -100,7 +100,7 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
 				<div className="carousel" style={{ width: '900px' }}>
 					<div className="carousel-content" style={{ transform: `translateX(-${currentIndex * height * 0.22}px)` }}>
 						{eventList?.map((event, index) => (
-							<div key={index} className="carousel-item" onClick={() => handleEventClick(event.id)} style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
+							<div key={index} className="carousel-item" onClick={() => handleEventClick(event.id)} style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleEventClick(event.id);}}>
 								<img src={event.eventImages[0]} alt={`event ${index + 1}`} style={{ height: '100%', objectFit: 'cover', maxWidth: `${height * 0.2}px`, display: 'block' }} />
 								<p>{formatarData(event.date_hour_initial)}</p>
 							</div>
@@ -114,7 +114,7 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
 				<div className="carousel" style={{ width: '100%' }}>
 					<div className="carousel-content" style={{ transform: `translateX(-${currentIndex * height * 0.22}px)` }}>
 						{eventList?.map((event, index) => (
-							<div key={index} className="carousel-item" onClick={() => handleEventClick(event.id)} style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }}>
+							<div key={index} className="carousel-item" onClick={() => handleEventClick(event.id)} style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleEventClick(event.id);}}>
 								<img src={event.eventImages[0]} alt={`event ${index + 1}`} style={{ height: '100%', objectFit: 'cover', maxWidth: `${height * 0.2}px`, display: 'block' }} />
 								<p>{formatarData(event.date_hour_initial)}</p>
 							</div>

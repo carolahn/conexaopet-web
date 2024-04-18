@@ -50,11 +50,11 @@ const DiscartModal = ({ isModalOpen, closeModal, handleConfirm }) => {
       style={modalStyle}
     >
       <div className="modal-header" style={{ display: 'flex', justifyContent: 'end'}}>
-        <div className='close-icon-container' onClick={closeModal}>
+        <div className='close-icon-container' onClick={closeModal} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') closeModal();}}>
           <img src={closeIcon} alt='Fechar' className='close-icon' style={{ height: '15px', cursor: 'pointer' }} />
         </div>
       </div>
-      <div style={{ marginTop: '5px'}}>
+      <div style={{ marginTop: '5px'}} tabIndex={0}>
         <h2 style={{ marginBottom: '15px'}}>Remover publicação?</h2>
       </div>
       <div style={{ marginTop: '5px', display: 'flex' }}>

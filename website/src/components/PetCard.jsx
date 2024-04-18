@@ -252,24 +252,24 @@ const PetCard = ({ pet }) => {
 
 				</div>
 				<div className='pet-card-bar'>
-					<div className='pet-card-summary'>
+					<div className='pet-card-summary' tabIndex={0}>
 						<h2>{pet.name}</h2>
 						<p className={`pet-label pet-${pet.gender?.toLowerCase()}`}>{pet.gender === 'M' ? 'macho' : 'fêmea'}</p>
 						<p className='pet-label pet-age'>{getLifeStage(pet.age_year)}</p>
 						<p className='pet-label pet-size'>{pet.size}</p>
 					</div>
 					<div className='pet-card-buttons'>
-						<div className={`star-icon-container ${(user && user.type === 1) ? '' : 'disabled'}`} onClick={handleFavoriteClick}>
+						<div className={`star-icon-container ${(user && user.type === 1) ? '' : 'disabled'}`} onClick={handleFavoriteClick} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleFavoriteClick();}}>
               <div className='pet-followers'>{pet.followers}</div>
 							<img src={starIconSrc} alt='Favorito' className='star-icon' />
 						</div>
-						<div className='more-icon-container' onClick={handleMoreInfoClick}>
+						<div className='more-icon-container' onClick={handleMoreInfoClick} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleMoreInfoClick();}}>
 							<img src={moreIcon} alt='Saiba mais' className='more-icon' />
 						</div>
 					</div>
 				</div>
 				{isMoreInfoVisible && (
-          <div className='pet-info'>
+          <div className='pet-info' tabIndex={0}>
 						<div className='pet-info-row'>
 							<div className='pet-info-col'>
 								<img src={pinIcon} alt='Cidade' className='pet-info-icon'/>
@@ -427,6 +427,10 @@ const PetCard = ({ pet }) => {
           .star-icon, .more-icon {
             cursor: pointer;
             height: 24px;
+          }
+
+          .more-icon {
+            padding: 0 5px;
           }
           
           .pet-label {
