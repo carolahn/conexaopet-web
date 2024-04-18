@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import ImageUploader from '../components/ImageUploader';
 import Toast from '../components/Toast';
 import { createUser, updateUser, login, clearUserError } from '../redux/actions';
@@ -153,28 +154,28 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
         <div className="row">
           <label htmlFor="userName" className="col col-form-label">Nome</label>
           <div className="col col-form-input">
-            <input type="text" id="userName" aria-label="Insira o nome do usuário" value={name} onChange={(e) => setName(e.target.value)} required/>
+            <input type="text" id="userName" aria-label="Insira o nome do usuário" value={name} onChange={(e) => setName(DOMPurify.sanitize(e.target.value))} required/>
           </div>
         </div>
 
         <div className="row">
           <label htmlFor="userUsername" className="col col-form-label">Username</label>
           <div className="col col-form-input">
-            <input type="text" id="userUsername" aria-label="Insira o apelido do usuário" value={username} onChange={(e) => setUsername(e.target.value)} required/>
+            <input type="text" id="userUsername" aria-label="Insira o apelido do usuário" value={username} onChange={(e) => setUsername(DOMPurify.sanitize(e.target.value))} required/>
           </div>
         </div>
 
         <div className="row">
           <label htmlFor="userEmail" className="col col-form-label">E-mail</label>
           <div className="col col-form-input">
-            <input type="email" id="userEmail" aria-label="Insira o email do usuário" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+            <input type="email" id="userEmail" aria-label="Insira o email do usuário" value={email} onChange={(e) => setEmail(DOMPurify.sanitize(e.target.value))} required/>
           </div>
         </div>
 
         <div className="row">
           <label htmlFor="userPhone" className="col col-form-label">Celular</label>
           <div className="col col-form-input">
-            <input type="text" id="userPhone" aria-label="Insira o telefone do usuário" value={phone} onChange={(e) => setPhone(e.target.value)} required/>
+            <input type="text" id="userPhone" aria-label="Insira o telefone do usuário" value={phone} onChange={(e) => setPhone(DOMPurify.sanitize(e.target.value))} required/>
           </div>
         </div>
 
@@ -185,13 +186,13 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
             </div>
             <div className='input-cidade-container col-form-input'>
               <div className="input-cidade">
-                  <input type="text" id="userCity" aria-label="Insira a cidade" value={city} onChange={(e) => setCity(e.target.value)} required />
+                  <input type="text" id="userCity" aria-label="Insira a cidade" value={city} onChange={(e) => setCity(DOMPurify.sanitize(e.target.value))} required />
               </div>
               <div className='label-uf'>
                 <label htmlFor="userUf" className="col col-form-label">UF</label>
               </div>
               <div className="input-uf">
-                  <input type="text" id="userUf" aria-label="Insira a UF" value={uf} onChange={(e) => setUf(e.target.value)} required/>
+                  <input type="text" id="userUf" aria-label="Insira a UF" value={uf} onChange={(e) => setUf(DOMPurify.sanitize(e.target.value))} required/>
               </div>
 
             </div>
@@ -213,7 +214,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
               <div className="row">
                 <label htmlFor="userPix" className="col col-form-label">Chave pix</label>
                 <div className="col col-form-input">
-                  <input type="text" id="userPix" aria-label="Insira a chave pix" value={pix} onChange={(e) => setPix(e.target.value)} required/>
+                  <input type="text" id="userPix" aria-label="Insira a chave pix" value={pix} onChange={(e) => setPix(DOMPurify.sanitize(e.target.value))} required/>
                 </div>
               </div>
             </>
@@ -224,7 +225,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
             <div className="row">
               <label htmlFor="userSite" className="col col-form-label">Site</label>
               <div className="col col-form-input">
-                <input type="text" id="userSite" aria-label="Insira o site" value={site} onChange={(e) => setSite(e.target.value)} required/>
+                <input type="text" id="userSite" aria-label="Insira o site" value={site} onChange={(e) => setSite(DOMPurify.sanitize(e.target.value))} required/>
                 </div>
             </div>
         )}
@@ -234,7 +235,7 @@ const RegisterForm = ({ initialValues = null, handleCloseModal }) => {
             <div className="row">
               <div className="col">
                 <div className="input-group">
-                  <textarea type="text" id="userDescription" placeholder="Descrição" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(e.target.value)}/>
+                  <textarea type="text" id="userDescription" placeholder="Descrição" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(DOMPurify.sanitize(e.target.value))}/>
                 </div>
               </div>
             </div>

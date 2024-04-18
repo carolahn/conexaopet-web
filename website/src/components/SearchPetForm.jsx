@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import MultiSelect from "./MultiSelect";
@@ -128,14 +129,14 @@ const SearchPetForm = ({ closeModal = null }) => {
           <div className="row">
             <label htmlFor="petName" className="col col-form-label">Nome</label>
             <div className="col">
-              <input type="text" className="form-control" id="petName" value={name} onChange={(e) => setName(e.target.value)} />
+              <input type="text" className="form-control" id="petName" value={name} onChange={(e) => setName(DOMPurify.sanitize(e.target.value))} />
             </div>
           </div>
 
           <div className="row">
             <label htmlFor="petCity" className="col col-form-label">Cidade</label>
             <div className="col">
-              <input type="text" className="form-control" id="petCity" value={city} onChange={(e) => setCity(e.target.value)} />
+              <input type="text" className="form-control" id="petCity" value={city} onChange={(e) => setCity(DOMPurify.sanitize(e.target.value))} />
             </div>
           </div>
 

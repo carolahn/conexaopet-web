@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import DOMPurify from 'dompurify';
 import ImageUploader from "./ImageUploader";
 import { useDispatch, useSelector } from 'react-redux';
 import MultiSelect from "./MultiSelect";
@@ -182,8 +183,6 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
     images?.forEach((value, index) => {
       formData.append('image[]', value);
     });
-
-    console.log("images de create update: ", images)
    
     try {
       if (initialValues) {
@@ -236,7 +235,7 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
           <label htmlFor="petName" className="col-sm-2 col-form-label">Nome</label>
           <div className="col-sm">
             <div className="input-group">
-              <input type="text" className="form-control" id="petName" value={name} onChange={(e) => setName(e.target.value)} />
+              <input type="text" className="form-control" id="petName" value={name} onChange={(e) => setName(DOMPurify.sanitize(e.target.value))} />
             </div>
           </div>
         </div>
@@ -273,9 +272,9 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
           <label htmlFor="petGender" className="col-sm-2 col-form-label">Idade</label>
           <div className="col-sm">
             <div className="input-group pet-idade">
-              <input type="text" className="form-control" id="petYear" placeholder="anos" value={ageYear} onChange={(e) => setAgeYear(e.target.value)}/>
+              <input type="text" className="form-control" id="petYear" placeholder="anos" value={ageYear} onChange={(e) => setAgeYear(DOMPurify.sanitize(e.target.value))}/>
           
-              <input type="text" className="form-control" id="petMonth" placeholder="meses" value={ageMonth} onChange={(e) => setAgeMonth(e.target.value)}/>
+              <input type="text" className="form-control" id="petMonth" placeholder="meses" value={ageMonth} onChange={(e) => setAgeMonth(DOMPurify.sanitize(e.target.value))}/>
             </div>
           </div>
         </div>
@@ -284,10 +283,10 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
           <label htmlFor="petWeight" className="col-sm-2 col-form-label">Porte</label>
           <div className="col-sm">
             <div className="input-group pet-porte">
-              <input type="text" className="form-control" id="petWeight" placeholder="kg" value={weight} onChange={(e) => setWeight(e.target.value)}/>
+              <input type="text" className="form-control" id="petWeight" placeholder="kg" value={weight} onChange={(e) => setWeight(DOMPurify.sanitize(e.target.value))}/>
 
       
-              <select className="form-select" id="petSize" name="petSize" aria-label="Selecione o porte do animal" value={size} onChange={(e) => setSize(e.target.value)} disabled>
+              <select className="form-select" id="petSize" name="petSize" aria-label="Selecione o porte do animal" value={size} onChange={(e) => setSize(DOMPurify.sanitize(e.target.value))} disabled>
                 <option key='' value=''>porte</option>
                 {petSizeChoices.map((item) => (
                   <option key={item.id} value={item.id}>
@@ -344,7 +343,7 @@ const NewPetForm = ({ user, initialValues = null, setToastType, setToastMessage,
         <div className="row mb-1">
           <div className="col-sm">
             <div className="input-group">
-              <textarea type="text" className="form-control" id="petDescription" placeholder="Descrição" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(e.target.value)}/>
+              <textarea type="text" className="form-control" id="petDescription" placeholder="Descrição" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(DOMPurify.sanitize(e.target.value))}/>
             </div>
           </div>
         </div>

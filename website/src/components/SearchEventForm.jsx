@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import DateTimePicker from "./DateTimePicker";
@@ -76,14 +77,14 @@ const SearchEventForm = ({ closeModal }) => {
           <div className="row">
             <label htmlFor="petCity" className="col-sm-2 col-form-label">Cidade</label>
             <div className="col" style={{ width: '76%'}}>
-              <input type="text" className="form-control" id="petCity" value={city} onChange={(e) => setCity(e.target.value)} />
+              <input type="text" className="form-control" id="petCity" value={city} onChange={(e) => setCity(DOMPurify.sanitize(e.target.value))} />
             </div>
           </div>
 
           <div className="row">
             <label htmlFor="petNames" className="col-sm-2 col-form-label">Animais</label>
             <div className="col" style={{ width: '76%'}}>
-              <input type="text" className="form-control" id="petNames" value={pets} onChange={(e) => setPets(e.target.value)} />
+              <input type="text" className="form-control" id="petNames" value={pets} onChange={(e) => setPets(DOMPurify.sanitize(e.target.value))} />
             </div>
           </div>
 

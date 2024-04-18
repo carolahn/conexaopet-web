@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from 'react-redux';
 import ImageUploader from './ImageUploader';
 import DateTimePicker from './DateTimePicker';
@@ -92,7 +93,7 @@ const NewCupomForm = ({ user, initialValues = null , handleCloseModal, setToastT
         <div className="row">
           <label htmlFor="cupomValue" className="col col-form-label">Cupom</label>
           <div className="col">
-            <input type="text" id="cupomValue" value={value} onChange={(e) => setValue(e.target.value)} required />
+            <input type="text" id="cupomValue" value={value} onChange={(e) => setValue(DOMPurify.sanitize(e.target.value))} required />
           </div>
         </div>
 
@@ -103,7 +104,7 @@ const NewCupomForm = ({ user, initialValues = null , handleCloseModal, setToastT
         <div className="row">
           <label htmlFor="cupomDescription" className="col col-form-label">Descrição</label>
           <div className="col">
-            <textarea type="text" id="cupomDescription" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(e.target.value)} required />
+            <textarea type="text" id="cupomDescription" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(DOMPurify.sanitize(e.target.value))} required />
           </div>
           
           

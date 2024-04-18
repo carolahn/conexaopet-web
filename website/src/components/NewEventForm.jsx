@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import DOMPurify from 'dompurify';
 import ImageUploader from './ImageUploader';
 import MultiSelect from './MultiSelect';
 import DateTimePicker from './DateTimePicker';
@@ -267,7 +268,7 @@ const NewEventForm = ({ user, initialValues = null, setToastType, setToastMessag
 
         <div className="row">
           <div className="col">
-            <textarea type="text" id="eventDescription" placeholder="Descrição" aria-label="Insira a descrição" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(e.target.value)}/>
+            <textarea type="text" id="eventDescription" placeholder="Descrição" aria-label="Insira a descrição" rows="3" style={{ resize: "none" }} value={description} onChange={(e) => setDescription(DOMPurify.sanitize(e.target.value))}/>
           </div>
         </div>
 
