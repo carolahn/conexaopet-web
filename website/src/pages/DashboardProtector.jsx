@@ -89,7 +89,7 @@ const DashboardProtector = ( props ) => {
       {loading && <LoadingSpinner />}
       <div className='profile-container'>
         <div className='profile-body'>
-          <Header user={props.user} token={props.token} />
+          <Header user={props.user} token={props.token} showLogo={false} title='Minha conta'/>
           <ProtectorCardDashboard protector={user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast} />
 
           {selectedTab === 'pet' && (

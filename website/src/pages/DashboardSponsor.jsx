@@ -58,7 +58,7 @@ const DashboardSponsor = ( props ) => {
   return (
     <>
       <div className='profile-container'>
-        <Header user={props.user} token={props.token} />
+        <Header user={props.user} token={props.token} showLogo={false} title='Minha conta'/>
         <div className='profile-body'>
           <SponsorCardDashboard sponsor={user} setSelectedTab={setSelectedTab} setToastType={setToastType} setToastMessage={setToastMessage} handleOpenToast={handleOpenToast}/>
 
