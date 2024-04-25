@@ -18,7 +18,6 @@ jobs:
           cd website
           npm install --legacy-peer-deps
 
-
       - name: Running Test
         run: |
           cd website
@@ -81,6 +80,7 @@ jobs:
     env:
         EC2_HOST_DNS: ${{ secrets.EC2_HOST_DNS }}
         REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+        REACT_APP_NODE_ENV: ${{ secrets.REACT_APP_NODE_ENV }}
     steps:
       - name: Install docker on EC2
         uses: appleboy/ssh-action@master
@@ -110,11 +110,20 @@ jobs:
               docker-compose --version
       - name: Deploying Application
         uses: appleboy/ssh-action@master
+        env:
+          EC2_HOST_DNS: ${{ secrets.EC2_HOST_DNS }}
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+          REACT_APP_NODE_ENV: ${{ secrets.REACT_APP_NODE_ENV }}
         with:
           host: ${{ secrets.EC2_HOST_DNS }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY_PEM }}
+          envs: EC2_HOST_DNS,REACT_APP_API_URL,REACT_APP_NODE_ENV
           script: |
+              export EC2_HOST_DNS=$EC2_HOST_DNS
+              export REACT_APP_API_URL=$REACT_APP_API_URL
+              export REACT_APP_NODE_ENV=$REACT_APP_NODE_ENV
+
               sudo su
               docker stop website nginx
               docker rm website nginx
