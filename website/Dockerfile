@@ -2,7 +2,7 @@ FROM node:19.6.1
 
 WORKDIR /website
 
-COPY ../.env ./
+COPY conexaopet-web/.env ./
 
 COPY package*.json ./
 
