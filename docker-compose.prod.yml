@@ -7,7 +7,9 @@ services:
       context: ./website
       dockerfile: Dockerfile
     environment:
+      - EC2_HOST_DNS=${EC2_HOST_DNS}
       - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - REACT_APP_NODE_ENV=${REACT_APP_NODE_ENV}
     ports:
       - "3000:3000"
     volumes:
@@ -19,6 +21,10 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile.prod
+    environment:
+      - EC2_HOST_DNS=${EC2_HOST_DNS}
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - REACT_APP_NODE_ENV=${REACT_APP_NODE_ENV}
     ports:
       - "80:80"
     volumes:

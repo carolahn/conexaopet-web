@@ -81,6 +81,7 @@ jobs:
     env:
         EC2_HOST_DNS: ${{ secrets.EC2_HOST_DNS }}
         REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+        REACT_APP_NODE_ENV: ${{ secrets.REACT_APP_NODE_ENV }}
     steps:
       - name: Install docker on EC2
         uses: appleboy/ssh-action@master
@@ -110,11 +111,25 @@ jobs:
               docker-compose --version
       - name: Deploying Application
         uses: appleboy/ssh-action@master
+        env:
+          EC2_HOST_DNS: ${{ secrets.EC2_HOST_DNS }}
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+          REACT_APP_NODE_ENV: ${{ secrets.REACT_APP_NODE_ENV }}
         with:
           host: ${{ secrets.EC2_HOST_DNS }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY_PEM }}
+          envs: EC2_HOST_DNS,REACT_APP_API_URL,REACT_APP_NODE_ENV
           script: |
+              export EC2_HOST_DNS=$EC2_HOST_DNS
+              export REACT_APP_API_URL=$REACT_APP_API_URL
+              export REACT_APP_NODE_ENV=$REACT_APP_NODE_ENV
+
+              touch .env
+              echo "EC2_HOST_DNS=$EC2_HOST_DNS" > .env
+              echo "REACT_APP_API_URL=$REACT_APP_API_URL" >> .env
+              echo "REACT_APP_NODE_ENV=$REACT_APP_NODE_ENV" >> .env
+
               sudo su
               docker stop website nginx
               docker rm website nginx
@@ -122,6 +137,7 @@ jobs:
               rm -rf conexaopet-web
               git clone https://github.com/carolahn/conexaopet-web.git
               cd conexaopet-web
+              cp ../.env .
               rm -rf /website/build/*
               docker-compose -f docker-compose.prod.yml up --build -d
 
