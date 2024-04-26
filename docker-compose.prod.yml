@@ -6,6 +6,8 @@ services:
     build: 
       context: ./website
       dockerfile: Dockerfile
+    env_file:
+      - ./website/.env
     environment:
       - EC2_HOST_DNS=${EC2_HOST_DNS}
       - REACT_APP_API_URL=${REACT_APP_API_URL}
@@ -21,6 +23,8 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile.prod
+    env_file:
+      - ./.env
     environment:
       - EC2_HOST_DNS=${EC2_HOST_DNS}
       - REACT_APP_API_URL=${REACT_APP_API_URL}
