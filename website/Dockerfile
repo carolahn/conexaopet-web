@@ -2,8 +2,6 @@ FROM node:19.6.1
 
 WORKDIR /website
 
-COPY ../../.env ./
-
 COPY package*.json ./
 
 RUN npm install --legacy-peer-deps
