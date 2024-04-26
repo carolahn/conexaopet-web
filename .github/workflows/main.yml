@@ -126,7 +126,7 @@ jobs:
               export REACT_APP_NODE_ENV=$REACT_APP_NODE_ENV
 
               touch .env
-              echo "EC2_HOST_DNS=$EC2_HOST_DNS" > .env
+              echo "EC2_HOST_DNS=$EC2_HOST_DNS" >> .env
               echo "REACT_APP_API_URL=$REACT_APP_API_URL" >> .env
               echo "REACT_APP_NODE_ENV=$REACT_APP_NODE_ENV" >> .env
 
@@ -138,7 +138,10 @@ jobs:
               git clone https://github.com/carolahn/conexaopet-web.git
               cd conexaopet-web
               cp ../.env .
-              cp ../.env /website
+              cp ../.env ./website
+              cd website
+              ls -la
+              cd ..
               rm -rf /website/build/*
               docker-compose -f docker-compose.prod.yml up --build -d
 
