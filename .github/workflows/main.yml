@@ -138,6 +138,7 @@ jobs:
               git clone https://github.com/carolahn/conexaopet-web.git
               cd conexaopet-web
               cp ../.env .
+              cp ../.env /website
               rm -rf /website/build/*
               docker-compose -f docker-compose.prod.yml up --build -d
 
