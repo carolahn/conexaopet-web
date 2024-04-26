@@ -2,7 +2,7 @@ FROM node:19.6.1
 
 WORKDIR /website
 
-COPY ../conexaopet-web/.env ./
+COPY ../../.env ./
 
 COPY package*.json ./
 
