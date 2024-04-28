@@ -36,6 +36,8 @@ const PetCard = ({ pet }) => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
   const [toastType, setToastType] = useState('success');
+  const [isAtBeginning, setIsAtBeginning] = useState(true);
+  const [isAtEnd, setIsAtEnd] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(getUser);
@@ -104,7 +106,13 @@ const PetCard = ({ pet }) => {
     }
 
     // eslint-disable-next-line
-  }, [favoritePetList])
+  }, [favoritePetList]);
+
+  useEffect(() => {
+    setIsAtBeginning(currentIndex === 0);
+    setIsAtEnd(currentIndex === pet.images?.length - 1);
+    // eslint-disable-next-line
+  }, [currentIndex]);
 
 	const handleFavoriteClick = () => {
     setIsFavorite((prevIsFavorite) => {
@@ -147,9 +155,6 @@ const PetCard = ({ pet }) => {
 	const handleChangeIndex = (index) => {
     setCurrentIndex(index);
   };
-
-	const isAtBeginning = currentIndex === 0;
-  const isAtEnd = currentIndex === pet.images?.length - 1;
 
 	const openDiscartModal = () => {
     setIsDiscartModalOpen(!isDiscartModalOpen);
@@ -207,7 +212,7 @@ const PetCard = ({ pet }) => {
 					<div className='pet-avatar'>
 						<img src={ownerImage} alt={`Avatar de ${pet.owner?.username}`} />
 					</div>
-					<h2 className='pet-header-owner' onClick={() => handleGetOwner(pet.owner?.id)}>{pet.owner?.username}</h2>
+					<h3 className='pet-header-owner' onClick={() => handleGetOwner(pet.owner?.id)}>{pet.owner?.username}</h3>
 				</div>
 				{user?.id === pet.owner?.id && (
 					<div className='pet-options-container'>
@@ -228,12 +233,12 @@ const PetCard = ({ pet }) => {
               <div className="pet-carousel-content" style={{ transform: `translateX(-${currentIndex * 500}px)` }}>
                 {petImages.map((imagem, index) => (
                   <div key={index} style={{ width: '500px' }}>
-                    <img src={imagem} alt={`Foto de ${pet.name}`} className='pet-image' style={{ height: '100%', objectFit: 'cover', maxWidth: '500px', display: 'block'}}/>
+                    <img src={imagem} alt={`Foto de ${pet.name}`} className='pet-image' style={{ height: '100%', maxHeight: '500px', objectFit: 'cover', maxWidth: '500px', display: 'block'}}/>
                   </div>
                 ))}
               </div>
-              <button className="pet-carousel-button left" onClick={prevSlide} disabled={isAtBeginning}>&#10094;</button>
-              <button className="pet-carousel-button right" onClick={nextSlide} disabled={isAtEnd}>&#10095;</button>
+              <button className="pet-carousel-button left" onClick={prevSlide} disabled={isAtBeginning} style={{ visibility: isAtBeginning ? 'hidden' : 'visible' }}>&#10094;</button>
+              <button className="pet-carousel-button right" onClick={nextSlide} disabled={isAtEnd} style={{ visibility: isAtEnd ? 'hidden' : 'visible' }}>&#10095;</button>
             </div>
 
 					) : (
@@ -245,15 +250,15 @@ const PetCard = ({ pet }) => {
 									</div>
 								))}
 							</div>
-							<button className="pet-carousel-button left mobile" onClick={prevSlide} disabled={isAtBeginning}>&#10094;</button>
-							<button className="pet-carousel-button right mobile" onClick={nextSlide} disabled={isAtEnd}>&#10095;</button>
+							<button className="pet-carousel-button left mobile" onClick={prevSlide} disabled={isAtBeginning} style={{ visibility: isAtBeginning ? 'hidden' : 'visible' }}>&#10094;</button>
+							<button className="pet-carousel-button right mobile" onClick={nextSlide} disabled={isAtEnd} style={{ visibility: isAtEnd ? 'hidden' : 'visible' }}>&#10095;</button>
 						</div>
 					)}
 
 				</div>
 				<div className='pet-card-bar'>
 					<div className='pet-card-summary' tabIndex={0}>
-						<h2>{pet.name}</h2>
+						<h3>{pet.name}</h3>
 						<p className={`pet-label pet-${pet.gender?.toLowerCase()}`}>{pet.gender === 'M' ? 'macho' : 'fêmea'}</p>
 						<p className='pet-label pet-age'>{getLifeStage(pet.age_year)}</p>
 						<p className='pet-label pet-size'>{pet.size}</p>
@@ -335,6 +340,11 @@ const PetCard = ({ pet }) => {
             padding: 0 0 7px 3px;
             justify-content: space-between;
           }
+
+          .pet-card-header h3 {
+            font-size: 1.5em;
+            font-weight: bold;
+          }
           
           .pet-header {
             display: flex;
@@ -396,6 +406,11 @@ const PetCard = ({ pet }) => {
           
           .pet-card-summary {
             width: 80%;
+          }
+
+          .pet-card-summary h3 {
+            font-size: 1.5em;
+            font-weight: bold;
           }
           
           .pet-card-buttons {

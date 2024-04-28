@@ -77,7 +77,9 @@ const Header = ({ user, token, showLogo = true, title = '' }) => {
         <div className='header-body'>
           {showLogo ? (
             <Link to="/" aria-label="Home">
-              <img src={logo} alt='Logo Conexão Pet' className='logo' />
+              <h1>
+                <img src={logo} alt='Logo Conexão Pet' className='logo' />
+              </h1>
             </Link>
           ) : (
             <div className='header-title-container'>

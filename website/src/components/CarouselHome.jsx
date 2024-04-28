@@ -102,7 +102,7 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
 						{eventList?.map((event, index) => (
 							<div key={index} className="carousel-item" onClick={() => handleEventClick(event.id)} style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleEventClick(event.id);}}>
 								<img src={event.eventImages[0]} alt={`event ${index + 1}`} style={{ height: '100%', objectFit: 'cover', maxWidth: `${height * 0.2}px`, display: 'block' }} />
-								<p>{formatarData(event.date_hour_initial)}</p>
+								<h3>{formatarData(event.date_hour_initial)}</h3>
 							</div>
 						))}
 					</div>
@@ -116,7 +116,7 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
 						{eventList?.map((event, index) => (
 							<div key={index} className="carousel-item" onClick={() => handleEventClick(event.id)} style={{ height: `${height * 0.2}px`, width: `${height * 0.2}px`, position: 'relative', marginRight: `${height * 0.02}px`, paddingBottom: '1.5rem' }} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleEventClick(event.id);}}>
 								<img src={event.eventImages[0]} alt={`event ${index + 1}`} style={{ height: '100%', objectFit: 'cover', maxWidth: `${height * 0.2}px`, display: 'block' }} />
-								<p>{formatarData(event.date_hour_initial)}</p>
+								<h3>{formatarData(event.date_hour_initial)}</h3>
 							</div>
 						))}
 					</div>
@@ -137,6 +137,13 @@ const CarouselHome = ({ events, loadMore, isLoading }) => {
           .carousel-content {
             display: flex;
             transition: transform 0.5s ease-in-out;
+          }
+
+          .carousel-item h3 {
+            margin: 0;
+            font-family: sans-serif;
+            font-size: 1rem;
+            font-weight: lighter;
           }
           
           .carousel-item {

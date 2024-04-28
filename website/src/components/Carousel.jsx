@@ -105,7 +105,7 @@ const Carousel = ({ events, loadMoreItems, isLoading }) => {
 									onClick={() => scrollToEvent(`event-${event.id}`)}
 
 								/>
-								<p>{formatarData(event.date_hour_initial)}</p>
+								<h3>{formatarData(event.date_hour_initial)}</h3>
 							</div>
 						))}
 					</div>
@@ -123,7 +123,7 @@ const Carousel = ({ events, loadMoreItems, isLoading }) => {
 									style={{ height: '100%', objectFit: 'cover', maxWidth: `${height * 0.2}px`, display: 'block' }}
 									onClick={() => scrollToEvent(`event-${event.id}`)}
 								/>
-								<p>{formatarData(event.date_hour_initial)}</p>
+								<h3>{formatarData(event.date_hour_initial)}</h3>
 							</div>
 						))}
 					</div>
@@ -148,6 +148,13 @@ const Carousel = ({ events, loadMoreItems, isLoading }) => {
           
           .carousel-item {
             cursor: pointer;
+          }
+
+          .carousel-item h3 {
+            margin: 0;
+            font-family: sans-serif;
+            font-size: 1rem;
+            font-weight: lighter;
           }
           
           .active {

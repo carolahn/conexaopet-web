@@ -46,6 +46,8 @@ const EventCard = ( props ) => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Alterações salvas');
   const [toastType, setToastType] = useState('success');
+  const [isAtBeginning, setIsAtBeginning] = useState(true);
+  const [isAtEnd, setIsAtEnd] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(getUser);
@@ -138,6 +140,12 @@ const EventCard = ( props ) => {
     // eslint-disable-next-line
   }, [favoriteEventList]);
 
+  useEffect(() => {
+    setIsAtBeginning(currentIndex === 0);
+    setIsAtEnd(currentIndex === sortedImages.length - 1);
+    // eslint-disable-next-line
+  }, [currentIndex])
+
   const handleFavoritePetClick = (pet) => {
     if (favoritePetList.filter(item => item.id === pet.id).length > 0) {
       dispatch(removeFavoritePet(pet));
@@ -195,9 +203,6 @@ const EventCard = ( props ) => {
       setCurrentAnimal(currentImage.petId !== null ? props.event.pets.find(animal => animal.id === currentImage.petId) : null);
     }
   };
-
-	const isAtBeginning = currentIndex === 0;
-  const isAtEnd = currentIndex === sortedImages.length - 1;
 
   const openDiscartModal = () => {
     setIsDiscartModalOpen(!isDiscartModalOpen);
@@ -290,7 +295,7 @@ const EventCard = ( props ) => {
           <div className='event-avatar'>
             <img src={ownerImage} alt={`Avatar de ${props.event.owner.username}`} />
           </div>
-          <h2 className='event-header-owner' onClick={() => handleGetOwner(props.event.owner?.id)} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleGetOwner(props.event.owner?.id);}}>{props.event.owner.username}</h2>
+          <h3 className='event-header-owner' onClick={() => handleGetOwner(props.event.owner?.id)} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleGetOwner(props.event.owner?.id);}}>{props.event.owner.username}</h3>
         </div>
         {user?.id === props.event.owner.id && (
           <div className='event-options-container'>
@@ -314,12 +319,12 @@ const EventCard = ( props ) => {
 							<div className="event-carousel-content" style={{ transform: `translateX(-${currentIndex * 500}px)` }}>
 								{sortedImages?.map((imageObj, index) => (
 									<div key={index} style={{ width: '500px' }} id={`event-${props.id}-image-${index}`}>
-										<img src={imageObj.image} alt={`Foto do evento`} className='event-image' style={{ height: '100%', objectFit: 'cover', maxWidth: '500px', display: 'block'}}/>
+										<img src={imageObj.image} alt={`Foto do evento`} className='event-image' style={{ height: '100%', maxHeight: '500px', objectFit: 'cover', maxWidth: '500px', display: 'block'}}/>
 									</div>
 								))}
 							</div>
-							<button className="event-carousel-button left" onClick={prevSlide} disabled={isAtBeginning} >&#10094;</button>
-							<button className="event-carousel-button right" onClick={nextSlide} disabled={isAtEnd} >&#10095;</button>
+							<button className="event-carousel-button left" onClick={prevSlide} disabled={isAtBeginning} style={{ visibility: isAtBeginning ? 'hidden' : 'visible' }}>&#10094;</button>
+							<button className="event-carousel-button right" onClick={nextSlide} disabled={isAtEnd} style={{ visibility: isAtEnd ? 'hidden' : 'visible' }}>&#10095;</button>
 						</div>
 
 					) : (
@@ -331,8 +336,8 @@ const EventCard = ( props ) => {
 									</div>
 								))}
 							</div>
-							<button className="event-carousel-button left mobile" onClick={prevSlide} disabled={isAtBeginning} >&#10094;</button>
-							<button className="event-carousel-button right mobile" onClick={nextSlide} disabled={isAtEnd} >&#10095;</button>
+							<button className="event-carousel-button left mobile" onClick={prevSlide} disabled={isAtBeginning} style={{ visibility: isAtBeginning ? 'hidden' : 'visible' }}>&#10094;</button>
+							<button className="event-carousel-button right mobile" onClick={nextSlide} disabled={isAtEnd} style={{ visibility: isAtEnd ? 'hidden' : 'visible' }}>&#10095;</button>
 						</div>
 					)}
 				</div>
@@ -341,7 +346,7 @@ const EventCard = ( props ) => {
 					<div>
 					<div className='event-card-bar'>
 						<div className='event-card-summary'>
-							<h2>{formatarData(props.event.date_hour_initial)}</h2>
+							<h3>{formatarData(props.event.date_hour_initial)}</h3>
 							<p className='event-label'>{props.event.address.city}, {props.event.address.uf}</p>
 							<p className='event-label'>{props.event.address.name}</p>
 						</div>
@@ -382,7 +387,7 @@ const EventCard = ( props ) => {
 					<div>
 						<div className='pet-card-bar'>
 							<div className='pet-card-summary'>
-								<h2 className='pet-card-name' onClick={() => handleGetPetCard(currentAnimal.id)} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleGetPetCard(currentAnimal.id);}}>{currentAnimal.name}</h2>
+								<h3 className='pet-card-name' onClick={() => handleGetPetCard(currentAnimal.id)} tabIndex={0} role="button" onKeyDown={(e) => {if (e.key === 'Enter') handleGetPetCard(currentAnimal.id);}}>{currentAnimal.name}</h3>
 								<p className='pet-label'>{currentAnimal.gender === 'M' ? 'macho' : 'fêmea'}</p>
 								<p className='pet-label pet-age'>{getLifeStage(currentAnimal.age_year)}</p>
 								<p className='pet-label pet-size'>{currentAnimal.size}</p>
@@ -473,6 +478,11 @@ const EventCard = ( props ) => {
             align-items: center;
           }
 
+          .event-header h3 {
+            font-size: 1.5em;
+            font-weight: bold;
+          }
+
           .event-header-owner {
             cursor: pointer;
             text-decoration: none;
@@ -533,6 +543,11 @@ const EventCard = ( props ) => {
           
           .event-card-summary {
             width: 80%;
+          }
+
+          .event-card-summary h3 {
+            font-size: 1.5em;
+            font-weight: bold;
           }
 
           .pet-card-name {
@@ -743,6 +758,11 @@ const EventCard = ( props ) => {
           
           .pet-card-summary {
             width: 80%;
+          }
+
+          .pet-card-summary h3 {
+            font-size: 1.5em;
+            font-weight: bold;
           }
           
           .pet-card-buttons {
