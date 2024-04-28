@@ -191,6 +191,8 @@ jobs:
           echo "REACT_APP_API_URL=$REACT_APP_API_URL" >> .env
           echo "REACT_APP_NODE_ENV=$REACT_APP_NODE_ENV" >> .env
 
+          cp .env /website
+
           cd website
           cp ../.env ./website
           docker build -t ${{ secrets.DOCKERHUB_WEBSITE_URL }}:v${{ steps.version_changed.outputs.current_version }} .
