@@ -182,6 +182,7 @@ jobs:
       - name: Build and push Docker images
         if: steps.version_changed.outputs.version_changed == 'true'
         run: |
+          sudo su
           export EC2_HOST_DNS=$EC2_HOST_DNS
           export REACT_APP_API_URL=$REACT_APP_API_URL
           export REACT_APP_NODE_ENV=$REACT_APP_NODE_ENV
