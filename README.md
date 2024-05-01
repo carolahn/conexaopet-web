@@ -22,11 +22,17 @@ Clonar este repositório
 Acessar o diretório do projeto:  
 `cd conexaopet-web`  
 
+Criar um arquivo `.env`com as variáveis de ambiente:  
+```
+REACT_APP_NODE_ENV=development
+REACT_APP_API_URL=http://127.0.0.1:8008/api
+```
+
 Executar contêineres  
 `docker compose -f docker-compose.dev.yml up --build`  
 
 Acesse a aplicação em    
-`http://localhost:3000`  
+`http://localhost`  
 
 ### Servir na EC2:  
 
